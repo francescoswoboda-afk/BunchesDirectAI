@@ -69,9 +69,6 @@ const dom = {
     menuToggle: document.getElementById("menuToggle"),
     siteNav: document.getElementById("siteNav"),
     year: document.getElementById("year"),
-    newsletterForm: document.getElementById("newsletterForm"),
-    newsletterEmail: document.getElementById("newsletterEmail"),
-    newsletterMessage: document.getElementById("newsletterMessage"),
     productGrid: document.getElementById("productGrid"),
     productSearch: document.getElementById("productSearch"),
     filterButtons: Array.from(document.querySelectorAll(".filter-btn")),
@@ -83,7 +80,6 @@ function init() {
     setYear();
     wireMobileMenu();
     markActiveNav();
-    wireNewsletterForm();
     initProductsPage();
     initContactPage();
 }
@@ -116,26 +112,6 @@ function markActiveNav() {
         if (link.dataset.link === page) {
             link.classList.add("active");
         }
-    });
-}
-
-function wireNewsletterForm() {
-    if (!dom.newsletterForm || !dom.newsletterEmail || !dom.newsletterMessage) {
-        return;
-    }
-
-    dom.newsletterForm.addEventListener("submit", (event) => {
-        event.preventDefault();
-        const email = dom.newsletterEmail.value.trim();
-
-        if (!isValidEmail(email)) {
-            setMessage(dom.newsletterMessage, "Please enter a valid email address.", false);
-            return;
-        }
-
-        localStorage.setItem("bunchesDirectNewsletterEmail", email);
-        dom.newsletterForm.reset();
-        setMessage(dom.newsletterMessage, "You are subscribed. Welcome to the flower club!", true);
     });
 }
 
