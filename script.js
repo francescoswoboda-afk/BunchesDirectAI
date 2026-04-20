@@ -1,5 +1,3 @@
-const ENQUIRY_KEY = "bunchesDirectEnquiry";
-
 const products = [
     {
         id: "rose-romance",
@@ -70,7 +68,6 @@ const products = [
 const dom = {
     menuToggle: document.getElementById("menuToggle"),
     siteNav: document.getElementById("siteNav"),
-    enquiryCount: document.getElementById("enquiryCount"),
     year: document.getElementById("year"),
     newsletterForm: document.getElementById("newsletterForm"),
     newsletterEmail: document.getElementById("newsletterEmail"),
@@ -78,9 +75,6 @@ const dom = {
     productGrid: document.getElementById("productGrid"),
     productSearch: document.getElementById("productSearch"),
     filterButtons: Array.from(document.querySelectorAll(".filter-btn")),
-    enquiryItems: document.getElementById("enquiryItems"),
-    enquiryTotal: document.getElementById("enquiryTotal"),
-    clearEnquiryBtn: document.getElementById("clearEnquiryBtn"),
     contactForm: document.getElementById("contactForm"),
     contactMessage: document.getElementById("contactMessage")
 };
@@ -90,7 +84,6 @@ function init() {
     wireMobileMenu();
     markActiveNav();
     wireNewsletterForm();
-    updateEnquiryCount();
     initProductsPage();
     initContactPage();
 }
@@ -152,7 +145,6 @@ function initProductsPage() {
     }
 
     renderProductCards(products);
-    renderEnquiryPanel();
 
     dom.filterButtons.forEach((button) => {
         button.addEventListener("click", () => {
@@ -164,14 +156,6 @@ function initProductsPage() {
 
     if (dom.productSearch) {
         dom.productSearch.addEventListener("input", filterAndRenderProducts);
-    }
-
-    if (dom.clearEnquiryBtn) {
-        dom.clearEnquiryBtn.addEventListener("click", () => {
-            localStorage.setItem(ENQUIRY_KEY, JSON.stringify([]));
-            renderEnquiryPanel();
-            updateEnquiryCount();
-        });
     }
 }
 
@@ -209,96 +193,10 @@ function renderProductCards(list) {
                 <h3>${product.name}</h3>
                 <p>${product.description}</p>
                 <p class="price">$${product.price}</p>
-                <button class="btn btn-solid" data-add-id="${product.id}">Add to Enquiry</button>
             </article>
         `
         )
         .join("");
-
-    dom.productGrid.querySelectorAll("[data-add-id]").forEach((button) => {
-        button.addEventListener("click", () => {
-            addToEnquiry(button.dataset.addId);
-        });
-    });
-}
-
-function addToEnquiry(productId) {
-    const product = products.find((item) => item.id === productId);
-    if (!product) {
-        return;
-    }
-
-    const enquiry = getEnquiryItems();
-    const existing = enquiry.find((item) => item.id === product.id);
-
-    if (existing) {
-        existing.qty += 1;
-    } else {
-        enquiry.push({ id: product.id, name: product.name, price: product.price, qty: 1 });
-    }
-
-    localStorage.setItem(ENQUIRY_KEY, JSON.stringify(enquiry));
-    renderEnquiryPanel();
-    updateEnquiryCount();
-}
-
-function getEnquiryItems() {
-    try {
-        const value = localStorage.getItem(ENQUIRY_KEY);
-        return value ? JSON.parse(value) : [];
-    } catch (_error) {
-        return [];
-    }
-}
-
-function updateEnquiryCount() {
-    if (!dom.enquiryCount) {
-        return;
-    }
-
-    const count = getEnquiryItems().reduce((acc, item) => acc + item.qty, 0);
-    dom.enquiryCount.textContent = String(count);
-}
-
-function renderEnquiryPanel() {
-    if (!dom.enquiryItems || !dom.enquiryTotal) {
-        return;
-    }
-
-    const enquiry = getEnquiryItems();
-
-    if (enquiry.length === 0) {
-        dom.enquiryItems.innerHTML = "<li>Your enquiry list is currently empty.</li>";
-        dom.enquiryTotal.textContent = "$0";
-        return;
-    }
-
-    dom.enquiryItems.innerHTML = enquiry
-        .map(
-            (item) => `
-            <li>
-                <span>${item.name} x${item.qty} - $${item.price * item.qty}</span>
-                <button type="button" data-remove-id="${item.id}">Remove</button>
-            </li>
-        `
-        )
-        .join("");
-
-    const total = enquiry.reduce((sum, item) => sum + item.price * item.qty, 0);
-    dom.enquiryTotal.textContent = `$${total}`;
-
-    dom.enquiryItems.querySelectorAll("[data-remove-id]").forEach((button) => {
-        button.addEventListener("click", () => {
-            removeFromEnquiry(button.dataset.removeId);
-        });
-    });
-}
-
-function removeFromEnquiry(productId) {
-    const enquiry = getEnquiryItems().filter((item) => item.id !== productId);
-    localStorage.setItem(ENQUIRY_KEY, JSON.stringify(enquiry));
-    renderEnquiryPanel();
-    updateEnquiryCount();
 }
 
 function initContactPage() {
@@ -369,7 +267,6 @@ function saveContactSubmission(payload) {
 
     records.push({
         ...payload,
-        enquiry: getEnquiryItems(),
         submittedAt: new Date().toISOString()
     });
 

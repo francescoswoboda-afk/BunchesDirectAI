@@ -31,6 +31,18 @@ body {
     radial-gradient(circle at 90% 8%, rgba(138, 19, 41, 0.16), transparent 30%),
     var(--cream);
   line-height: 1.6;
+  cursor: url("assets/rose-cursor.svg") 8 8, auto;
+}
+
+a,
+button,
+input,
+select,
+textarea,
+label,
+.filter-btn,
+.menu-toggle {
+  cursor: url("assets/rose-cursor.svg") 8 8, pointer;
 }
 
 h1,
@@ -114,26 +126,6 @@ a {
 .site-nav a.active,
 .site-nav a:hover {
   background: rgba(194, 31, 58, 0.12);
-}
-
-.enquiry-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  background: var(--forest);
-  color: #f5f5ef;
-  padding: 0.45rem 0.85rem;
-  border-radius: 999px;
-  font-size: 0.92rem;
-  font-weight: 700;
-}
-
-.enquiry-pill span {
-  background: rgba(255, 255, 255, 0.2);
-  min-width: 24px;
-  text-align: center;
-  border-radius: 999px;
-  padding: 0.05rem 0.35rem;
 }
 
 .menu-toggle {
@@ -372,32 +364,6 @@ textarea {
   font-weight: 700;
 }
 
-.enquiry-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: grid;
-  gap: 0.65rem;
-}
-
-.enquiry-list li {
-  display: flex;
-  justify-content: space-between;
-  gap: 0.8rem;
-  background: rgba(255, 255, 255, 0.72);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 0.55rem 0.7rem;
-}
-
-.enquiry-list button {
-  border: 0;
-  background: transparent;
-  color: #8a1329;
-  cursor: pointer;
-  font-weight: 700;
-}
-
 .contact-form {
   display: grid;
   gap: 0.65rem;
@@ -534,10 +500,6 @@ textarea {
 
   .site-nav.open {
     display: flex;
-  }
-
-  .enquiry-pill {
-    margin-left: auto;
   }
 
   .search-wrap {

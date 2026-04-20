@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" role="img" aria-label="Rose cursor">
+  <circle cx="14" cy="12" r="6" fill="#c21f3a"/>
+  <path d="M14 5c2.6 0 4.9 2.2 4.9 4.9S16.6 15 14 15s-4.9-2.2-4.9-4.9S11.4 5 14 5z" fill="#e33d5c"/>
+  <path d="M10.2 13.5c1.5 1.8 4.2 2.1 6 .6" stroke="#7b1024" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+  <path d="M14 17l2.5 7" stroke="#2f5e2b" stroke-width="1.8" stroke-linecap="round"/>
+  <path d="M16 20l4.6-1.2-3 3.9" fill="#3b7a35"/>
+  <path d="M15 23l-3.6 1.4 2.2 2.4" fill="#3b7a35"/>
+</svg>
