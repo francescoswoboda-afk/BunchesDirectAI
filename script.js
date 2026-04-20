@@ -71,9 +71,7 @@ const dom = {
     year: document.getElementById("year"),
     productGrid: document.getElementById("productGrid"),
     productSearch: document.getElementById("productSearch"),
-    filterButtons: Array.from(document.querySelectorAll(".filter-btn")),
-    contactForm: document.getElementById("contactForm"),
-    contactMessage: document.getElementById("contactMessage")
+    filterButtons: Array.from(document.querySelectorAll(".filter-btn"))
 };
 
 function init() {
@@ -81,7 +79,6 @@ function init() {
     wireMobileMenu();
     markActiveNav();
     initProductsPage();
-    initContactPage();
 }
 
 function setYear() {
@@ -173,90 +170,6 @@ function renderProductCards(list) {
         `
         )
         .join("");
-}
-
-function initContactPage() {
-    if (!dom.contactForm || !dom.contactMessage) {
-        return;
-    }
-
-    dom.contactForm.addEventListener("submit", (event) => {
-        event.preventDefault();
-
-        const formData = new FormData(dom.contactForm);
-        const payload = {
-            name: String(formData.get("name") || "").trim(),
-            email: String(formData.get("email") || "").trim(),
-            phone: String(formData.get("phone") || "").trim(),
-            occasion: String(formData.get("occasion") || "").trim(),
-            date: String(formData.get("date") || "").trim(),
-            message: String(formData.get("message") || "").trim(),
-            updates: Boolean(formData.get("updates"))
-        };
-
-        const validationError = validateContactPayload(payload);
-        if (validationError) {
-            setMessage(dom.contactMessage, validationError, false);
-            return;
-        }
-
-        saveContactSubmission(payload);
-        dom.contactForm.reset();
-        setMessage(dom.contactMessage, "Thanks! We received your request and will contact you shortly.", true);
-    });
-}
-
-function validateContactPayload(payload) {
-    if (!payload.name || payload.name.length < 2) {
-        return "Please enter your full name.";
-    }
-
-    if (!isValidEmail(payload.email)) {
-        return "Please provide a valid email address.";
-    }
-
-    if (!payload.occasion) {
-        return "Please choose an occasion.";
-    }
-
-    if (!payload.date) {
-        return "Please select a preferred date.";
-    }
-
-    if (!payload.message || payload.message.length < 10) {
-        return "Please include a few details in your message.";
-    }
-
-    return "";
-}
-
-function saveContactSubmission(payload) {
-    const key = "bunchesDirectContactRequests";
-    let records = [];
-
-    try {
-        const existing = localStorage.getItem(key);
-        records = existing ? JSON.parse(existing) : [];
-    } catch (_error) {
-        records = [];
-    }
-
-    records.push({
-        ...payload,
-        submittedAt: new Date().toISOString()
-    });
-
-    localStorage.setItem(key, JSON.stringify(records));
-}
-
-function setMessage(element, text, isSuccess) {
-    element.textContent = text;
-    element.classList.remove("success", "error");
-    element.classList.add(isSuccess ? "success" : "error");
-}
-
-function isValidEmail(email) {
-    return /^\S+@\S+\.\S+$/.test(email);
 }
 
 init();

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Get in touch with Bunches Direct for bouquet orders, event flowers, and subscriptions.">
+  <meta name="description" content="Get in touch with Bunches Direct for bouquet orders and floral services.">
   <title>Contact Us | Bunches Direct</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -42,46 +42,29 @@
       <div class="container split">
         <article>
           <h2 class="section-title">Contact Details</h2>
-          <p><strong>Email:</strong> hello@bunchesdirect.com</p>
-          <p><strong>Phone:</strong> (555) 123-4567</p>
+          <p><strong>Email:</strong> es@bunches-direct.com</p>
+          <p><strong>Phone:</strong> +39 345 005 4849</p>
           <p><strong>Hours:</strong> Mon-Sat, 8:00 AM - 6:00 PM</p>
-          <p><strong>Address:</strong> 125 Petal Street, Springfield, CA 91010</p>
+          <p><strong>Address:</strong> Prunus 12, 1424 LD De Kwakel</p>
         </article>
 
-        <form id="contactForm" class="contact-form" novalidate>
-          <label for="name">Full Name</label>
-          <input id="name" name="name" type="text" required>
+        <form id="contactForm" class="contact-form" action="https://formsubmit.co/es@bunches-direct.com" method="POST">
+          <input type="hidden" name="_subject" value="New contact request from Bunches Direct website">
+          <input type="hidden" name="_captcha" value="false">
 
-          <label for="email">Email</label>
-          <input id="email" name="email" type="email" required>
+          <label for="companyName">Company Name</label>
+          <input id="companyName" name="companyName" type="text" required>
 
-          <label for="phone">Phone</label>
-          <input id="phone" name="phone" type="tel" placeholder="Optional">
+          <label for="companyEmail">Company Email</label>
+          <input id="companyEmail" name="companyEmail" type="email" required>
 
-          <label for="occasion">Occasion</label>
-          <select id="occasion" name="occasion" required>
-            <option value="">Select occasion</option>
-            <option value="Birthday">Birthday</option>
-            <option value="Anniversary">Anniversary</option>
-            <option value="Wedding">Wedding</option>
-            <option value="Corporate">Corporate Event</option>
-            <option value="Sympathy">Sympathy</option>
-            <option value="Other">Other</option>
-          </select>
-
-          <label for="date">Preferred Delivery/Event Date</label>
-          <input id="date" name="date" type="date" required>
+          <label for="companyPhone">Company Phone Number or WhatsApp</label>
+          <input id="companyPhone" name="companyPhone" type="text" required>
 
           <label for="message">Message</label>
-          <textarea id="message" name="message" rows="5" required placeholder="Tell us your preferred style, budget, and delivery notes."></textarea>
-
-          <label class="check-row">
-            <input id="updates" name="updates" type="checkbox">
-            <span>Send me flower tips and seasonal offers</span>
-          </label>
+          <textarea id="message" name="message" rows="5" required placeholder="Write your message here."></textarea>
 
           <button class="btn btn-solid" type="submit">Send Request</button>
-          <p id="contactMessage" class="form-message" aria-live="polite"></p>
         </form>
       </div>
     </section>
@@ -95,7 +78,7 @@
       </div>
       <div>
         <h4>Visit</h4>
-        <p>125 Petal Street<br>Springfield, CA 91010</p>
+        <p>Prunus 12, 1424 LD De Kwakel</p>
       </div>
       <div>
         <h4><strong>Contact</strong></h4>
