@@ -6,56 +6,64 @@ const products = [
         name: "Rose Romance",
         category: "romantic",
         price: 65,
-        description: "Classic red roses with burgundy foliage and silk ribbon wrap."
+        description: "Classic red roses with burgundy foliage and silk ribbon wrap.",
+        image: "assets/flower-card.svg"
     },
     {
         id: "sunlit-daisy",
         name: "Sunlit Daisy Pop",
         category: "bright",
         price: 42,
-        description: "Yellow daisies, orange spray roses, and mint for a cheerful look."
+        description: "Yellow daisies, orange spray roses, and mint for a cheerful look.",
+        image: "assets/flower-card.svg"
     },
     {
         id: "linen-whites",
         name: "Linen Whites",
         category: "minimal",
         price: 48,
-        description: "A calm palette of white lisianthus, ivory roses, and eucalyptus."
+        description: "A calm palette of white lisianthus, ivory roses, and eucalyptus.",
+        image: "assets/flower-card.svg"
     },
     {
         id: "wedding-cloud",
         name: "Wedding Cloud",
         category: "event",
         price: 95,
-        description: "Premium peonies and garden roses tailored for bridal events."
+        description: "Premium peonies and garden roses tailored for bridal events.",
+        image: "assets/flower-card.svg"
     },
     {
         id: "pink-muse",
         name: "Pink Muse",
         category: "romantic",
         price: 58,
-        description: "Blush pink mix with ranunculus and textural seasonal stems."
+        description: "Blush pink mix with ranunculus and textural seasonal stems.",
+        image: "assets/flower-card.svg"
     },
     {
         id: "citrus-bloom",
         name: "Citrus Bloom",
         category: "bright",
         price: 55,
-        description: "Orange tulips, coral carnations, and lemon button mums."
+        description: "Orange tulips, coral carnations, and lemon button mums.",
+        image: "assets/flower-card.svg"
     },
     {
         id: "green-studio",
         name: "Green Studio",
         category: "minimal",
         price: 44,
-        description: "Modern foliage-forward bunch with white accents and clean lines."
+        description: "Modern foliage-forward bunch with white accents and clean lines.",
+        image: "assets/flower-card.svg"
     },
     {
         id: "gala-grandeur",
         name: "Gala Grandeur",
         category: "event",
         price: 120,
-        description: "Large centerpiece blend for receptions and statement installations."
+        description: "Large centerpiece blend for receptions and statement installations.",
+        image: "assets/flower-card.svg"
     }
 ];
 
@@ -196,6 +204,7 @@ function renderProductCards(list) {
         .map(
             (product) => `
             <article class="product-card">
+                <img class="product-image" src="${product.image}" alt="${product.name} arrangement image" loading="lazy">
                 <span class="tag">${product.category}</span>
                 <h3>${product.name}</h3>
                 <p>${product.description}</p>
