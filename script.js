@@ -70,8 +70,7 @@ const dom = {
     siteNav: document.getElementById("siteNav"),
     year: document.getElementById("year"),
     productGrid: document.getElementById("productGrid"),
-    productSearch: document.getElementById("productSearch"),
-    filterButtons: Array.from(document.querySelectorAll(".filter-btn"))
+    productSearch: document.getElementById("productSearch")
 };
 
 function init() {
@@ -119,29 +118,17 @@ function initProductsPage() {
 
     renderProductCards(products);
 
-    dom.filterButtons.forEach((button) => {
-        button.addEventListener("click", () => {
-            dom.filterButtons.forEach((btn) => btn.classList.remove("active"));
-            button.classList.add("active");
-            filterAndRenderProducts();
-        });
-    });
-
     if (dom.productSearch) {
         dom.productSearch.addEventListener("input", filterAndRenderProducts);
     }
 }
 
 function filterAndRenderProducts() {
-    const activeFilterButton = dom.filterButtons.find((button) => button.classList.contains("active"));
-    const activeFilter = activeFilterButton ? activeFilterButton.dataset.filter : "all";
     const searchTerm = dom.productSearch ? dom.productSearch.value.trim().toLowerCase() : "";
 
     const filteredProducts = products.filter((product) => {
-        const matchesFilter = activeFilter === "all" || product.category === activeFilter;
         const searchable = `${product.name} ${product.description} ${product.category}`.toLowerCase();
-        const matchesSearch = searchable.includes(searchTerm);
-        return matchesFilter && matchesSearch;
+        return searchable.includes(searchTerm);
     });
 
     renderProductCards(filteredProducts);
@@ -165,7 +152,6 @@ function renderProductCards(list) {
                 <span class="tag">${product.category}</span>
                 <h3>${product.name}</h3>
                 <p>${product.description}</p>
-                <p class="price">$${product.price}</p>
             </article>
         `
         )
