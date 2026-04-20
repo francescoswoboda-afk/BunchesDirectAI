@@ -1,0 +1,110 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  color: #1f2937;
+  background: #f8fafc;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.site-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.logo {
+  width: 44px;
+  height: 44px;
+}
+
+.business-name {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #881337;
+}
+
+.site-nav {
+  display: flex;
+  gap: 1rem;
+}
+
+.site-nav a {
+  text-decoration: none;
+  color: #374151;
+  font-weight: 600;
+}
+
+.site-nav a.active,
+.site-nav a:hover {
+  color: #be123c;
+}
+
+.home-main,
+.page-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem;
+}
+
+.home-main h1,
+.page-main h1 {
+  margin-bottom: 0.8rem;
+}
+
+.motto-divider {
+  width: 70px;
+  border: none;
+  border-top: 2px solid #be123c;
+  margin: 0.4rem 0 1rem;
+}
+
+.home-main p,
+.page-main p {
+  margin: 0;
+  color: #4b5563;
+}
+
+.site-footer {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  padding: 1.2rem 2rem;
+  background: #111827;
+  color: #f9fafb;
+}
+
+.site-footer h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+}
+
+.site-footer p {
+  margin: 0.2rem 0;
+  font-size: 0.95rem;
+}
+
+@media (max-width: 720px) {
+  .site-header {
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+}
