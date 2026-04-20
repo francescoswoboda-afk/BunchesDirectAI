@@ -3,41 +3,113 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bunches Direct | Contact</title>
+  <meta name="description" content="Get in touch with Bunches Direct for bouquet orders, event flowers, and subscriptions.">
+  <title>Contact Us | Bunches Direct</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
-<body>
+<body data-page="contact">
   <header class="site-header">
-    <div class="brand">
-      <img src="assets/logo.svg" alt="Bunches Direct logo" class="logo">
-      <span class="business-name">Bunches Direct</span>
+    <div class="container nav-wrap">
+      <a class="logo" href="index.html" aria-label="Bunches Direct home">
+        <span class="logo-mark">BD</span>
+        <span>Bunches Direct</span>
+      </a>
+      <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+      <nav class="site-nav" id="siteNav">
+        <a href="index.html" data-link="home">Home</a>
+        <a href="about.html" data-link="about">About Us</a>
+        <a href="products.html" data-link="products">Our Products</a>
+        <a href="contact.html" data-link="contact">Contact Us</a>
+      </nav>
+      <a class="enquiry-pill" href="products.html#enquiry">Enquiry List <span id="enquiryCount">0</span></a>
     </div>
-    <nav class="site-nav" aria-label="Main navigation">
-      <a href="index.html">Home</a>
-      <a href="about.html">About</a>
-      <a href="products.html">Products</a>
-      <a href="contact.html" class="active">Contact</a>
-    </nav>
   </header>
 
-  <main class="page-main">
-    <h1>Contact</h1>
-    <p>This is a placeholder Contact page for Bunches Direct.</p>
+  <main>
+    <section class="section-pad page-hero">
+      <div class="container narrow">
+        <p class="eyebrow">Let&apos;s talk flowers</p>
+        <h1>Contact Bunches Direct</h1>
+        <p class="lead">Tell us what you need and we will get back to you quickly with design options, pricing, and delivery details.</p>
+      </div>
+    </section>
+
+    <section class="section-pad">
+      <div class="container split">
+        <article>
+          <h2 class="section-title">Contact Details</h2>
+          <p><strong>Email:</strong> hello@bunchesdirect.com</p>
+          <p><strong>Phone:</strong> (555) 123-4567</p>
+          <p><strong>Hours:</strong> Mon-Sat, 8:00 AM - 6:00 PM</p>
+          <p><strong>Address:</strong> 125 Petal Street, Springfield, CA 91010</p>
+        </article>
+
+        <form id="contactForm" class="contact-form" novalidate>
+          <label for="name">Full Name</label>
+          <input id="name" name="name" type="text" required>
+
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" required>
+
+          <label for="phone">Phone</label>
+          <input id="phone" name="phone" type="tel" placeholder="Optional">
+
+          <label for="occasion">Occasion</label>
+          <select id="occasion" name="occasion" required>
+            <option value="">Select occasion</option>
+            <option value="Birthday">Birthday</option>
+            <option value="Anniversary">Anniversary</option>
+            <option value="Wedding">Wedding</option>
+            <option value="Corporate">Corporate Event</option>
+            <option value="Sympathy">Sympathy</option>
+            <option value="Other">Other</option>
+          </select>
+
+          <label for="date">Preferred Delivery/Event Date</label>
+          <input id="date" name="date" type="date" required>
+
+          <label for="message">Message</label>
+          <textarea id="message" name="message" rows="5" required placeholder="Tell us your preferred style, budget, and delivery notes."></textarea>
+
+          <label class="check-row">
+            <input id="updates" name="updates" type="checkbox">
+            <span>Send me flower tips and seasonal offers</span>
+          </label>
+
+          <button class="btn btn-solid" type="submit">Send Request</button>
+          <p id="contactMessage" class="form-message" aria-live="polite"></p>
+        </form>
+      </div>
+    </section>
   </main>
 
   <footer class="site-footer">
-    <div>
-      <h2>Contact</h2>
-      <p>Email: hello@bunchesdirect.com</p>
-      <p>Phone: +1 (555) 321-9876</p>
-      <p>Address: 123 Blossom Avenue, Miami, FL 33101</p>
+    <div class="container footer-grid">
+      <div>
+        <h3>Bunches Direct</h3>
+        <p>Fresh flowers delivered with heart.</p>
+      </div>
+      <div>
+        <h4>Visit</h4>
+        <p>125 Petal Street<br>Springfield, CA 91010</p>
+      </div>
+      <div>
+        <h4>Stay in Bloom</h4>
+        <form id="newsletterForm" class="newsletter-form">
+          <input type="email" id="newsletterEmail" placeholder="Your email" required>
+          <button type="submit">Join</button>
+        </form>
+        <p id="newsletterMessage" class="form-message" aria-live="polite"></p>
+      </div>
     </div>
-    <div>
-      <h2>Business Hours</h2>
-      <p>Mon–Fri: 8:00 AM – 6:00 PM</p>
-      <p>Sat: 9:00 AM – 3:00 PM</p>
-      <p>Sun: Closed</p>
-    </div>
+    <p class="copyright">&copy; <span id="year"></span> Bunches Direct. All rights reserved.</p>
   </footer>
+
+  <script src="script.js"></script>
 </body>
 </html>

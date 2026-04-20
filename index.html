@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Bunches Direct delivers handcrafted flower bouquets for every occasion.">
+    <title>Bunches Direct | Fresh Flowers, Delivered Beautifully</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="home">
+    <header class="site-header">
+        <div class="container nav-wrap">
+            <a class="logo" href="index.html" aria-label="Bunches Direct home">
+                <span class="logo-mark">BD</span>
+                <span>Bunches Direct</span>
+            </a>
+            <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation" aria-expanded="false">
+                <span></span><span></span><span></span>
+            </button>
+            <nav class="site-nav" id="siteNav">
+                <a href="index.html" data-link="home">Home</a>
+                <a href="about.html" data-link="about">About Us</a>
+                <a href="products.html" data-link="products">Our Products</a>
+                <a href="contact.html" data-link="contact">Contact Us</a>
+            </nav>
+            <a class="enquiry-pill" href="products.html#enquiry">Enquiry List <span id="enquiryCount">0</span></a>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero section-pad">
+            <div class="container hero-grid">
+                <div>
+                    <p class="eyebrow">Farm fresh, city fast</p>
+                    <h1>Bold Blooms for Every Moment</h1>
+                    <p class="lead">From elegant wedding bouquets to bright everyday stems, Bunches Direct curates premium flowers and delivers them same-day across your city.</p>
+                    <div class="btn-row">
+                        <a href="products.html" class="btn btn-solid">Shop Bouquets</a>
+                        <a href="contact.html" class="btn btn-outline">Plan an Event</a>
+                    </div>
+                </div>
+                <div class="hero-card floating">
+                    <h2>Today&apos;s Signature Bunch</h2>
+                    <p class="price">Sunrise Garden Mix · $59</p>
+                    <p>Peonies, ranunculus, eucalyptus, and blush roses arranged in a textured wrap made from recycled fiber.</p>
+                    <a class="btn btn-outline" href="products.html">See full collection</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="section-pad">
+            <div class="container">
+                <h2 class="section-title">Why Customers Choose Bunches Direct</h2>
+                <div class="feature-grid stagger-list">
+                    <article class="feature-card">
+                        <h3>Handcrafted Arrangements</h3>
+                        <p>Every bouquet is arranged by florists who design with seasonality, color harmony, and long vase life in mind.</p>
+                    </article>
+                    <article class="feature-card">
+                        <h3>Same-Day Delivery</h3>
+                        <p>Order before 2:00 PM for same-day local delivery, with real-time updates and delivery confirmation.</p>
+                    </article>
+                    <article class="feature-card">
+                        <h3>Thoughtful Add-ons</h3>
+                        <p>Add candles, handwritten cards, artisan chocolates, and vases to make each delivery feel truly personal.</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="section-pad alt-bg">
+            <div class="container split">
+                <div>
+                    <h2 class="section-title">Weekly Flower Subscriptions</h2>
+                    <p>Keep your home or workspace blooming with weekly or biweekly deliveries. Pick your color palette and budget, then leave the rest to our design team.</p>
+                    <ul class="ticks">
+                        <li>Pause, skip, or reschedule anytime</li>
+                        <li>Premium seasonal stems only</li>
+                        <li>Gift options available year-round</li>
+                    </ul>
+                </div>
+                <aside class="info-panel">
+                    <h3>Popular Plan</h3>
+                    <p class="price">The Classic Home Plan · $39/week</p>
+                    <p>Includes one medium arrangement in your selected style plus care instructions for longer freshness.</p>
+                    <a href="contact.html" class="btn btn-solid">Start Subscription</a>
+                </aside>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container footer-grid">
+            <div>
+                <h3>Bunches Direct</h3>
+                <p>Fresh flowers delivered with heart.</p>
+            </div>
+            <div>
+                <h4>Visit</h4>
+                <p>125 Petal Street<br>Springfield, CA 91010</p>
+            </div>
+            <div>
+                <h4>Stay in Bloom</h4>
+                <form id="newsletterForm" class="newsletter-form">
+                    <input type="email" id="newsletterEmail" placeholder="Your email" required>
+                    <button type="submit">Join</button>
+                </form>
+                <p id="newsletterMessage" class="form-message" aria-live="polite"></p>
+            </div>
+        </div>
+        <p class="copyright">&copy; <span id="year"></span> Bunches Direct. All rights reserved.</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
