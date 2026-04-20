@@ -127,7 +127,7 @@ function filterAndRenderProducts() {
     const searchTerm = dom.productSearch ? dom.productSearch.value.trim().toLowerCase() : "";
 
     const filteredProducts = products.filter((product) => {
-        const searchable = `${product.name} ${product.description} ${product.category}`.toLowerCase();
+        const searchable = `${product.name} ${product.description}`.toLowerCase();
         return searchable.includes(searchTerm);
     });
 
@@ -149,7 +149,6 @@ function renderProductCards(list) {
             (product) => `
             <article class="product-card">
                 <img class="product-image" src="${product.image}" alt="${product.name} arrangement image" loading="lazy">
-                <span class="tag">${product.category}</span>
                 <h3>${product.name}</h3>
                 <p>${product.description}</p>
             </article>

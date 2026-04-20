@@ -1,15 +1,15 @@
 :root {
-  --cream: #0b0406;
-  --sage: #18090d;
-  --leaf: #d33a57;
-  --forest: #090304;
-  --clay: #ff5779;
-  --terracotta: #9f203b;
-  --ink: #f9ebef;
-  --muted: #cfaeb7;
-  --card: #1a0b10;
-  --border: rgba(211, 58, 87, 0.33);
-  --shadow: 0 20px 40px rgba(4, 1, 2, 0.58);
+  --cream: #2b1118;
+  --sage: #3b1821;
+  --leaf: #d84b67;
+  --forest: #12070a;
+  --clay: #ff6d8d;
+  --terracotta: #b02c49;
+  --ink: #ffeef2;
+  --muted: #e6bec8;
+  --card: #4a1d2a;
+  --border: rgba(255, 133, 161, 0.35);
+  --shadow: 0 16px 34px rgba(12, 2, 5, 0.42);
   --radius: 18px;
 }
 
@@ -27,9 +27,9 @@ body {
   font-family: "Manrope", "Trebuchet MS", sans-serif;
   color: var(--ink);
   background:
-    radial-gradient(circle at 8% 5%, rgba(211, 58, 87, 0.26), transparent 29%),
-    radial-gradient(circle at 88% 8%, rgba(159, 32, 59, 0.3), transparent 34%),
-    linear-gradient(160deg, #090204 0%, #120508 45%, #1b0910 100%),
+    radial-gradient(circle at 8% 5%, rgba(236, 97, 129, 0.3), transparent 31%),
+    radial-gradient(circle at 88% 8%, rgba(198, 63, 95, 0.28), transparent 36%),
+    linear-gradient(160deg, #2a1017 0%, #3b1620 45%, #4b1a27 100%),
     var(--cream);
   line-height: 1.6;
   cursor: url("assets/rose-cursor.svg") 10 8, auto;
@@ -41,7 +41,6 @@ input,
 select,
 textarea,
 label,
-.filter-btn,
 .menu-toggle {
   cursor: url("assets/rose-cursor.svg") 10 8, pointer;
 }
@@ -79,7 +78,7 @@ a {
   position: sticky;
   top: 0;
   z-index: 20;
-  background: rgba(11, 4, 6, 0.86);
+  background: rgba(43, 17, 24, 0.82);
   backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--border);
 }
@@ -163,8 +162,25 @@ a {
   width: 120px;
   height: 120px;
   border-radius: 38% 62% 58% 42% / 42% 38% 62% 58%;
-  background: rgba(227, 61, 92, 0.18);
+  background: rgba(255, 109, 141, 0.2);
   pointer-events: none;
+}
+
+.home-hero-copy {
+  text-align: center;
+}
+
+.home-hero-copy .lead {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.hero-note {
+  opacity: 0.88;
+}
+
+body[data-page="home"] .hero-card {
+  margin-top: clamp(2.2rem, 4vw, 3.8rem);
 }
 
 .page-hero h1,
@@ -245,7 +261,7 @@ a {
 .btn-outline {
   border-color: var(--leaf);
   color: var(--leaf);
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(255, 245, 248, 0.08);
 }
 
 .section-title {
@@ -262,8 +278,8 @@ a {
 
 .alt-bg {
   background:
-    linear-gradient(180deg, rgba(34, 8, 13, 0.72), rgba(47, 10, 18, 0.84)),
-    repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.04) 12px, rgba(255, 255, 255, 0.015) 12px, rgba(255, 255, 255, 0.015) 24px);
+    linear-gradient(180deg, rgba(89, 32, 48, 0.5), rgba(102, 36, 55, 0.6)),
+    repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.08) 12px, rgba(255, 255, 255, 0.03) 12px, rgba(255, 255, 255, 0.03) 24px);
 }
 
 .ticks {
@@ -297,27 +313,6 @@ a {
   margin-bottom: 1.25rem;
 }
 
-.filter-group {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.filter-btn {
-  border: 1px solid var(--border);
-  background: #14080c;
-  border-radius: 999px;
-  padding: 0.45rem 0.85rem;
-  cursor: pointer;
-  font-weight: 700;
-}
-
-.filter-btn.active {
-  background: var(--forest);
-  color: #fff;
-  border-color: var(--forest);
-}
-
 .search-wrap {
   display: flex;
   align-items: center;
@@ -331,9 +326,9 @@ textarea {
   width: 100%;
   padding: 0.65rem 0.75rem;
   border-radius: 11px;
-  border: 1px solid rgba(211, 58, 87, 0.36);
+  border: 1px solid rgba(255, 133, 161, 0.48);
   color: var(--ink);
-  background: rgba(9, 3, 4, 0.85);
+  background: rgba(57, 22, 31, 0.86);
   font: inherit;
 }
 
@@ -355,24 +350,20 @@ textarea {
   gap: 0.35rem;
 }
 
-.tag {
-  display: inline-block;
-  width: fit-content;
-  padding: 0.15rem 0.55rem;
-  border-radius: 999px;
-  font-size: 0.78rem;
-  text-transform: capitalize;
-  background: rgba(211, 58, 87, 0.18);
-  color: #ffd7e0;
-  font-weight: 700;
-}
-
 body[data-page="products"] .products-hero {
   padding-bottom: clamp(1rem, 2.2vw, 1.65rem);
 }
 
 body[data-page="products"] .products-content {
   padding-top: clamp(1rem, 2.4vw, 1.8rem);
+}
+
+body[data-page="about"] .about-hero {
+  padding-bottom: clamp(0.9rem, 2vw, 1.4rem);
+}
+
+body[data-page="about"] .about-beliefs {
+  padding-top: clamp(1rem, 2.2vw, 1.5rem);
 }
 
 .contact-form {
@@ -412,7 +403,7 @@ body[data-page="products"] .products-content {
 .site-footer {
   padding: 2rem 0 1rem;
   border-top: 1px solid var(--border);
-  background: linear-gradient(180deg, rgba(15, 5, 8, 0.94), rgba(8, 2, 3, 0.96));
+  background: linear-gradient(180deg, rgba(55, 20, 30, 0.86), rgba(40, 14, 22, 0.9));
 }
 
 .footer-grid {
@@ -501,7 +492,7 @@ body[data-page="products"] .products-content {
     top: 74px;
     left: 0;
     right: 0;
-    background: rgba(12, 4, 6, 0.98);
+    background: rgba(54, 21, 30, 0.96);
     border-bottom: 1px solid var(--border);
     padding: 0.9rem 1rem;
     display: none;
