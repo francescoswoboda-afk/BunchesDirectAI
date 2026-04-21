@@ -16,12 +16,12 @@ const products = [
         image: "assets/products/rose-romance.svg"
     },
     {
-        id: "sunlit-daisy",
+        id: "ABSOLUTPINK2",
         name: "Absolut Pink",
         category: "bright",
         price: 42,
         description: "Yellow daisies, orange spray roses, and mint for a cheerful look.",
-        image: "assets/products/sunlit-daisy.svg"
+        image: "assets/products/ABSOLUTPINK2.svg"
     },
     {
         id: "linen-whites",
