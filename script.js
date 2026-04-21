@@ -37,15 +37,15 @@ const products = [
         category: "event",
         price: 95,
         description: "Premium peonies and garden roses tailored for bridal events.",
-        image: "assets/products/ALOHA3.png"
+        image: "assets/products/ALOHA3.jpg"
     },
     {
-        id: "ALTAMIRA",
+        id: "ALTAMIRA-",
         name: "Altamira",
         category: "romantic",
         price: 58,
         description: "Blush pink mix with ranunculus and textural seasonal stems.",
-        image: "assets/products/ALTAMIRA.png"
+        image: "assets/products/ALTAMIRA-.png"
     },
     {
         id: "AMARETTO",
