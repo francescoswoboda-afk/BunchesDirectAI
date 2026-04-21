@@ -8,12 +8,12 @@ const PRODUCTS_PER_PAGE = 18;
 
 const products = [
     {
-        id: "rose-romance",
+        id: "ALL-FOR-LOVE-",
         name: "All for Love",
         category: "romantic",
         price: 65,
         description: "Classic red roses with burgundy foliage and silk ribbon wrap.",
-        image: "assets/products/rose-romance.svg"
+        image: "assets/products/ALL-FOR-LOVE-.png"
     },
     {
         id: "ABSOLUTPINK2",
@@ -24,116 +24,116 @@ const products = [
         image: "assets/products/ABSOLUTPINK2.jpg"
     },
     {
-        id: "linen-whites",
+        id: "ALOHA",
         name: "Aloha",
         category: "minimal",
         price: 48,
         description: "A calm palette of white lisianthus, ivory roses, and eucalyptus.",
-        image: "assets/products/linen-whites.svg"
+        image: "assets/products/ALOHA.png"
     },
     {
-        id: "wedding-cloud",
+        id: "ALOHA3",
         name: "Aloha 3",
         category: "event",
         price: 95,
         description: "Premium peonies and garden roses tailored for bridal events.",
-        image: "assets/products/wedding-cloud.svg"
+        image: "assets/products/ALOHA3.png"
     },
     {
-        id: "pink-muse",
+        id: "ALTAMIRA",
         name: "Altamira",
         category: "romantic",
         price: 58,
         description: "Blush pink mix with ranunculus and textural seasonal stems.",
-        image: "assets/products/pink-muse.svg"
+        image: "assets/products/ALTAMIRA.png"
     },
     {
-        id: "citrus-bloom",
+        id: "AMARETTO",
         name: "Amaretto",
         category: "bright",
         price: 55,
         description: "Orange tulips, coral carnations, and lemon button mums.",
-        image: "assets/products/citrus-bloom.svg"
+        image: "assets/products/AMARETTO.png"
     },
     {
-        id: "green-studio",
+        id: "ANDREA-",
         name: "Andrea",
         category: "minimal",
         price: 44,
         description: "Modern foliage-forward bunch with white accents and clean lines.",
-        image: "assets/products/green-studio.svg"
+        image: "assets/products/ANDREA-.png"
     },
     {
-        id: "gala-grandeur",
+        id: "ANTONIAGARDEN1",
         name: "Antonia Garden",
         category: "event",
         price: 120,
         description: "Large centerpiece blend for receptions and statement installations.",
-        image: "assets/products/gala-grandeur.svg"
+        image: "assets/products/ANTONIAGARDEN1.jpg"
     },
         {
-        id: "gala-grandeur",
+        id: "Art+Deco-1",
         name: "Art+Deco",
         category: "event",
         price: 120,
         description: "Large centerpiece blend for receptions and statement installations.",
-        image: "assets/products/gala-grandeur.svg"
+        image: "assets/products/Art+Deco-1.jpeg"
     },
     {
-        id: "rose-romance",
+        id: "ARTICA-",
         name: "Artica",
         category: "romantic",
         price: 65,
         description: "Classic red roses with burgundy foliage and silk ribbon wrap.",
-        image: "assets/products/rose-romance.svg"
+        image: "assets/products/ARTICA-.jpeg"
     },
     {
-        id: "sunlit-daisy",
+        id: "ARYA",
         name: "Arya",
         category: "bright",
         price: 42,
         description: "Yellow daisies, orange spray roses, and mint for a cheerful look.",
-        image: "assets/products/sunlit-daisy.svg"
+        image: "assets/products/ARYA.png"
     },
     {
-        id: "linen-whites",
-        name: "Atlas 2",
+        id: "ATLAS2",
+        name: "Atlas",
         category: "minimal",
         price: 48,
         description: "A calm palette of white lisianthus, ivory roses, and eucalyptus.",
-        image: "assets/products/linen-whites.svg"
+        image: "assets/products/ATLAS2.jpg"
     },
     {
-        id: "wedding-cloud",
+        id: "Atomic1",
         name: "Atomic 1",
         category: "event",
         price: 95,
         description: "Premium peonies and garden roses tailored for bridal events.",
-        image: "assets/products/wedding-cloud.svg"
+        image: "assets/products/Atomic1.jpg"
     },
     {
-        id: "pink-muse",
+        id: "Atomic3",
         name: "Atomic 3",
         category: "romantic",
         price: 58,
         description: "Blush pink mix with ranunculus and textural seasonal stems.",
-        image: "assets/products/pink-muse.svg"
+        image: "assets/products/Atomic3.jpg"
     },
     {
-        id: "citrus-bloom",
+        id: "AVALANCH-",
         name: "Avalanch",
         category: "bright",
         price: 55,
         description: "Orange tulips, coral carnations, and lemon button mums.",
-        image: "assets/products/citrus-bloom.svg"
+        image: "assets/products/AVALANCH-.png"
     },
     {
-        id: "green-studio",
+        id: "babbaloo-rose",
         name: "Babaloo Rose",
         category: "minimal",
         price: 44,
         description: "Modern foliage-forward bunch with white accents and clean lines.",
-        image: "assets/products/green-studio.svg"
+        image: "assets/products/babaloo-rose.jpeg"
     },
     {
         id: "gala-grandeur",
