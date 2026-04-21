@@ -207,6 +207,11 @@ body[data-page="home"] .hero-card {
   max-width: 62ch;
 }
 
+body[data-page="products"] .products-hero .lead {
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .hero-card,
 .info-panel,
 .feature-card,
