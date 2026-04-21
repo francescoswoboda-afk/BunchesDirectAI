@@ -8,7 +8,7 @@ const FALLBACK_PRODUCT_IMAGE = "assets/flower-card.svg";
 const products = [
     {
         id: "rose-romance",
-        name: "Rose Romance",
+        name: "Free Spirit",
         category: "romantic",
         price: 65,
         description: "Classic red roses with burgundy foliage and silk ribbon wrap.",
@@ -16,7 +16,7 @@ const products = [
     },
     {
         id: "sunlit-daisy",
-        name: "Sunlit Daisy Pop",
+        name: "Moody Blues",
         category: "bright",
         price: 42,
         description: "Yellow daisies, orange spray roses, and mint for a cheerful look.",
