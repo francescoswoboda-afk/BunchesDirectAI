@@ -4,6 +4,7 @@
 // 2) Replace each image path in the products array
 // 3) Keep the same filename (easy) or update the path string
 const FALLBACK_PRODUCT_IMAGE = "assets/flower-card.svg";
+const PRODUCTS_PER_PAGE = 18;
 
 const products = [
     {
@@ -302,8 +303,12 @@ const dom = {
     siteNav: document.getElementById("siteNav"),
     year: document.getElementById("year"),
     productGrid: document.getElementById("productGrid"),
-    productSearch: document.getElementById("productSearch")
+    productSearch: document.getElementById("productSearch"),
+    productPagination: document.getElementById("productPagination")
 };
+
+let filteredProducts = [...products];
+let currentProductPage = 1;
 
 function init() {
     setYear();
@@ -348,7 +353,9 @@ function initProductsPage() {
         return;
     }
 
-    renderProductCards(products);
+    filteredProducts = [...products];
+    currentProductPage = 1;
+    renderProductsPage();
 
     if (dom.productSearch) {
         dom.productSearch.addEventListener("input", filterAndRenderProducts);
@@ -358,12 +365,22 @@ function initProductsPage() {
 function filterAndRenderProducts() {
     const searchTerm = dom.productSearch ? dom.productSearch.value.trim().toLowerCase() : "";
 
-    const filteredProducts = products.filter((product) => {
+    filteredProducts = products.filter((product) => {
         const searchable = `${product.name} ${product.description}`.toLowerCase();
         return searchable.includes(searchTerm);
     });
 
-    renderProductCards(filteredProducts);
+    currentProductPage = 1;
+    renderProductsPage();
+}
+
+function renderProductsPage() {
+    const totalPages = Math.max(1, Math.ceil(filteredProducts.length / PRODUCTS_PER_PAGE));
+    const start = (currentProductPage - 1) * PRODUCTS_PER_PAGE;
+    const pageItems = filteredProducts.slice(start, start + PRODUCTS_PER_PAGE);
+
+    renderProductCards(pageItems);
+    renderProductPagination(totalPages);
 }
 
 function renderProductCards(list) {
@@ -387,6 +404,49 @@ function renderProductCards(list) {
         `
         )
         .join("");
+}
+
+function renderProductPagination(totalPages) {
+    if (!dom.productPagination) {
+        return;
+    }
+
+    if (filteredProducts.length === 0 || totalPages <= 1) {
+        dom.productPagination.innerHTML = "";
+        return;
+    }
+
+    const prevDisabled = currentProductPage <= 1 ? "disabled" : "";
+    const nextDisabled = currentProductPage >= totalPages ? "disabled" : "";
+
+    dom.productPagination.innerHTML = `
+        <button class="btn btn-outline" id="productsPrevBtn" ${prevDisabled}>View Previous Products</button>
+        <p class="page-indicator">Page ${currentProductPage} of ${totalPages}</p>
+        <button class="btn btn-solid" id="productsNextBtn" ${nextDisabled}>View More Products</button>
+    `;
+
+    const prevButton = document.getElementById("productsPrevBtn");
+    const nextButton = document.getElementById("productsNextBtn");
+
+    if (prevButton) {
+        prevButton.addEventListener("click", () => {
+            if (currentProductPage > 1) {
+                currentProductPage -= 1;
+                renderProductsPage();
+                window.scrollTo({ top: 0, behavior: "smooth" });
+            }
+        });
+    }
+
+    if (nextButton) {
+        nextButton.addEventListener("click", () => {
+            if (currentProductPage < totalPages) {
+                currentProductPage += 1;
+                renderProductsPage();
+                window.scrollTo({ top: 0, behavior: "smooth" });
+            }
+        });
+    }
 }
 
 init();
