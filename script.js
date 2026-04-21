@@ -69,7 +69,16 @@ const products = [
         price: 120,
         description: "Large centerpiece blend for receptions and statement installations.",
         image: "assets/products/gala-grandeur.svg"
+    },
+        {
+        id: "gala-grandeur",
+        name: "Explorer",
+        category: "event",
+        price: 120,
+        description: "Large centerpiece blend for receptions and statement installations.",
+        image: "assets/products/gala-grandeur.svg"
     }
+
 ];
 
 const dom = {
