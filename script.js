@@ -21,7 +21,7 @@ const products = [
         category: "bright",
         price: 42,
         description: "Yellow daisies, orange spray roses, and mint for a cheerful look.",
-        image: "assets/products/ABSOLUTPINK2.svg"
+        image: "assets/products/ABSOLUTPINK2.jpg"
     },
     {
         id: "linen-whites",
