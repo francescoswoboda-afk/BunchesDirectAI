@@ -1,3 +1,10 @@
+// Product images are configured per product below.
+// To use your own images:
+// 1) Put files in assets/products/
+// 2) Replace each image path in the products array
+// 3) Keep the same filename (easy) or update the path string
+const FALLBACK_PRODUCT_IMAGE = "assets/flower-card.svg";
+
 const products = [
     {
         id: "rose-romance",
@@ -5,7 +12,7 @@ const products = [
         category: "romantic",
         price: 65,
         description: "Classic red roses with burgundy foliage and silk ribbon wrap.",
-        image: "assets/flower-card.svg"
+        image: "assets/products/rose-romance.svg"
     },
     {
         id: "sunlit-daisy",
@@ -13,7 +20,7 @@ const products = [
         category: "bright",
         price: 42,
         description: "Yellow daisies, orange spray roses, and mint for a cheerful look.",
-        image: "assets/flower-card.svg"
+        image: "assets/products/sunlit-daisy.svg"
     },
     {
         id: "linen-whites",
@@ -21,7 +28,7 @@ const products = [
         category: "minimal",
         price: 48,
         description: "A calm palette of white lisianthus, ivory roses, and eucalyptus.",
-        image: "assets/flower-card.svg"
+        image: "assets/products/linen-whites.svg"
     },
     {
         id: "wedding-cloud",
@@ -29,7 +36,7 @@ const products = [
         category: "event",
         price: 95,
         description: "Premium peonies and garden roses tailored for bridal events.",
-        image: "assets/flower-card.svg"
+        image: "assets/products/wedding-cloud.svg"
     },
     {
         id: "pink-muse",
@@ -37,7 +44,7 @@ const products = [
         category: "romantic",
         price: 58,
         description: "Blush pink mix with ranunculus and textural seasonal stems.",
-        image: "assets/flower-card.svg"
+        image: "assets/products/pink-muse.svg"
     },
     {
         id: "citrus-bloom",
@@ -45,7 +52,7 @@ const products = [
         category: "bright",
         price: 55,
         description: "Orange tulips, coral carnations, and lemon button mums.",
-        image: "assets/flower-card.svg"
+        image: "assets/products/citrus-bloom.svg"
     },
     {
         id: "green-studio",
@@ -53,7 +60,7 @@ const products = [
         category: "minimal",
         price: 44,
         description: "Modern foliage-forward bunch with white accents and clean lines.",
-        image: "assets/flower-card.svg"
+        image: "assets/products/green-studio.svg"
     },
     {
         id: "gala-grandeur",
@@ -61,7 +68,7 @@ const products = [
         category: "event",
         price: 120,
         description: "Large centerpiece blend for receptions and statement installations.",
-        image: "assets/flower-card.svg"
+        image: "assets/products/gala-grandeur.svg"
     }
 ];
 
@@ -148,7 +155,7 @@ function renderProductCards(list) {
         .map(
             (product) => `
             <article class="product-card">
-                <img class="product-image" src="${product.image}" alt="${product.name} arrangement image" loading="lazy">
+                <img class="product-image" src="${product.image || FALLBACK_PRODUCT_IMAGE}" alt="${product.name} arrangement image" loading="lazy" onerror="this.onerror=null;this.src='${FALLBACK_PRODUCT_IMAGE}';">
                 <h3>${product.name}</h3>
                 <p>${product.description}</p>
             </article>

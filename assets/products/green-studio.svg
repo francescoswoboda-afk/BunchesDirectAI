@@ -1,0 +1,21 @@
+<svg width="900" height="540" viewBox="0 0 900 540" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Stylized red bouquet illustration">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#2A080E"/>
+      <stop offset="100%" stop-color="#5E111F"/>
+    </linearGradient>
+    <radialGradient id="petal" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(450 220) rotate(90) scale(220 260)">
+      <stop stop-color="#FF8DA1"/>
+      <stop offset="1" stop-color="#C72643"/>
+    </radialGradient>
+  </defs>
+  <rect width="900" height="540" rx="28" fill="url(#bg)"/>
+  <circle cx="290" cy="210" r="96" fill="url(#petal)" opacity="0.95"/>
+  <circle cx="440" cy="180" r="112" fill="#E83956" opacity="0.92"/>
+  <circle cx="580" cy="230" r="100" fill="#B31833" opacity="0.95"/>
+  <circle cx="390" cy="280" r="88" fill="#8E1026" opacity="0.92"/>
+  <path d="M250 360C360 315 520 326 650 360" stroke="#FBD1D9" stroke-width="20" stroke-linecap="round"/>
+  <path d="M450 316L420 470" stroke="#1A1214" stroke-width="16" stroke-linecap="round"/>
+  <path d="M515 320L560 470" stroke="#1A1214" stroke-width="14" stroke-linecap="round"/>
+  <path d="M375 320L320 470" stroke="#1A1214" stroke-width="14" stroke-linecap="round"/>
+</svg>
