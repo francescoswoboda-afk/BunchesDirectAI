@@ -26,9 +26,6 @@ body {
 body {
   font-family: "Manrope", "Trebuchet MS", sans-serif;
   color: var(--ink);
-  background:
-    radial-gradient(circle at 8% 5%, rgb(235, 214, 219), transparent 0%),
-    var(--cream);
   line-height: 1.6;
   cursor: url("assets/rose-cursor.svg") 10 8, auto;
 }
