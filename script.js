@@ -8,7 +8,7 @@ const FALLBACK_PRODUCT_IMAGE = "assets/flower-card.svg";
 const products = [
     {
         id: "rose-romance",
-        name: "Free Spirit",
+        name: "All for Love",
         category: "romantic",
         price: 65,
         description: "Classic red roses with burgundy foliage and silk ribbon wrap.",
@@ -16,7 +16,7 @@ const products = [
     },
     {
         id: "sunlit-daisy",
-        name: "Moody Blues",
+        name: "Absolut Pink",
         category: "bright",
         price: 42,
         description: "Yellow daisies, orange spray roses, and mint for a cheerful look.",
@@ -24,7 +24,7 @@ const products = [
     },
     {
         id: "linen-whites",
-        name: "Linen Whites",
+        name: "Aloha",
         category: "minimal",
         price: 48,
         description: "A calm palette of white lisianthus, ivory roses, and eucalyptus.",
@@ -32,7 +32,7 @@ const products = [
     },
     {
         id: "wedding-cloud",
-        name: "Wedding Cloud",
+        name: "Aloha 3",
         category: "event",
         price: 95,
         description: "Premium peonies and garden roses tailored for bridal events.",
@@ -40,7 +40,7 @@ const products = [
     },
     {
         id: "pink-muse",
-        name: "Pink Muse",
+        name: "Altamira",
         category: "romantic",
         price: 58,
         description: "Blush pink mix with ranunculus and textural seasonal stems.",
@@ -48,7 +48,7 @@ const products = [
     },
     {
         id: "citrus-bloom",
-        name: "Citrus Bloom",
+        name: "Amaretto",
         category: "bright",
         price: 55,
         description: "Orange tulips, coral carnations, and lemon button mums.",
@@ -56,7 +56,7 @@ const products = [
     },
     {
         id: "green-studio",
-        name: "Green Studio",
+        name: "Andrea",
         category: "minimal",
         price: 44,
         description: "Modern foliage-forward bunch with white accents and clean lines.",
@@ -64,7 +64,7 @@ const products = [
     },
     {
         id: "gala-grandeur",
-        name: "Gala Grandeur",
+        name: "Antonia Garden",
         category: "event",
         price: 120,
         description: "Large centerpiece blend for receptions and statement installations.",
@@ -72,7 +72,223 @@ const products = [
     },
         {
         id: "gala-grandeur",
-        name: "Explorer",
+        name: "Art+Deco",
+        category: "event",
+        price: 120,
+        description: "Large centerpiece blend for receptions and statement installations.",
+        image: "assets/products/gala-grandeur.svg"
+    },
+    {
+        id: "rose-romance",
+        name: "Artica",
+        category: "romantic",
+        price: 65,
+        description: "Classic red roses with burgundy foliage and silk ribbon wrap.",
+        image: "assets/products/rose-romance.svg"
+    },
+    {
+        id: "sunlit-daisy",
+        name: "Arya",
+        category: "bright",
+        price: 42,
+        description: "Yellow daisies, orange spray roses, and mint for a cheerful look.",
+        image: "assets/products/sunlit-daisy.svg"
+    },
+    {
+        id: "linen-whites",
+        name: "Atlas 2",
+        category: "minimal",
+        price: 48,
+        description: "A calm palette of white lisianthus, ivory roses, and eucalyptus.",
+        image: "assets/products/linen-whites.svg"
+    },
+    {
+        id: "wedding-cloud",
+        name: "Atomic 1",
+        category: "event",
+        price: 95,
+        description: "Premium peonies and garden roses tailored for bridal events.",
+        image: "assets/products/wedding-cloud.svg"
+    },
+    {
+        id: "pink-muse",
+        name: "Atomic 3",
+        category: "romantic",
+        price: 58,
+        description: "Blush pink mix with ranunculus and textural seasonal stems.",
+        image: "assets/products/pink-muse.svg"
+    },
+    {
+        id: "citrus-bloom",
+        name: "Avalanch",
+        category: "bright",
+        price: 55,
+        description: "Orange tulips, coral carnations, and lemon button mums.",
+        image: "assets/products/citrus-bloom.svg"
+    },
+    {
+        id: "green-studio",
+        name: "Babaloo Rose",
+        category: "minimal",
+        price: 44,
+        description: "Modern foliage-forward bunch with white accents and clean lines.",
+        image: "assets/products/green-studio.svg"
+    },
+    {
+        id: "gala-grandeur",
+        name: "Be Sweet 2",
+        category: "event",
+        price: 120,
+        description: "Large centerpiece blend for receptions and statement installations.",
+        image: "assets/products/gala-grandeur.svg"
+    },
+        {
+        id: "gala-grandeur",
+        name: "Bimba",
+        category: "event",
+        price: 120,
+        description: "Large centerpiece blend for receptions and statement installations.",
+        image: "assets/products/gala-grandeur.svg"
+    },
+    {
+        id: "rose-romance",
+        name: "Blessing",
+        category: "romantic",
+        price: 65,
+        description: "Classic red roses with burgundy foliage and silk ribbon wrap.",
+        image: "assets/products/rose-romance.svg"
+    },
+    {
+        id: "sunlit-daisy",
+        name: "Blue Dream",
+        category: "bright",
+        price: 42,
+        description: "Yellow daisies, orange spray roses, and mint for a cheerful look.",
+        image: "assets/products/sunlit-daisy.svg"
+    },
+    {
+        id: "linen-whites",
+        name: "Blueberry",
+        category: "minimal",
+        price: 48,
+        description: "A calm palette of white lisianthus, ivory roses, and eucalyptus.",
+        image: "assets/products/linen-whites.svg"
+    },
+    {
+        id: "wedding-cloud",
+        name: "Bluez",
+        category: "event",
+        price: 95,
+        description: "Premium peonies and garden roses tailored for bridal events.",
+        image: "assets/products/wedding-cloud.svg"
+    },
+    {
+        id: "pink-muse",
+        name: "Boulevard",
+        category: "romantic",
+        price: 58,
+        description: "Blush pink mix with ranunculus and textural seasonal stems.",
+        image: "assets/products/pink-muse.svg"
+    },
+    {
+        id: "citrus-bloom",
+        name: "Bountyway",
+        category: "bright",
+        price: 55,
+        description: "Orange tulips, coral carnations, and lemon button mums.",
+        image: "assets/products/citrus-bloom.svg"
+    },
+    {
+        id: "green-studio",
+        name: "Brighton 20",
+        category: "minimal",
+        price: 44,
+        description: "Modern foliage-forward bunch with white accents and clean lines.",
+        image: "assets/products/green-studio.svg"
+    },
+    {
+        id: "gala-grandeur",
+        name: "Bumblebee",
+        category: "event",
+        price: 120,
+        description: "Large centerpiece blend for receptions and statement installations.",
+        image: "assets/products/gala-grandeur.svg"
+    },
+        {
+        id: "gala-grandeur",
+        name: "Cabaret",
+        category: "event",
+        price: 120,
+        description: "Large centerpiece blend for receptions and statement installations.",
+        image: "assets/products/gala-grandeur.svg"
+    },
+    {
+        id: "rose-romance",
+        name: "Candlelight",
+        category: "romantic",
+        price: 65,
+        description: "Classic red roses with burgundy foliage and silk ribbon wrap.",
+        image: "assets/products/rose-romance.svg"
+    },
+    {
+        id: "sunlit-daisy",
+        name: "Candy X Pression",
+        category: "bright",
+        price: 42,
+        description: "Yellow daisies, orange spray roses, and mint for a cheerful look.",
+        image: "assets/products/sunlit-daisy.svg"
+    },
+    {
+        id: "linen-whites",
+        name: "Caraluna",
+        category: "minimal",
+        price: 48,
+        description: "A calm palette of white lisianthus, ivory roses, and eucalyptus.",
+        image: "assets/products/linen-whites.svg"
+    },
+    {
+        id: "wedding-cloud",
+        name: "Carpe Diem",
+        category: "event",
+        price: 95,
+        description: "Premium peonies and garden roses tailored for bridal events.",
+        image: "assets/products/wedding-cloud.svg"
+    },
+    {
+        id: "pink-muse",
+        name: "Carrousel",
+        category: "romantic",
+        price: 58,
+        description: "Blush pink mix with ranunculus and textural seasonal stems.",
+        image: "assets/products/pink-muse.svg"
+    },
+    {
+        id: "citrus-bloom",
+        name: "Champagner",
+        category: "bright",
+        price: 55,
+        description: "Orange tulips, coral carnations, and lemon button mums.",
+        image: "assets/products/citrus-bloom.svg"
+    },
+    {
+        id: "green-studio",
+        name: "Cherry Brandy",
+        category: "minimal",
+        price: 44,
+        description: "Modern foliage-forward bunch with white accents and clean lines.",
+        image: "assets/products/green-studio.svg"
+    },
+    {
+        id: "gala-grandeur",
+        name: "Cherry Oh",
+        category: "event",
+        price: 120,
+        description: "Large centerpiece blend for receptions and statement installations.",
+        image: "assets/products/gala-grandeur.svg"
+    },
+        {
+        id: "gala-grandeur",
+        name: "Chilli Love",
         category: "event",
         price: 120,
         description: "Large centerpiece blend for receptions and statement installations.",
