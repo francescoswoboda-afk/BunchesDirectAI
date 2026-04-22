@@ -74,7 +74,7 @@ a {
   position: sticky;
   top: 0;
   z-index: 20;
-  background: rgba(213, 7, 3, 0.92);
+  background: #d40000;
   backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--border);
   color: var(--cream);
@@ -125,7 +125,8 @@ a {
 .site-title-logo img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+  padding: 2px;
 }
 
 .site-nav {
@@ -512,7 +513,7 @@ body[data-page="contact"] .contact-content {
 .site-footer {
   padding: 2rem 0 1rem;
   border-top: 1px solid var(--border);
-  background: #8d0308;
+  background: #d40000;
   color: var(--cream);
 }
 
@@ -628,7 +629,7 @@ body[data-page="contact"] .contact-content {
     top: calc(100% - 0.15rem);
     left: 0;
     right: 0;
-    background: rgba(213, 7, 3, 0.96);
+    background: rgba(212, 0, 0, 0.96);
     border-bottom: 1px solid var(--border);
     padding: 0.9rem 1rem;
     display: none;
@@ -643,6 +644,21 @@ body[data-page="contact"] .contact-content {
 
   body[data-page="home"] .home-hero-grid {
     width: 100%;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    align-items: stretch;
+  }
+
+  body[data-page="home"] .home-hero-layout {
+    gap: 1rem;
+  }
+
+  body[data-page="home"] .home-hero-intro,
+  body[data-page="home"] .home-hero-copy,
+  body[data-page="home"] .hero-card {
+    width: min(620px, 100%);
+    margin-left: auto;
+    margin-right: auto;
   }
 
   body[data-page="home"] .home-hero-copy {
@@ -728,6 +744,10 @@ body[data-page="contact"] .contact-content {
   .product-card {
     padding: 1rem;
   }
+
+  body[data-page="home"] .home-hero-copy .lead {
+    max-width: 42ch;
+  }
 }
 
 @media (max-width: 520px) {
@@ -751,6 +771,19 @@ body[data-page="contact"] .contact-content {
 
   .hero::before {
     display: none;
+  }
+
+  body[data-page="home"] .home-hero-layout {
+    gap: 0.75rem;
+  }
+
+  body[data-page="home"] .home-hero-copy .lead {
+    max-width: 34ch;
+    margin-bottom: 0.78rem;
+  }
+
+  body[data-page="home"] .hero-card {
+    width: 100%;
   }
 
   .product-grid,
