@@ -1093,7 +1093,7 @@ const dom = {
     clearCartBtn: document.getElementById("clearCartBtn"),
     checkoutItems: document.getElementById("checkoutItems"),
     deliveryForm: document.getElementById("deliveryForm"),
-    deliveryDateOptions: document.getElementById("deliveryDateOptions"),
+    deliveryDateSelect: document.getElementById("deliveryDateSelect"),
     deliveryMessage: document.getElementById("deliveryMessage"),
     toPaymentBtn: document.getElementById("toPaymentBtn"),
     paymentItems: document.getElementById("paymentItems"),
@@ -1487,7 +1487,7 @@ function initOrderDetailsPage() {
 }
 
 function hydrateDeliveryForm() {
-    if (!dom.deliveryForm || !dom.deliveryDateOptions) {
+    if (!dom.deliveryForm || !dom.deliveryDateSelect) {
         return;
     }
 
@@ -1506,34 +1506,32 @@ function hydrateDeliveryForm() {
     setIfPresent("contactPerson", details.contactPerson);
     setIfPresent("truckCompany", details.truckCompany);
 
-    // Render available delivery dates
+    // Render available delivery dates in select dropdown
     const availableDates = getAvailableDeliveryDates();
     if (availableDates.length === 0) {
         dom.deliveryMessage.textContent = "No delivery dates available at this time.";
+        dom.deliveryDateSelect.disabled = true;
         return;
     }
 
-    let optionsHtml = "";
-    availableDates.forEach((option, index) => {
+    let optionsHtml = '<option value="">-- Select a delivery date --</option>';
+    availableDates.forEach((option) => {
         const dateStr = option.date.toISOString().split("T")[0]; // YYYY-MM-DD format
-        const isChecked = details.deliveryDate === dateStr ? "checked" : "";
-        optionsHtml += `
-            <label class="delivery-option">
-                <input type="radio" name="deliveryDate" value="${dateStr}" ${isChecked} required>
-                ${option.label}
-            </label>
-        `;
+        const isSelected = details.deliveryDate === dateStr ? "selected" : "";
+        optionsHtml += `<option value="${dateStr}" ${isSelected}>${option.label}</option>`;
     });
 
-    dom.deliveryDateOptions.innerHTML = optionsHtml;
+    dom.deliveryDateSelect.innerHTML = optionsHtml;
     dom.deliveryMessage.textContent = "Select your preferred delivery date.";
 
     // Add change listener to update message
-    const radioButtons = dom.deliveryDateOptions.querySelectorAll("input[type='radio']");
-    radioButtons.forEach((radio) => {
-        radio.addEventListener("change", () => {
-            dom.deliveryMessage.textContent = `Selected: ${radio.nextElementSibling?.textContent || radio.value}`;
-        });
+    dom.deliveryDateSelect.addEventListener("change", () => {
+        if (dom.deliveryDateSelect.value) {
+            const selectedText = dom.deliveryDateSelect.options[dom.deliveryDateSelect.selectedIndex].text;
+            dom.deliveryMessage.textContent = `Selected: ${selectedText}`;
+        } else {
+            dom.deliveryMessage.textContent = "Select your preferred delivery date.";
+        }
     });
 }
 
@@ -1542,7 +1540,12 @@ function getAvailableDeliveryDates() {
     today.setHours(0, 0, 0, 0);
 
     function dateString(date) {
-        const options = { weekday: "long", year: "numeric", month: "short", day: "numeric" };
+        const options = { month: "short", day: "numeric" };
+        return date.toLocaleDateString("en-US", options);
+    }
+
+    function dayName(date) {
+        const options = { weekday: "long" };
         return date.toLocaleDateString("en-US", options);
     }
 
@@ -1563,7 +1566,7 @@ function getAvailableDeliveryDates() {
                 available.push({
                     day: "Monday",
                     date: new Date(date),
-                    label: `Monday, ${dateString(date)}`
+                    label: `${dayName(date)}, ${dateString(date)}`
                 });
             }
         } else if (day === 4) {
@@ -1575,7 +1578,7 @@ function getAvailableDeliveryDates() {
                 available.push({
                     day: "Thursday",
                     date: new Date(date),
-                    label: `Thursday, ${dateString(date)}`
+                    label: `${dayName(date)}, ${dateString(date)}`
                 });
             }
         }

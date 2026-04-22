@@ -69,11 +69,11 @@
           <label for="truckCompanyField">Truck Company in Aalsmeer</label>
           <input id="truckCompanyField" name="truckCompany" type="text" required>
 
-          <fieldset class="delivery-options">
-            <legend>Delivery Date</legend>
-            <div id="deliveryDateOptions" aria-live="polite"></div>
-            <p id="deliveryMessage" class="selection-summary"></p>
-          </fieldset>
+          <label for="deliveryDateSelect">Delivery Date</label>
+          <select id="deliveryDateSelect" name="deliveryDate" required>
+            <option value="">-- Select a delivery date --</option>
+          </select>
+          <p id="deliveryMessage" class="selection-summary"></p>
 
           <div class="checkout-next-row">
             <button id="toPaymentBtn" class="btn btn-solid" type="button">Next</button>

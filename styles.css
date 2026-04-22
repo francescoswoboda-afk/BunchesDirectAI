@@ -655,31 +655,6 @@ textarea {
   width: auto;
 }
 
-.delivery-options {
-  margin-top: 0.65rem;
-  border: none;
-  padding: 0;
-}
-
-.delivery-options legend {
-  font-weight: 700;
-  padding: 0;
-  margin-bottom: 0.45rem;
-  display: block;
-}
-
-.delivery-option {
-  display: flex;
-  align-items: center;
-  gap: 0.55rem;
-  padding: 0.5rem 0;
-  cursor: pointer;
-}
-
-.delivery-option input {
-  width: auto;
-}
-
 .product-pagination {
   margin-top: 1.35rem;
   display: flex;
