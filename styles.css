@@ -113,7 +113,7 @@ p {
   gap: 0.55rem;
   font-family: "Birthstone", cursive;
   font-size: clamp(2rem, 4.4vw, 3.35rem);
-  font-weight: 600;
+  font-weight: 400;
   letter-spacing: 0.04em;
   line-height: 1;
   text-align: center;
@@ -418,6 +418,169 @@ textarea {
   gap: 0.35rem;
 }
 
+.product-card-link {
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.product-card-link:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 28px rgba(53, 2, 1, 0.18);
+}
+
+.product-detail-layout {
+  display: grid;
+  grid-template-columns: minmax(260px, 1fr) minmax(300px, 1fr);
+  gap: clamp(1.2rem, 3vw, 2.5rem);
+  align-items: start;
+}
+
+.product-detail-media {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 0.8rem;
+}
+
+.product-detail-media img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 1px solid rgba(213, 7, 3, 0.2);
+}
+
+.product-detail-info .lead {
+  margin-top: 0;
+}
+
+.packaging-copy {
+  margin: 1rem 0;
+  font-weight: 600;
+}
+
+.detail-controls {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.45rem;
+  max-width: 320px;
+}
+
+.detail-controls label {
+  font-weight: 700;
+  margin-top: 0.45rem;
+}
+
+.order-row {
+  margin-top: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  align-items: center;
+}
+
+.qty-control {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  overflow: hidden;
+  background: #fff9f0;
+}
+
+.qty-control button {
+  border: 0;
+  min-width: 2.2rem;
+  height: 2.2rem;
+  font-size: 1.2rem;
+  font-weight: 800;
+  background: transparent;
+  color: var(--forest);
+}
+
+.qty-control span {
+  min-width: 2.2rem;
+  text-align: center;
+  font-weight: 700;
+}
+
+.selection-summary {
+  margin-top: 0.85rem;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.next-flower-link {
+  margin-top: 1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.55rem 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: #fff8ee;
+  font-weight: 800;
+  color: var(--forest);
+}
+
+.next-flower-link:hover {
+  transform: translateY(-1px);
+}
+
+.detail-nav-row {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.cart-items {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.cart-item-card {
+  display: grid;
+  grid-template-columns: 110px 1fr auto;
+  gap: 0.85rem;
+  align-items: center;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 0.85rem;
+}
+
+.cart-item-image {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid rgba(213, 7, 3, 0.2);
+}
+
+.cart-item-copy h3 {
+  margin: 0 0 0.2rem;
+}
+
+.cart-item-copy p {
+  margin: 0;
+  text-align: left;
+}
+
+.cart-summary-row {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+}
+
 .product-pagination {
   margin-top: 1.35rem;
   display: flex;
@@ -718,6 +881,19 @@ body[data-page="contact"] .contact-content {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .product-detail-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .cart-item-card {
+    grid-template-columns: 90px 1fr;
+  }
+
+  .cart-remove-btn {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+
   .product-pagination {
     gap: 0.6rem;
   }
@@ -836,6 +1012,19 @@ body[data-page="contact"] .contact-content {
 
   .btn {
     width: 100%;
+  }
+
+  .order-row {
+    align-items: stretch;
+  }
+
+  .detail-nav-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .cart-summary-row {
+    align-items: stretch;
   }
 }
 

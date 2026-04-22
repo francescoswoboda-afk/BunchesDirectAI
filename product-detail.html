@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Explore individual rose details, packaging options, and box selections.">
+  <title>Rose Details | Bunches Direct</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Birthstone&family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="products">
+  <header class="site-header">
+    <div class="container nav-wrap">
+      <a class="site-title birthstone-regular" href="index.html" aria-label="Bunches Direct home">
+        <span class="site-title-logo" aria-hidden="true">
+          <img src="assets/header-logo.png" alt="" onerror="this.onerror=null;this.src='assets/logo.svg';">
+        </span>
+        <span>Bunches Direct</span>
+      </a>
+      <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+      <nav class="site-nav" id="siteNav">
+        <a href="index.html" data-link="home">Home</a>
+        <a href="about.html" data-link="about">About Us</a>
+        <a href="products.html" data-link="products">Our Products</a>
+        <a href="cart.html" data-link="cart">Cart</a>
+        <a href="contact.html" data-link="contact">Contact Us</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="section-pad product-detail-section">
+      <div class="container product-detail-layout">
+        <div class="product-detail-media">
+          <img id="detailImage" src="assets/flower-card.svg" alt="Rose image" onerror="this.onerror=null;this.src='assets/flower-card.svg';">
+        </div>
+
+        <div class="product-detail-info">
+          <p class="eyebrow">Rose details</p>
+          <h1 id="detailName">Rose Name</h1>
+          <p id="detailDescription" class="lead"></p>
+
+          <p id="detailPackaging" class="packaging-copy">Packaging: Q-Box = 100 stems and H-Box = 200-250 stems.</p>
+
+          <div class="detail-controls">
+            <label for="boxTypeSelect">Box type</label>
+            <select id="boxTypeSelect">
+              <option value="Q-Box">Q-Box</option>
+              <option value="H-Box">H-Box</option>
+            </select>
+
+            <label for="stemLengthSelect">Stem length (cm)</label>
+            <select id="stemLengthSelect">
+              <option value="40">40</option>
+              <option value="50">50</option>
+              <option value="60" selected>60</option>
+              <option value="70">70</option>
+            </select>
+          </div>
+
+          <div class="order-row">
+            <div class="qty-control" aria-label="Select number of boxes">
+              <button id="qtyMinus" type="button" aria-label="Decrease box quantity">-</button>
+              <span id="qtyValue" aria-live="polite">1</span>
+              <button id="qtyPlus" type="button" aria-label="Increase box quantity">+</button>
+            </div>
+            <button id="addBoxBtn" type="button" class="btn btn-solid">Add box to cart</button>
+          </div>
+
+          <p id="selectionSummary" class="selection-summary">Selected: 1 box(es), Q-Box, 60 cm stems.</p>
+
+          <div class="detail-nav-row">
+            <a id="prevFlowerBtn" class="next-flower-link" href="products.html">&larr; Previous flower</a>
+            <a id="nextFlowerBtn" class="next-flower-link" href="products.html">Next flower: View collection &rarr;</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div>
+        <h3>Bunches Direct</h3>
+        <p>Fresh quality roses delivered with heart.</p>
+      </div>
+      <div>
+        <h4>Visit</h4>
+        <p>Prunus 12, 1424 LD De Kwakel</p>
+      </div>
+      <div>
+        <h4><strong>Contact</strong></h4>
+        <p>Email: es@bunches-direct.com</p>
+        <p>Phone: +39 345 005 4849</p>
+      </div>
+    </div>
+    <p class="copyright">&copy; <span id="year"></span>Bunches Direct. All rights reserved.</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

@@ -5,6 +5,7 @@
 // 3) Keep the same filename (easy) or update the path string
 const FALLBACK_PRODUCT_IMAGE = "assets/flower-card.svg";
 const PRODUCTS_PER_PAGE = 18;
+const CART_STORAGE_KEY = "bunchesDirectCart";
 
 const products = [
     {
@@ -1071,17 +1072,37 @@ const dom = {
     year: document.getElementById("year"),
     productGrid: document.getElementById("productGrid"),
     productSearch: document.getElementById("productSearch"),
-    productPagination: document.getElementById("productPagination")
+    productPagination: document.getElementById("productPagination"),
+    detailImage: document.getElementById("detailImage"),
+    detailName: document.getElementById("detailName"),
+    detailDescription: document.getElementById("detailDescription"),
+    detailPackaging: document.getElementById("detailPackaging"),
+    boxTypeSelect: document.getElementById("boxTypeSelect"),
+    stemLengthSelect: document.getElementById("stemLengthSelect"),
+    qtyMinus: document.getElementById("qtyMinus"),
+    qtyPlus: document.getElementById("qtyPlus"),
+    qtyValue: document.getElementById("qtyValue"),
+    addBoxBtn: document.getElementById("addBoxBtn"),
+    selectionSummary: document.getElementById("selectionSummary"),
+    prevFlowerBtn: document.getElementById("prevFlowerBtn"),
+    nextFlowerBtn: document.getElementById("nextFlowerBtn"),
+    cartItems: document.getElementById("cartItems"),
+    cartTotal: document.getElementById("cartTotal"),
+    cartEmptyState: document.getElementById("cartEmptyState"),
+    clearCartBtn: document.getElementById("clearCartBtn")
 };
 
 let filteredProducts = [...products];
 let currentProductPage = 1;
+let activeDetailProduct = null;
 
 function init() {
     setYear();
     wireMobileMenu();
     markActiveNav();
     initProductsPage();
+    initProductDetailPage();
+    initCartPage();
 }
 
 function setYear() {
@@ -1163,14 +1184,252 @@ function renderProductCards(list) {
     dom.productGrid.innerHTML = list
         .map(
             (product) => `
-            <article class="product-card">
+            <a class="product-card product-card-link" href="${getProductDetailUrl(product)}" aria-label="View details for ${product.name}">
                 <img class="product-image" src="${product.image || FALLBACK_PRODUCT_IMAGE}" alt="${product.name} arrangement image" loading="lazy" onerror="this.onerror=null;this.src='${FALLBACK_PRODUCT_IMAGE}';">
                 <h3>${product.name}</h3>
                 <p>${product.description}</p>
+            </a>
+        `
+        )
+        .join("");
+}
+
+function getProductDetailUrl(product) {
+    const rose = encodeURIComponent(product.name);
+    return `product-detail.html?rose=${rose}`;
+}
+
+function initProductDetailPage() {
+    if (!dom.detailImage || !dom.detailName) {
+        return;
+    }
+
+    const selectedRose = getRoseNameFromQuery();
+    const selectedIndex = findProductIndexByName(selectedRose);
+    const safeIndex = selectedIndex >= 0 ? selectedIndex : 0;
+    const product = products[safeIndex];
+
+    renderProductDetail(product, safeIndex);
+    wireDetailQuantityControls();
+}
+
+function getRoseNameFromQuery() {
+    const params = new URLSearchParams(window.location.search);
+    return (params.get("rose") || "").trim();
+}
+
+function findProductIndexByName(name) {
+    if (!name) {
+        return -1;
+    }
+
+    const loweredName = name.toLowerCase();
+    return products.findIndex((product) => product.name.toLowerCase() === loweredName);
+}
+
+function renderProductDetail(product, index) {
+    const previousProduct = index > 0 ? products[index - 1] : null;
+    const nextProduct = index < products.length - 1 ? products[index + 1] : null;
+    activeDetailProduct = product;
+
+    dom.detailImage.src = product.image || FALLBACK_PRODUCT_IMAGE;
+    dom.detailImage.alt = `${product.name} rose image`;
+    dom.detailName.textContent = product.name;
+
+    if (dom.detailDescription) {
+        dom.detailDescription.textContent = product.description;
+    }
+
+    if (dom.detailPackaging) {
+        dom.detailPackaging.textContent = "Packaging: Q-Box = 100 stems and H-Box = 200-250 stems.";
+    }
+
+    if (dom.prevFlowerBtn) {
+        if (previousProduct) {
+            dom.prevFlowerBtn.href = getProductDetailUrl(previousProduct);
+            dom.prevFlowerBtn.innerHTML = `&larr; Previous flower: ${previousProduct.name}`;
+            dom.prevFlowerBtn.style.display = "inline-flex";
+        } else {
+            dom.prevFlowerBtn.style.display = "none";
+        }
+    }
+
+    if (dom.nextFlowerBtn) {
+        if (nextProduct) {
+            dom.nextFlowerBtn.href = getProductDetailUrl(nextProduct);
+            dom.nextFlowerBtn.innerHTML = `Next flower: ${nextProduct.name} &rarr;`;
+            dom.nextFlowerBtn.style.display = "inline-flex";
+        } else {
+            dom.nextFlowerBtn.style.display = "none";
+        }
+    }
+
+    updateSelectionSummary();
+}
+
+function wireDetailQuantityControls() {
+    if (!dom.qtyMinus || !dom.qtyPlus || !dom.qtyValue || !dom.addBoxBtn) {
+        return;
+    }
+
+    dom.qtyMinus.addEventListener("click", () => {
+        const currentValue = Number(dom.qtyValue.textContent) || 1;
+        const nextValue = Math.max(1, currentValue - 1);
+        dom.qtyValue.textContent = String(nextValue);
+        updateSelectionSummary();
+    });
+
+    dom.qtyPlus.addEventListener("click", () => {
+        const currentValue = Number(dom.qtyValue.textContent) || 1;
+        const nextValue = currentValue + 1;
+        dom.qtyValue.textContent = String(nextValue);
+        updateSelectionSummary();
+    });
+
+    if (dom.boxTypeSelect) {
+        dom.boxTypeSelect.addEventListener("change", updateSelectionSummary);
+    }
+
+    if (dom.stemLengthSelect) {
+        dom.stemLengthSelect.addEventListener("change", updateSelectionSummary);
+    }
+
+    dom.addBoxBtn.addEventListener("click", () => {
+        addCurrentSelectionToCart();
+        dom.addBoxBtn.textContent = "Added!";
+        updateSelectionSummary();
+
+        window.setTimeout(() => {
+            dom.addBoxBtn.textContent = "Add box to cart";
+        }, 1200);
+    });
+}
+
+function addCurrentSelectionToCart() {
+    if (!activeDetailProduct || !dom.qtyValue || !dom.boxTypeSelect || !dom.stemLengthSelect) {
+        return;
+    }
+
+    const quantity = Number(dom.qtyValue.textContent) || 1;
+    const item = {
+        roseName: activeDetailProduct.name,
+        image: activeDetailProduct.image || FALLBACK_PRODUCT_IMAGE,
+        boxType: dom.boxTypeSelect.value,
+        stemLength: Number(dom.stemLengthSelect.value),
+        quantity
+    };
+
+    const cart = getCartItems();
+    const existingItem = cart.find(
+        (entry) =>
+            entry.roseName === item.roseName &&
+            entry.boxType === item.boxType &&
+            entry.stemLength === item.stemLength
+    );
+
+    if (existingItem) {
+        existingItem.quantity += item.quantity;
+    } else {
+        cart.push(item);
+    }
+
+    saveCartItems(cart);
+}
+
+function getCartItems() {
+    try {
+        const stored = window.localStorage.getItem(CART_STORAGE_KEY);
+        if (!stored) {
+            return [];
+        }
+
+        const parsed = JSON.parse(stored);
+        return Array.isArray(parsed) ? parsed : [];
+    } catch {
+        return [];
+    }
+}
+
+function saveCartItems(items) {
+    window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
+}
+
+function initCartPage() {
+    if (!dom.cartItems || !dom.cartTotal || !dom.clearCartBtn || !dom.cartEmptyState) {
+        return;
+    }
+
+    renderCartPage();
+
+    dom.clearCartBtn.addEventListener("click", () => {
+        saveCartItems([]);
+        renderCartPage();
+    });
+}
+
+function renderCartPage() {
+    if (!dom.cartItems || !dom.cartTotal || !dom.clearCartBtn || !dom.cartEmptyState) {
+        return;
+    }
+
+    const cart = getCartItems();
+
+    if (cart.length === 0) {
+        dom.cartItems.innerHTML = "";
+        dom.cartTotal.textContent = "Total boxes: 0";
+        dom.cartEmptyState.style.display = "block";
+        dom.clearCartBtn.style.display = "none";
+        return;
+    }
+
+    dom.cartEmptyState.style.display = "none";
+    dom.clearCartBtn.style.display = "inline-flex";
+
+    dom.cartItems.innerHTML = cart
+        .map(
+            (item, index) => `
+            <article class="cart-item-card">
+                <img class="cart-item-image" src="${item.image || FALLBACK_PRODUCT_IMAGE}" alt="${item.roseName} rose image" loading="lazy" onerror="this.onerror=null;this.src='${FALLBACK_PRODUCT_IMAGE}';">
+                <div class="cart-item-copy">
+                    <h3>${item.roseName}</h3>
+                    <p>Packaging: ${item.boxType}</p>
+                    <p>Stem length: ${item.stemLength} cm</p>
+                    <p>Boxes: ${item.quantity}</p>
+                </div>
+                <button class="btn btn-outline cart-remove-btn" type="button" data-index="${index}">Remove</button>
             </article>
         `
         )
         .join("");
+
+    const totalBoxes = cart.reduce((sum, item) => sum + (Number(item.quantity) || 0), 0);
+    dom.cartTotal.textContent = `Total boxes: ${totalBoxes}`;
+
+    const removeButtons = dom.cartItems.querySelectorAll(".cart-remove-btn");
+    removeButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+            const index = Number(button.dataset.index);
+            const latestCart = getCartItems();
+
+            if (!Number.isNaN(index)) {
+                latestCart.splice(index, 1);
+                saveCartItems(latestCart);
+                renderCartPage();
+            }
+        });
+    });
+}
+
+function updateSelectionSummary() {
+    if (!dom.selectionSummary || !dom.qtyValue || !dom.boxTypeSelect || !dom.stemLengthSelect) {
+        return;
+    }
+
+    const qty = dom.qtyValue.textContent;
+    const boxType = dom.boxTypeSelect.value;
+    const stemLength = dom.stemLengthSelect.value;
+
+    dom.selectionSummary.textContent = `Selected: ${qty} box(es), ${boxType}, ${stemLength} cm stems.`;
 }
 
 function renderProductPagination(totalPages) {
