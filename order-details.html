@@ -69,8 +69,11 @@
           <label for="truckCompanyField">Truck Company in Aalsmeer</label>
           <input id="truckCompanyField" name="truckCompany" type="text" required>
 
-          <label for="deliveryDayField">Delivery Day</label>
-          <input id="deliveryDayField" name="deliveryDay" type="date" required>
+          <fieldset class="delivery-options">
+            <legend>Delivery Date</legend>
+            <div id="deliveryDateOptions" aria-live="polite"></div>
+            <p id="deliveryMessage" class="selection-summary"></p>
+          </fieldset>
 
           <div class="checkout-next-row">
             <button id="toPaymentBtn" class="btn btn-solid" type="button">Next</button>

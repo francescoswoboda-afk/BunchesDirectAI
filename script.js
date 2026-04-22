@@ -1093,6 +1093,8 @@ const dom = {
     clearCartBtn: document.getElementById("clearCartBtn"),
     checkoutItems: document.getElementById("checkoutItems"),
     deliveryForm: document.getElementById("deliveryForm"),
+    deliveryDateOptions: document.getElementById("deliveryDateOptions"),
+    deliveryMessage: document.getElementById("deliveryMessage"),
     toPaymentBtn: document.getElementById("toPaymentBtn"),
     paymentItems: document.getElementById("paymentItems"),
     paymentForm: document.getElementById("paymentForm"),
@@ -1476,7 +1478,7 @@ function initOrderDetailsPage() {
             phone: String(formData.get("phone") || ""),
             contactPerson: String(formData.get("contactPerson") || ""),
             truckCompany: String(formData.get("truckCompany") || ""),
-            deliveryDay: String(formData.get("deliveryDay") || "")
+            deliveryDate: String(formData.get("deliveryDate") || "")
         };
 
         saveOrderDetails(details);
@@ -1485,7 +1487,7 @@ function initOrderDetailsPage() {
 }
 
 function hydrateDeliveryForm() {
-    if (!dom.deliveryForm) {
+    if (!dom.deliveryForm || !dom.deliveryDateOptions) {
         return;
     }
 
@@ -1503,7 +1505,83 @@ function hydrateDeliveryForm() {
     setIfPresent("phone", details.phone);
     setIfPresent("contactPerson", details.contactPerson);
     setIfPresent("truckCompany", details.truckCompany);
-    setIfPresent("deliveryDay", details.deliveryDay);
+
+    // Render available delivery dates
+    const availableDates = getAvailableDeliveryDates();
+    if (availableDates.length === 0) {
+        dom.deliveryMessage.textContent = "No delivery dates available at this time.";
+        return;
+    }
+
+    let optionsHtml = "";
+    availableDates.forEach((option, index) => {
+        const dateStr = option.date.toISOString().split("T")[0]; // YYYY-MM-DD format
+        const isChecked = details.deliveryDate === dateStr ? "checked" : "";
+        optionsHtml += `
+            <label class="delivery-option">
+                <input type="radio" name="deliveryDate" value="${dateStr}" ${isChecked} required>
+                ${option.label}
+            </label>
+        `;
+    });
+
+    dom.deliveryDateOptions.innerHTML = optionsHtml;
+    dom.deliveryMessage.textContent = "Select your preferred delivery date.";
+
+    // Add change listener to update message
+    const radioButtons = dom.deliveryDateOptions.querySelectorAll("input[type='radio']");
+    radioButtons.forEach((radio) => {
+        radio.addEventListener("change", () => {
+            dom.deliveryMessage.textContent = `Selected: ${radio.nextElementSibling?.textContent || radio.value}`;
+        });
+    });
+}
+
+function getAvailableDeliveryDates() {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    function dateString(date) {
+        const options = { weekday: "long", year: "numeric", month: "short", day: "numeric" };
+        return date.toLocaleDateString("en-US", options);
+    }
+
+    const available = [];
+
+    // Find all Mondays and Thursdays for the next 5 weeks
+    for (let i = 0; i < 35; i++) {
+        const date = new Date(today);
+        date.setDate(date.getDate() + i);
+        const day = date.getDay(); // 0=Sun, 1=Mon, ..., 6=Sat
+
+        if (day === 1) {
+            // Monday - deadline is 5 days before (Wednesday of previous week)
+            const deadline = new Date(date);
+            deadline.setDate(deadline.getDate() - 5);
+
+            if (today <= deadline) {
+                available.push({
+                    day: "Monday",
+                    date: new Date(date),
+                    label: `Monday, ${dateString(date)}`
+                });
+            }
+        } else if (day === 4) {
+            // Thursday - deadline is 5 days before (Friday of previous week)
+            const deadline = new Date(date);
+            deadline.setDate(deadline.getDate() - 5);
+
+            if (today <= deadline) {
+                available.push({
+                    day: "Thursday",
+                    date: new Date(date),
+                    label: `Thursday, ${dateString(date)}`
+                });
+            }
+        }
+    }
+
+    return available;
 }
 
 function getOrderDetails() {
