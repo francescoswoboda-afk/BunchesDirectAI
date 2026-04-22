@@ -1250,10 +1250,6 @@ function renderProductDetail(product, index) {
         dom.detailDescription.textContent = product.description;
     }
 
-    if (dom.detailPackaging) {
-        dom.detailPackaging.textContent = "Packaging: Q-Box = 100 stems and H-Box = 200-250 stems.";
-    }
-
     if (dom.prevFlowerBtn) {
         if (previousProduct) {
             dom.prevFlowerBtn.href = getProductDetailUrl(previousProduct);
