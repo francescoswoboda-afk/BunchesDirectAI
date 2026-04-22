@@ -1,15 +1,15 @@
 :root {
-  --cream: #f7efdf;
-  --sage: #f2d6cf;
-  --leaf: #b40f0f;
-  --forest: #5a1712;
-  --clay: #cf6b6b;
-  --terracotta: #d98f8f;
-  --ink: #341717;
-  --muted: #7a4b45;
-  --card: #fff8ee;
-  --border: rgba(180, 15, 15, 0.18);
-  --shadow: 0 14px 30px rgba(90, 23, 18, 0.14);
+  --cream: #1b0606;
+  --sage: #350201;
+  --leaf: #d50703;
+  --forest: #350201;
+  --clay: #c01f21;
+  --terracotta: #8d0308;
+  --ink: #d50703;
+  --muted: #c01f21;
+  --card: #350201;
+  --border: rgba(213, 7, 3, 0.26);
+  --shadow: 0 16px 34px rgba(27, 6, 6, 0.55);
   --radius: 18px;
 }
 
@@ -26,7 +26,10 @@ body {
 body {
   font-family: "Manrope", "Trebuchet MS", sans-serif;
   color: var(--ink);
-  background: var(--cream);
+  background:
+    radial-gradient(circle at 12% 10%, rgba(213, 7, 3, 0.18), transparent 28%),
+    radial-gradient(circle at 88% 12%, rgba(192, 31, 33, 0.14), transparent 32%),
+    linear-gradient(180deg, #1b0606 0%, #350201 100%);
   line-height: 1.6;
   cursor: url("assets/rose-cursor.svg") 10 8, auto;
 }
@@ -74,10 +77,10 @@ a {
   position: sticky;
   top: 0;
   z-index: 20;
-  background: rgba(180, 15, 15, 0.9);
+  background: rgba(213, 7, 3, 0.92);
   backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--border);
-  color: #fff8ee;
+  color: #1b0606;
 }
 
 .nav-wrap {
@@ -117,7 +120,7 @@ a {
 
 .site-nav a.active,
 .site-nav a:hover {
-  background: rgba(255, 255, 255, 0.18);
+  background: rgba(27, 6, 6, 0.16);
 }
 
 .menu-toggle {
@@ -134,7 +137,7 @@ a {
   display: block;
   width: 23px;
   height: 2px;
-  background: var(--ink);
+  background: #1b0606;
   margin: 4px 0;
 }
 
@@ -157,7 +160,7 @@ a {
   width: 120px;
   height: 120px;
   border-radius: 38% 62% 58% 42% / 42% 38% 62% 58%;
-  background: rgba(207, 107, 107, 0.18);
+  background: rgba(141, 3, 8, 0.24);
   pointer-events: none;
 }
 
@@ -212,7 +215,7 @@ body[data-page="home"] .hero-card {
   display: inline-block;
   padding: 0.2rem 0.65rem;
   border-radius: 999px;
-  background: rgba(180, 15, 15, 0.1);
+  background: rgba(213, 7, 3, 0.12);
   color: var(--leaf);
   font-weight: 700;
   text-transform: uppercase;
@@ -278,14 +281,14 @@ body[data-page="products"] .products-hero .lead {
 }
 
 .btn-solid {
-  background: linear-gradient(120deg, var(--leaf), var(--forest));
-  color: #fff8ee;
+  background: linear-gradient(120deg, var(--leaf), var(--terracotta));
+  color: #1b0606;
 }
 
 .btn-outline {
   border-color: var(--leaf);
   color: var(--leaf);
-  background: rgba(242, 214, 207, 0.5);
+  background: rgba(53, 2, 1, 0.82);
 }
 
 .section-title {
@@ -302,8 +305,8 @@ body[data-page="products"] .products-hero .lead {
 
 .alt-bg {
   background:
-    linear-gradient(180deg, rgba(242, 214, 207, 0.6), rgba(247, 239, 223, 0.9)),
-    repeating-linear-gradient(45deg, rgba(180, 15, 15, 0.04), rgba(180, 15, 15, 0.04) 12px, rgba(255, 255, 255, 0.18) 12px, rgba(255, 255, 255, 0.18) 24px);
+    linear-gradient(180deg, rgba(53, 2, 1, 0.82), rgba(27, 6, 6, 0.95)),
+    repeating-linear-gradient(45deg, rgba(213, 7, 3, 0.06), rgba(213, 7, 3, 0.06) 12px, rgba(141, 3, 8, 0.16) 12px, rgba(141, 3, 8, 0.16) 24px);
 }
 
 .ticks {
@@ -350,9 +353,9 @@ textarea {
   width: 100%;
   padding: 0.65rem 0.75rem;
   border-radius: 11px;
-  border: 1px solid rgba(180, 15, 15, 0.2);
+  border: 1px solid rgba(213, 7, 3, 0.26);
   color: var(--ink);
-  background: #fffdf8;
+  background: #1b0606;
   font: inherit;
 }
 
@@ -365,7 +368,8 @@ textarea {
   height: 170px;
   object-fit: cover;
   border-radius: 12px;
-  border: 1px solid rgba(180, 15, 15, 0.14);
+  border: 1px solid rgba(213, 7, 3, 0.18);
+  margin-bottom: 0.45rem;
 }
 
 .product-card {
@@ -400,7 +404,7 @@ textarea {
   height: 2.1rem;
   border-radius: 999px;
   border: 1px solid var(--border);
-  background: #fffdf8;
+  background: #350201;
   color: var(--leaf);
   font-weight: 800;
   cursor: pointer;
@@ -413,7 +417,7 @@ textarea {
 .page-jump-btn.is-active {
   background: var(--leaf);
   border-color: var(--leaf);
-  color: #fff8ee;
+  color: #1b0606;
 }
 
 .page-ellipsis {
@@ -436,6 +440,14 @@ body[data-page="about"] .about-hero {
 
 body[data-page="about"] .about-beliefs {
   padding-top: clamp(1rem, 2.2vw, 1.5rem);
+}
+
+body[data-page="contact"] .page-hero {
+  padding-bottom: clamp(0.8rem, 1.8vw, 1.25rem);
+}
+
+body[data-page="contact"] .contact-content {
+  padding-top: clamp(0.7rem, 1.7vw, 1.15rem);
 }
 
 .contact-form {
@@ -465,17 +477,17 @@ body[data-page="about"] .about-beliefs {
 }
 
 .form-message.success {
-  color: #6e1123;
+  color: #d50703;
 }
 
 .form-message.error {
-  color: #9e1b34;
+  color: #c01f21;
 }
 
 .site-footer {
   padding: 2rem 0 1rem;
   border-top: 1px solid var(--border);
-  background: linear-gradient(180deg, #cf6b6b, #d98f8f);
+  background: linear-gradient(180deg, #8d0308, #55090b);
 }
 
 .footer-grid {
@@ -495,7 +507,7 @@ body[data-page="about"] .about-beliefs {
   padding: 0 0.9rem;
   font-weight: 800;
   background: var(--forest);
-  color: #fff8ee;
+  color: var(--leaf);
   cursor: pointer;
 }
 
@@ -563,7 +575,7 @@ body[data-page="about"] .about-beliefs {
     top: calc(100% - 0.15rem);
     left: 0;
     right: 0;
-    background: rgba(180, 15, 15, 0.96);
+    background: rgba(213, 7, 3, 0.96);
     border-bottom: 1px solid var(--border);
     padding: 0.9rem 1rem;
     display: none;

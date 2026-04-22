@@ -1243,19 +1243,29 @@ function renderProductPagination(totalPages) {
 }
 
 function getPageTokens(totalPages, currentPage) {
-    if (totalPages <= 6) {
+    if (totalPages <= 8) {
         return Array.from({ length: totalPages }, (_, index) => index + 1);
     }
 
     if (currentPage <= 4) {
-        return [1, 2, 3, 4, "ellipsis", totalPages];
+        return [...createPageRange(1, 7), "ellipsis", totalPages];
     }
 
     if (currentPage >= totalPages - 3) {
-        return [1, "ellipsis", totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
+        return [1, "ellipsis", ...createPageRange(totalPages - 6, totalPages)];
     }
 
-    return [1, "ellipsis", currentPage - 1, currentPage, currentPage + 1, "ellipsis", totalPages];
+    return [
+        1,
+        "ellipsis",
+        ...createPageRange(currentPage - 1, currentPage + 3),
+        "ellipsis",
+        totalPages
+    ];
+}
+
+function createPageRange(startPage, endPage) {
+    return Array.from({ length: endPage - startPage + 1 }, (_, index) => startPage + index);
 }
 
 init();
