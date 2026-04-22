@@ -175,6 +175,10 @@ a {
   opacity: 0.88;
 }
 
+body[data-page="home"] .hero::before {
+  inset: clamp(5.6rem, 11vw, 7.8rem) auto auto 4%;
+}
+
 body[data-page="home"] .hero-card {
   margin-top: clamp(2.2rem, 4vw, 3.8rem);
 }
