@@ -77,7 +77,7 @@ a {
   background: rgba(213, 7, 3, 0.92);
   backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--border);
-  color: #1b0606;
+  color: var(--cream);
 }
 
 .nav-wrap {
@@ -161,7 +161,7 @@ a {
   display: block;
   width: 23px;
   height: 2px;
-  background: #1b0606;
+  background: var(--cream);
   margin: 4px 0;
 }
 
@@ -512,7 +512,8 @@ body[data-page="contact"] .contact-content {
 .site-footer {
   padding: 2rem 0 1rem;
   border-top: 1px solid var(--border);
-  background: linear-gradient(180deg, #8d0308, #55090b);
+  background: #8d0308;
+  color: var(--cream);
 }
 
 .footer-grid {
@@ -538,7 +539,7 @@ body[data-page="contact"] .contact-content {
 
 .copyright {
   text-align: center;
-  color: var(--muted);
+  color: var(--cream);
   margin: 1.3rem 0 0;
   font-size: 0.9rem;
 }
