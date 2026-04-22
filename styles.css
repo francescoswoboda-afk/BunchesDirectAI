@@ -1,5 +1,5 @@
 :root {
-  --cream: #1b0606;
+  --cream: #f6eee1;
   --sage: #350201;
   --leaf: #d50703;
   --forest: #350201;
@@ -26,10 +26,7 @@ body {
 body {
   font-family: "Manrope", "Trebuchet MS", sans-serif;
   color: var(--ink);
-  background:
-    radial-gradient(circle at 12% 10%, rgba(213, 7, 3, 0.18), transparent 28%),
-    radial-gradient(circle at 88% 12%, rgba(192, 31, 33, 0.14), transparent 32%),
-    linear-gradient(180deg, #1b0606 0%, #350201 100%);
+  background: var(--cream);
   line-height: 1.6;
   cursor: url("assets/rose-cursor.svg") 10 8, auto;
 }
@@ -94,11 +91,17 @@ a {
   position: relative;
 }
 
+.birthstone-regular {
+  font-family: "Birthstone", cursive;
+  font-weight: 400;
+  font-style: normal;
+}
+
 .site-title {
   display: inline-block;
-  font-family: "Cormorant Garamond", Georgia, serif;
+  font-family: "Birthstone", cursive;
   font-size: clamp(2rem, 4.4vw, 3.35rem);
-  font-weight: 800;
+  font-weight: 400;
   letter-spacing: 0.04em;
   line-height: 1;
   text-align: center;
