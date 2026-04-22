@@ -370,6 +370,39 @@ textarea {
   font-weight: 700;
 }
 
+.page-jump-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.page-jump-btn {
+  min-width: 2.1rem;
+  height: 2.1rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: #fffdf8;
+  color: var(--leaf);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.page-jump-btn:hover {
+  transform: translateY(-1px);
+}
+
+.page-jump-btn.is-active {
+  background: var(--leaf);
+  border-color: var(--leaf);
+  color: #fff8ee;
+}
+
+.page-ellipsis {
+  color: var(--muted);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
 body[data-page="products"] .products-hero {
   padding-bottom: clamp(1rem, 2.2vw, 1.65rem);
 }

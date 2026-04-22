@@ -1185,15 +1185,29 @@ function renderProductPagination(totalPages) {
 
     const prevDisabled = currentProductPage <= 1 ? "disabled" : "";
     const nextDisabled = currentProductPage >= totalPages ? "disabled" : "";
+    const pageTokens = getPageTokens(totalPages, currentProductPage);
+    const pageButtons = pageTokens
+        .map((token) => {
+            if (token === "ellipsis") {
+                return "<span class=\"page-ellipsis\" aria-hidden=\"true\">...</span>";
+            }
+
+            const activeClass = token === currentProductPage ? "is-active" : "";
+            const ariaCurrent = token === currentProductPage ? "aria-current=\"page\"" : "";
+            return `<button class="page-jump-btn ${activeClass}" data-page="${token}" ${ariaCurrent}>${token}</button>`;
+        })
+        .join("");
 
     dom.productPagination.innerHTML = `
         <button class="btn btn-outline" id="productsPrevBtn" ${prevDisabled}>View Previous Products</button>
         <p class="page-indicator">Page ${currentProductPage} of ${totalPages}</p>
+        <div class="page-jump-wrap" aria-label="Select product page">${pageButtons}</div>
         <button class="btn btn-solid" id="productsNextBtn" ${nextDisabled}>View More Products</button>
     `;
 
     const prevButton = document.getElementById("productsPrevBtn");
     const nextButton = document.getElementById("productsNextBtn");
+    const jumpButtons = dom.productPagination.querySelectorAll(".page-jump-btn");
 
     if (prevButton) {
         prevButton.addEventListener("click", () => {
@@ -1214,6 +1228,34 @@ function renderProductPagination(totalPages) {
             }
         });
     }
+
+    jumpButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+            const selectedPage = Number(button.dataset.page);
+
+            if (!Number.isNaN(selectedPage) && selectedPage !== currentProductPage) {
+                currentProductPage = selectedPage;
+                renderProductsPage();
+                window.scrollTo({ top: 0, behavior: "smooth" });
+            }
+        });
+    });
+}
+
+function getPageTokens(totalPages, currentPage) {
+    if (totalPages <= 6) {
+        return Array.from({ length: totalPages }, (_, index) => index + 1);
+    }
+
+    if (currentPage <= 4) {
+        return [1, 2, 3, 4, "ellipsis", totalPages];
+    }
+
+    if (currentPage >= totalPages - 3) {
+        return [1, "ellipsis", totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
+    }
+
+    return [1, "ellipsis", currentPage - 1, currentPage, currentPage + 1, "ellipsis", totalPages];
 }
 
 init();
