@@ -179,8 +179,15 @@ body[data-page="home"] .hero::before {
   inset: clamp(5.6rem, 11vw, 7.8rem) auto auto 4%;
 }
 
+body[data-page="home"] .hero-grid {
+  grid-template-columns: 1fr;
+  justify-items: center;
+  text-align: center;
+}
+
 body[data-page="home"] .hero-card {
-  margin-top: clamp(2.2rem, 4vw, 3.8rem);
+  margin-top: clamp(0.75rem, 2vw, 1.35rem);
+  width: min(620px, 100%);
 }
 
 .page-hero h1,
