@@ -11,6 +11,7 @@
   --border: rgba(109, 1, 4, 0.24);
   --shadow: 0 12px 26px rgba(53, 2, 1, 0.12);
   --radius: 18px;
+  --header-image: url("assets/header-image.png");
 }
 
 * {
@@ -74,7 +75,11 @@ a {
   position: sticky;
   top: 0;
   z-index: 20;
-  background: #d40000;
+  background-color: #d40000;
+  background-image: linear-gradient(rgba(212, 0, 0, 0.7), rgba(212, 0, 0, 0.7)), var(--header-image);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--border);
   color: var(--cream);
