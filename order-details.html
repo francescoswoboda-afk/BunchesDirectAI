@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Review selected rose boxes before checkout.">
-  <title>Your Cart | Bunches Direct</title>
+  <meta name="description" content="Provide delivery and company details for your selected rose boxes.">
+  <title>Order Details | Bunches Direct</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Birthstone&family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
@@ -35,30 +35,47 @@
   <main>
     <section class="section-pad page-hero">
       <div class="container narrow">
-        <p class="eyebrow">Your selection</p>
-        <h1>Cart</h1>
-        <p class="lead">Review your selected rose boxes before sending your request.</p>
+        <p class="eyebrow">Order setup</p>
+        <h1>Delivery Details</h1>
+        <p class="lead">Confirm selected products and complete your company and delivery information.</p>
       </div>
     </section>
 
-    <section class="section-pad cart-content">
-      <div class="container">
-        <div id="cartEmptyState" class="info-panel">
-          <h3>Your cart is empty</h3>
-          <p>Add rose boxes from the individual product page to see them here.</p>
-          <a class="btn btn-solid" href="products.html">Browse roses</a>
-        </div>
+    <section class="section-pad checkout-content">
+      <div class="container checkout-grid">
+        <article>
+          <h2 class="section-title">Selected Products</h2>
+          <div id="checkoutItems" class="cart-items" aria-live="polite"></div>
+        </article>
 
-        <div id="cartItems" class="cart-items" aria-live="polite"></div>
+        <form id="deliveryForm" class="contact-form" novalidate>
+          <h2 class="section-title">Company & Delivery Form</h2>
 
-        <div class="cart-summary-row">
-          <a class="btn btn-outline" href="products.html">Our Products</a>
-          <p id="cartTotal" class="price">Total boxes: 0</p>
-          <div class="cart-actions">
-            <button id="clearCartBtn" class="btn btn-outline" type="button">Clear cart</button>
-            <a id="toDetailsBtn" class="btn btn-solid" href="order-details.html">Continue</a>
+          <label for="companyNameField">Company Name</label>
+          <input id="companyNameField" name="companyName" type="text" required>
+
+          <label for="deliveryAddressField">Delivery Address</label>
+          <input id="deliveryAddressField" name="deliveryAddress" type="text" required>
+
+          <label for="taxVatField">Tax / VAT #</label>
+          <input id="taxVatField" name="taxVat" type="text" required>
+
+          <label for="phoneField">Phone</label>
+          <input id="phoneField" name="phone" type="tel" required>
+
+          <label for="contactPersonField">Contact Person</label>
+          <input id="contactPersonField" name="contactPerson" type="text" required>
+
+          <label for="truckCompanyField">Truck Company in Aalsmeer</label>
+          <input id="truckCompanyField" name="truckCompany" type="text" required>
+
+          <label for="deliveryDayField">Delivery Day</label>
+          <input id="deliveryDayField" name="deliveryDay" type="date" required>
+
+          <div class="checkout-next-row">
+            <button id="toPaymentBtn" class="btn btn-solid" type="button">Next</button>
           </div>
-        </div>
+        </form>
       </div>
     </section>
   </main>

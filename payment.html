@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Review selected rose boxes before checkout.">
-  <title>Your Cart | Bunches Direct</title>
+  <meta name="description" content="Choose your advance payment method for your Bunches Direct order.">
+  <title>Advance Payment | Bunches Direct</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Birthstone&family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
@@ -35,30 +35,38 @@
   <main>
     <section class="section-pad page-hero">
       <div class="container narrow">
-        <p class="eyebrow">Your selection</p>
-        <h1>Cart</h1>
-        <p class="lead">Review your selected rose boxes before sending your request.</p>
+        <p class="eyebrow">Advance payment</p>
+        <h1>Payment Method</h1>
+        <p class="lead">Please pay in advance using one of the payment methods below.</p>
       </div>
     </section>
 
-    <section class="section-pad cart-content">
-      <div class="container">
-        <div id="cartEmptyState" class="info-panel">
-          <h3>Your cart is empty</h3>
-          <p>Add rose boxes from the individual product page to see them here.</p>
-          <a class="btn btn-solid" href="products.html">Browse roses</a>
-        </div>
+    <section class="section-pad checkout-content">
+      <div class="container checkout-grid">
+        <article>
+          <h2 class="section-title">Order Summary</h2>
+          <div id="paymentItems" class="cart-items" aria-live="polite"></div>
+        </article>
 
-        <div id="cartItems" class="cart-items" aria-live="polite"></div>
+        <form id="paymentForm" class="contact-form" novalidate>
+          <h2 class="section-title">Choose Payment</h2>
 
-        <div class="cart-summary-row">
-          <a class="btn btn-outline" href="products.html">Our Products</a>
-          <p id="cartTotal" class="price">Total boxes: 0</p>
-          <div class="cart-actions">
-            <button id="clearCartBtn" class="btn btn-outline" type="button">Clear cart</button>
-            <a id="toDetailsBtn" class="btn btn-solid" href="order-details.html">Continue</a>
+          <label class="pay-option">
+            <input type="radio" name="paymentMethod" value="credit-card" required>
+            Credit Card
+          </label>
+
+          <label class="pay-option">
+            <input type="radio" name="paymentMethod" value="bank-transfer" required>
+            Bank Transfer
+          </label>
+
+          <div id="paymentMessage" class="selection-summary">Select a payment method to continue.</div>
+
+          <div class="checkout-next-row">
+            <button id="confirmPaymentBtn" class="btn btn-solid" type="button">Confirm Advance Payment</button>
           </div>
-        </div>
+        </form>
       </div>
     </section>
   </main>
@@ -79,7 +87,7 @@
         <p>Phone: +39 345 005 4849</p>
       </div>
     </div>
-    <p class="copyright">&copy; <span id="year"></span>Bunches Direct. All rights reserved.</p>
+    <p class="copyright">&copy; <span id="year"></span>BunchesDirect. All rights reserved.</p>
   </footer>
 
   <script src="script.js"></script>

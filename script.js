@@ -6,6 +6,7 @@
 const FALLBACK_PRODUCT_IMAGE = "assets/flower-card.svg";
 const PRODUCTS_PER_PAGE = 18;
 const CART_STORAGE_KEY = "bunchesDirectCart";
+const ORDER_DETAILS_STORAGE_KEY = "bunchesDirectOrderDetails";
 
 const products = [
     {
@@ -1089,7 +1090,14 @@ const dom = {
     cartItems: document.getElementById("cartItems"),
     cartTotal: document.getElementById("cartTotal"),
     cartEmptyState: document.getElementById("cartEmptyState"),
-    clearCartBtn: document.getElementById("clearCartBtn")
+    clearCartBtn: document.getElementById("clearCartBtn"),
+    checkoutItems: document.getElementById("checkoutItems"),
+    deliveryForm: document.getElementById("deliveryForm"),
+    toPaymentBtn: document.getElementById("toPaymentBtn"),
+    paymentItems: document.getElementById("paymentItems"),
+    paymentForm: document.getElementById("paymentForm"),
+    confirmPaymentBtn: document.getElementById("confirmPaymentBtn"),
+    paymentMessage: document.getElementById("paymentMessage")
 };
 
 let filteredProducts = [...products];
@@ -1103,6 +1111,8 @@ function init() {
     initProductsPage();
     initProductDetailPage();
     initCartPage();
+    initOrderDetailsPage();
+    initPaymentPage();
 }
 
 function setYear() {
@@ -1417,6 +1427,131 @@ function renderCartPage() {
                 renderCartPage();
             }
         });
+    });
+}
+
+function buildCartItemsHtml(cart) {
+    if (!Array.isArray(cart) || cart.length === 0) {
+        return "<p>No products selected yet.</p>";
+    }
+
+    return cart
+        .map(
+            (item) => `
+            <article class="cart-item-card">
+                <img class="cart-item-image" src="${item.image || FALLBACK_PRODUCT_IMAGE}" alt="${item.roseName} rose image" loading="lazy" onerror="this.onerror=null;this.src='${FALLBACK_PRODUCT_IMAGE}';">
+                <div class="cart-item-copy">
+                    <h3>${item.roseName}</h3>
+                    <p>Packaging: ${item.boxType}</p>
+                    <p>Stem length: ${item.stemLength} cm</p>
+                    <p>Boxes: ${item.quantity}</p>
+                </div>
+            </article>
+        `
+        )
+        .join("");
+}
+
+function initOrderDetailsPage() {
+    if (!dom.checkoutItems || !dom.deliveryForm || !dom.toPaymentBtn) {
+        return;
+    }
+
+    const cart = getCartItems();
+    dom.checkoutItems.innerHTML = buildCartItemsHtml(cart);
+
+    if (cart.length === 0) {
+        dom.toPaymentBtn.disabled = true;
+        return;
+    }
+
+    hydrateDeliveryForm();
+
+    dom.toPaymentBtn.addEventListener("click", () => {
+        if (!dom.deliveryForm.reportValidity()) {
+            return;
+        }
+
+        const formData = new FormData(dom.deliveryForm);
+        const details = {
+            companyName: String(formData.get("companyName") || ""),
+            deliveryAddress: String(formData.get("deliveryAddress") || ""),
+            taxVat: String(formData.get("taxVat") || ""),
+            phone: String(formData.get("phone") || ""),
+            contactPerson: String(formData.get("contactPerson") || ""),
+            truckCompany: String(formData.get("truckCompany") || ""),
+            deliveryDay: String(formData.get("deliveryDay") || "")
+        };
+
+        saveOrderDetails(details);
+        window.location.href = "payment.html";
+    });
+}
+
+function hydrateDeliveryForm() {
+    if (!dom.deliveryForm) {
+        return;
+    }
+
+    const details = getOrderDetails();
+    const setIfPresent = (name, value) => {
+        const field = dom.deliveryForm.elements.namedItem(name);
+        if (field && typeof value === "string" && value) {
+            field.value = value;
+        }
+    };
+
+    setIfPresent("companyName", details.companyName);
+    setIfPresent("deliveryAddress", details.deliveryAddress);
+    setIfPresent("taxVat", details.taxVat);
+    setIfPresent("phone", details.phone);
+    setIfPresent("contactPerson", details.contactPerson);
+    setIfPresent("truckCompany", details.truckCompany);
+    setIfPresent("deliveryDay", details.deliveryDay);
+}
+
+function getOrderDetails() {
+    try {
+        const stored = window.localStorage.getItem(ORDER_DETAILS_STORAGE_KEY);
+        if (!stored) {
+            return {};
+        }
+
+        const parsed = JSON.parse(stored);
+        return typeof parsed === "object" && parsed !== null ? parsed : {};
+    } catch {
+        return {};
+    }
+}
+
+function saveOrderDetails(details) {
+    window.localStorage.setItem(ORDER_DETAILS_STORAGE_KEY, JSON.stringify(details));
+}
+
+function initPaymentPage() {
+    if (!dom.paymentItems || !dom.paymentForm || !dom.confirmPaymentBtn || !dom.paymentMessage) {
+        return;
+    }
+
+    const cart = getCartItems();
+    dom.paymentItems.innerHTML = buildCartItemsHtml(cart);
+
+    if (cart.length === 0) {
+        dom.paymentMessage.textContent = "Your cart is empty. Add products before payment.";
+        dom.confirmPaymentBtn.disabled = true;
+        return;
+    }
+
+    dom.confirmPaymentBtn.addEventListener("click", () => {
+        const selectedMethod = dom.paymentForm.querySelector('input[name="paymentMethod"]:checked');
+
+        if (!selectedMethod) {
+            dom.paymentMessage.textContent = "Please choose credit card or bank transfer to continue.";
+            return;
+        }
+
+        const label = selectedMethod.value === "credit-card" ? "credit card" : "bank transfer";
+        dom.paymentMessage.textContent = `Payment method selected: ${label}. Your order request is ready.`;
     });
 }
 
