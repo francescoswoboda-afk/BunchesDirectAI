@@ -264,6 +264,7 @@ body[data-page="home"] .hero-card {
 }
 
 body[data-page="products"] .products-hero .lead {
+  text-align: center;
   margin-left: auto;
   margin-right: auto;
 }
@@ -483,12 +484,13 @@ body[data-page="about"] .about-hero .narrow {
 
 body[data-page="about"] .about-hero h1,
 body[data-page="about"] .about-hero .lead {
+  text-align: center;
   margin-left: auto;
   margin-right: auto;
 }
 
 body[data-page="about"] .about-hero h1 {
-  max-width: 24ch;
+  max-width: 38ch;
 }
 
 body[data-page="about"] .about-hero .lead {
@@ -550,7 +552,7 @@ body[data-page="contact"] .contact-content {
 .site-footer {
   padding: 2rem 0 1rem;
   border-top: 1px solid var(--border);
-  background: #8f0000;
+  background: #000;
   color: var(--cream);
 }
 
