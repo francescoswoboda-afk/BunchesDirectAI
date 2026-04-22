@@ -56,6 +56,10 @@ a {
   text-decoration: none;
 }
 
+p {
+  text-align: justify;
+}
+
 .container {
   width: min(1120px, 92vw);
   margin: 0 auto;
@@ -262,6 +266,10 @@ body[data-page="home"] .hero-card {
 body[data-page="products"] .products-hero .lead {
   margin-left: auto;
   margin-right: auto;
+}
+
+body[data-page="products"] .product-card p {
+  text-align: left;
 }
 
 .hero-card,
@@ -495,6 +503,12 @@ body[data-page="contact"] .page-hero {
   padding-bottom: clamp(0.8rem, 1.8vw, 1.25rem);
 }
 
+body[data-page="contact"] .page-hero .lead {
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 body[data-page="contact"] .contact-content {
   padding-top: clamp(0.7rem, 1.7vw, 1.15rem);
 }
@@ -536,7 +550,7 @@ body[data-page="contact"] .contact-content {
 .site-footer {
   padding: 2rem 0 1rem;
   border-top: 1px solid var(--border);
-  background: #d40000;
+  background: #8f0000;
   color: var(--cream);
 }
 
