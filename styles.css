@@ -368,10 +368,12 @@ body[data-page="products"] .product-card p {
 
 .cert-logos {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 2rem;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0;
   margin: 2rem 0 2.5rem;
+  width: 100%;
 }
 
 .cert-logo {
