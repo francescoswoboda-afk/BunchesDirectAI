@@ -12,6 +12,7 @@
   --shadow: 0 12px 26px rgba(53, 2, 1, 0.12);
   --radius: 18px;
   --header-image: url("assets/header-image.png");
+  --fingerprint-image: url("assets/fingerprint.png");
 }
 
 * {
@@ -29,7 +30,31 @@ body {
   color: var(--ink);
   background: var(--cream);
   line-height: 1.6;
+  position: relative;
+  min-height: 100vh;
+  overflow-x: hidden;
   cursor: url("assets/rose-cursor.svg") 10 8, auto;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: min(44vw, 620px);
+  height: 100vh;
+  background-image: var(--fingerprint-image);
+  background-repeat: no-repeat;
+  background-position: right center;
+  background-size: contain;
+  opacity: 0.13;
+  pointer-events: none;
+  z-index: 0;
+}
+
+body > * {
+  position: relative;
+  z-index: 1;
 }
 
 a,
@@ -1109,6 +1134,11 @@ body[data-page="contact"] .contact-content {
   body[data-page="home"] .home-hero-copy .lead {
     max-width: 42ch;
   }
+
+  body::before {
+    width: min(58vw, 340px);
+    opacity: 0.09;
+  }
 }
 
 @media (max-width: 520px) {
@@ -1171,6 +1201,12 @@ body[data-page="contact"] .contact-content {
 
   .cart-summary-row {
     align-items: stretch;
+  }
+
+  body::before {
+    width: min(52vw, 260px);
+    opacity: 0.07;
+    background-position: right 20% center;
   }
 }
 
