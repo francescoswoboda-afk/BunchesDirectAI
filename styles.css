@@ -183,6 +183,15 @@ p {
   align-items: center;
 }
 
+.about-image {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+
 .hero {
   position: relative;
 }
@@ -424,7 +433,6 @@ textarea {
   height: 170px;
   object-fit: cover;
   border-radius: 12px;
-  border: 1px solid rgba(213, 7, 3, 0.18);
   margin-bottom: 0.45rem;
 }
 
@@ -432,6 +440,37 @@ textarea {
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
+}
+
+body[data-page="products"] .product-card {
+  background: none;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+}
+
+body[data-page="products"] .product-card h3,
+body[data-page="products"] .product-card p {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.8rem;
+  margin: 0;
+}
+
+body[data-page="products"] .product-card h3 {
+  border-bottom: none;
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+
+body[data-page="products"] .product-card p {
+  border-top: none;
+  border-radius: 0 0 var(--radius) var(--radius);
+  margin-top: -2px;
+}
+
+body[data-page="products"] .product-card {
+  gap: 0;
 }
 
 .product-card-link {
