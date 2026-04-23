@@ -366,6 +366,35 @@ body[data-page="products"] .product-card p {
   gap: 1rem;
 }
 
+.cert-logos {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2rem;
+  margin: 2rem 0 2.5rem;
+}
+
+.cert-logo {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  background: var(--card);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  flex-shrink: 0;
+}
+
+.cert-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
 .alt-bg {
   background:
     linear-gradient(180deg, #fff8ee, #f4e8d8),
