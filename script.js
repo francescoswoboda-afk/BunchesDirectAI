@@ -1199,7 +1199,6 @@ function renderProductCards(list) {
             <a class="product-card product-card-link" href="${getProductDetailUrl(product)}" aria-label="View details for ${product.name}">
                 <img class="product-image" src="${product.image || FALLBACK_PRODUCT_IMAGE}" alt="${product.name} arrangement image" loading="lazy" onerror="this.onerror=null;this.src='${FALLBACK_PRODUCT_IMAGE}';">
                 <h3>${product.name}</h3>
-                <p>${product.description}</p>
             </a>
         `
         )
