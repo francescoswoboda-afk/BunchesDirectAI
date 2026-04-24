@@ -7,7 +7,7 @@
   --terracotta: #8d0308;
   --ink: #000000;
   --muted: #000000;
-  --card: #F9E0E0;
+  --card: #ffffff;
   --border: rgba(0, 0, 0, 0.2);
   --shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
   --radius: 18px;
@@ -574,10 +574,10 @@ textarea {
 }
 
 body[data-page="products"] .product-card {
-  background: none;
-  border: none;
-  box-shadow: none;
-  padding: 0;
+  background: var(--card);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  padding: 1.15rem;
   align-items: center;
 }
 
@@ -623,7 +623,7 @@ body[data-page="products"] .product-card {
   aspect-ratio: 1 / 1;
   object-fit: cover;
   border-radius: 12px;
-  border: 1px solid rgba(213, 7, 3, 0.2);
+  border: 1px solid var(--border);
 }
 
 .product-detail-info .lead {
@@ -718,12 +718,23 @@ body[data-page="products"] .product-card {
 }
 
 .detail-nav-row {
-  margin-top: 1rem;
+  margin-top: 0.5rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 0.75rem;
-  flex-wrap: wrap;
+  grid-column: 1 / -1;
+  width: 100%;
+  flex-wrap: nowrap;
+}
+
+.detail-nav-row .next-flower-link {
+  margin-top: 0;
+}
+
+#nextFlowerBtn {
+  margin-left: auto;
+  text-align: right;
 }
 
 .delivery-notes {
@@ -761,7 +772,7 @@ body[data-page="products"] .product-card {
   aspect-ratio: 1 / 1;
   object-fit: cover;
   border-radius: 10px;
-  border: 1px solid rgba(213, 7, 3, 0.2);
+  border: 1px solid var(--border);
 }
 
 .cart-item-copy h3 {
@@ -918,6 +929,12 @@ body[data-page="contact"] .contact-content {
 .contact-form {
   display: grid;
   gap: 0.65rem;
+}
+
+.contact-form-centered {
+  max-width: min(640px, 100%);
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .contact-form label {
@@ -1226,8 +1243,8 @@ body[data-page="contact"] .contact-content {
   }
 
   .detail-nav-row {
-    flex-direction: column;
-    align-items: stretch;
+    align-items: center;
+    padding: 0;
   }
 
   .cart-summary-row {
