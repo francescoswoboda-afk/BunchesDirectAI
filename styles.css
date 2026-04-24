@@ -114,6 +114,7 @@ p {
   border-bottom: 1px solid var(--border);
   color: var(--cream);
   overflow: hidden;
+  height: 120px;
 }
 
 .site-header::after {
@@ -136,13 +137,14 @@ p {
 }
 
 .nav-wrap {
-  min-height: 50px;
+  height: 100%;
+  width: 100%;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: stretch;
   justify-content: center;
-  gap: 0.7rem;
-  padding: 1rem 0 0.9rem;
+  gap: 0.3rem;
+  padding: 0;
   position: relative;
   z-index: 2;
 }
@@ -155,16 +157,19 @@ p {
 
 .site-title {
   display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  align-items: flex-start;
+  justify-content: flex-start;
   line-height: 1;
-  text-align: center;
+  position: absolute;
+  top: -30px;
+  left: -50px;
+  z-index: 2;
 }
 
 .site-title-banner {
-  width: clamp(180px, 34vw, 420px);
+  width: clamp(175px, 32vw, 500px);
   height: auto;
-  max-height: 72px;
+  max-height: 200px;
   display: block;
   object-fit: contain;
 }
@@ -173,8 +178,35 @@ p {
   display: flex;
   gap: 1.1rem;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
   flex-wrap: wrap;
+  width: 100%;
+  padding-right: 2rem;
+}
+
+.cart-icon-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.32rem 0.5rem;
+}
+
+.cart-count {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: #fff;
+  color: #8E0000;
+  font-size: 0.65rem;
+  font-weight: 800;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  padding: 0 2px;
 }
 
 .site-nav a {

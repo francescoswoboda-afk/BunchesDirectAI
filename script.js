@@ -1738,4 +1738,14 @@ function createPageRange(startPage, endPage) {
     return Array.from({ length: endPage - startPage + 1 }, (_, index) => startPage + index);
 }
 
+function updateCartBadge() {
+    const badge = document.getElementById("cartCount");
+    if (!badge) return;
+    const items = getCartItems();
+    const total = items.reduce((sum, item) => sum + (item.quantity || 1), 0);
+    badge.textContent = total;
+    badge.style.display = total > 0 ? "flex" : "none";
+}
+
 init();
+updateCartBadge();
