@@ -1129,9 +1129,43 @@ function wireMobileMenu() {
     }
 
     dom.menuToggle.addEventListener("click", () => {
+        const header = document.querySelector(".site-header");
+        if (!header || !header.classList.contains("nav-collapsed")) {
+            return;
+        }
+
         const open = dom.siteNav.classList.toggle("open");
         dom.menuToggle.setAttribute("aria-expanded", String(open));
     });
+
+    window.addEventListener("resize", updateResponsiveNavMode);
+    window.addEventListener("load", updateResponsiveNavMode);
+
+    if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(updateResponsiveNavMode);
+    }
+
+    updateResponsiveNavMode();
+}
+
+function updateResponsiveNavMode() {
+    if (!dom.menuToggle || !dom.siteNav) {
+        return;
+    }
+
+    const header = document.querySelector(".site-header");
+    if (!header) {
+        return;
+    }
+
+    header.classList.remove("nav-collapsed");
+    dom.siteNav.classList.remove("open");
+    dom.menuToggle.setAttribute("aria-expanded", "false");
+
+    const needsCollapse = window.innerWidth <= 880;
+    if (needsCollapse) {
+        header.classList.add("nav-collapsed");
+    }
 }
 
 function markActiveNav() {
