@@ -1282,7 +1282,8 @@ function renderProductDetail(product, index) {
     dom.detailName.textContent = product.name;
 
     if (dom.detailDescription) {
-        dom.detailDescription.textContent = product.description;
+        dom.detailDescription.textContent = "";
+        dom.detailDescription.style.display = "none";
     }
 
     if (dom.prevFlowerBtn) {
