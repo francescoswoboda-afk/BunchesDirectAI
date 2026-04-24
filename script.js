@@ -7,6 +7,7 @@ const FALLBACK_PRODUCT_IMAGE = "assets/flower-card.svg";
 const PRODUCTS_PER_PAGE = 18;
 const CART_STORAGE_KEY = "bunchesDirectCart";
 const ORDER_DETAILS_STORAGE_KEY = "bunchesDirectOrderDetails";
+const CHECKOUT_SESSION_ENDPOINT = "/api/create-checkout-session";
 
 const products = [
     {
@@ -1097,6 +1098,7 @@ const dom = {
     deliveryMessage: document.getElementById("deliveryMessage"),
     toPaymentBtn: document.getElementById("toPaymentBtn"),
     paymentItems: document.getElementById("paymentItems"),
+    paymentTotal: document.getElementById("paymentTotal"),
     paymentForm: document.getElementById("paymentForm"),
     confirmPaymentBtn: document.getElementById("confirmPaymentBtn"),
     paymentMessage: document.getElementById("paymentMessage")
@@ -1644,8 +1646,25 @@ function initPaymentPage() {
         return;
     }
 
+    const paymentStatus = getPaymentStatus();
+    if (paymentStatus === "success") {
+        saveCartItems([]);
+        dom.paymentItems.innerHTML = "<p>Payment received. Thank you for your order.</p>";
+        if (dom.paymentTotal) {
+            dom.paymentTotal.textContent = "Paid: confirmed";
+        }
+        dom.paymentMessage.textContent = "Payment completed securely. You can close this page.";
+        dom.confirmPaymentBtn.disabled = true;
+        return;
+    }
+
     const cart = getCartItems();
     dom.paymentItems.innerHTML = buildCartItemsHtml(cart);
+
+    const payableTotal = getCartPayableTotal(cart);
+    if (dom.paymentTotal) {
+        dom.paymentTotal.textContent = `Total amount due: ${formatCurrency(payableTotal)}`;
+    }
 
     if (cart.length === 0) {
         dom.paymentMessage.textContent = "Your cart is empty. Add products before payment.";
@@ -1653,7 +1672,11 @@ function initPaymentPage() {
         return;
     }
 
-    dom.confirmPaymentBtn.addEventListener("click", () => {
+    if (paymentStatus === "cancelled") {
+        dom.paymentMessage.textContent = "Payment was cancelled. Please try again when ready.";
+    }
+
+    dom.confirmPaymentBtn.addEventListener("click", async () => {
         const selectedMethod = dom.paymentForm.querySelector('input[name="paymentMethod"]:checked');
 
         if (!selectedMethod) {
@@ -1661,9 +1684,63 @@ function initPaymentPage() {
             return;
         }
 
-        const label = selectedMethod.value === "credit-card" ? "credit card" : "bank transfer";
-        dom.paymentMessage.textContent = `Payment method selected: ${label}. Your order request is ready.`;
+        if (selectedMethod.value === "bank-transfer") {
+            dom.paymentMessage.textContent = "Bank transfer selected. Please contact us to receive IBAN and payment reference for this order.";
+            return;
+        }
+
+        await startSecureCardCheckout(cart);
     });
+}
+
+function getPaymentStatus() {
+    const params = new URLSearchParams(window.location.search);
+    return (params.get("status") || "").toLowerCase();
+}
+
+function getCartPayableTotal(cart) {
+    return cart.reduce((sum, item) => {
+        const quantity = Number(item.quantity) || 0;
+        const unitPrice = getUnitPriceByRoseName(item.roseName);
+        return sum + unitPrice * quantity;
+    }, 0);
+}
+
+function getUnitPriceByRoseName(roseName) {
+    const rose = products.find((product) => product.name === roseName);
+    return rose ? Number(rose.price) || 0 : 0;
+}
+
+function formatCurrency(amount) {
+    return new Intl.NumberFormat("en-IE", {
+        style: "currency",
+        currency: "EUR"
+    }).format(amount);
+}
+
+async function startSecureCardCheckout(cart) {
+    dom.confirmPaymentBtn.disabled = true;
+    dom.paymentMessage.textContent = "Redirecting to secure card checkout...";
+
+    try {
+        const response = await fetch(CHECKOUT_SESSION_ENDPOINT, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ cartItems: cart })
+        });
+
+        const payload = await response.json();
+        if (!response.ok || !payload.url) {
+            throw new Error(payload.error || "Unable to create payment session.");
+        }
+
+        window.location.href = payload.url;
+    } catch (error) {
+        dom.paymentMessage.textContent = `Payment failed to start: ${error.message}`;
+        dom.confirmPaymentBtn.disabled = false;
+    }
 }
 
 function updateSelectionSummary() {

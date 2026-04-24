@@ -1,15 +1,41 @@
 # Bunches Direct Website
 
-Simple multi-page static website for **Bunches Direct**.
+Multi-page website for **Bunches Direct** with secure Stripe card checkout.
 
-## Run locally
+## Local setup
 
-Because this is a static HTML/CSS site, you can open `index.html` directly in your browser, or serve it with a local web server:
+1. Install dependencies:
 
 ```bash
-python3 -m http.server 8000
+npm install
 ```
 
-Then open:
+2. Create your environment file and add your Stripe secret key:
 
-- `http://localhost:8000/index.html`
+```bash
+cp .env.example .env
+```
+
+3. Update `.env`:
+
+```env
+STRIPE_SECRET_KEY=sk_test_your_key_here
+PORT=4242
+FRONTEND_URL=http://localhost:4242
+```
+
+4. Start the app:
+
+```bash
+npm start
+```
+
+5. Open:
+
+- `http://localhost:4242/index.html`
+
+## Payment behavior
+
+- `Credit Card` uses Stripe Checkout (secure hosted payment page).
+- `Bank Transfer` keeps a manual confirmation message.
+- Cart totals are calculated from product prices and sent to a secure server endpoint before checkout.

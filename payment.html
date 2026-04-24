@@ -49,6 +49,7 @@
         <article>
           <h2 class="section-title">Order Summary</h2>
           <div id="paymentItems" class="cart-items" aria-live="polite"></div>
+          <p id="paymentTotal" class="selection-summary"></p>
         </article>
 
         <form id="paymentForm" class="contact-form" novalidate>
@@ -56,7 +57,7 @@
 
           <label class="pay-option">
             <input type="radio" name="paymentMethod" value="credit-card" required>
-            Credit Card
+            Credit Card (Secure Stripe Checkout)
           </label>
 
           <label class="pay-option">
