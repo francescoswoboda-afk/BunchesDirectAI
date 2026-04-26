@@ -1074,6 +1074,7 @@ const dom = {
     year: document.getElementById("year"),
     productGrid: document.getElementById("productGrid"),
     productSearch: document.getElementById("productSearch"),
+    productColorFilter: document.getElementById("productColorFilter"),
     productPagination: document.getElementById("productPagination"),
     detailImage: document.getElementById("detailImage"),
     detailName: document.getElementById("detailName"),
@@ -1216,18 +1217,53 @@ function initProductsPage() {
     if (dom.productSearch) {
         dom.productSearch.addEventListener("input", filterAndRenderProducts);
     }
+
+    if (dom.productColorFilter) {
+        dom.productColorFilter.addEventListener("change", filterAndRenderProducts);
+    }
 }
 
 function filterAndRenderProducts() {
     const searchTerm = dom.productSearch ? dom.productSearch.value.trim().toLowerCase() : "";
+    const selectedColor = dom.productColorFilter ? dom.productColorFilter.value : "all";
 
     filteredProducts = products.filter((product) => {
         const searchable = `${product.name} ${product.description}`.toLowerCase();
-        return searchable.includes(searchTerm);
+        const textMatch = searchable.includes(searchTerm);
+        if (selectedColor === "all") {
+            return textMatch;
+        }
+
+        return textMatch && inferProductColor(product) === selectedColor;
     });
 
     currentProductPage = 1;
     renderProductsPage();
+}
+
+function inferProductColor(product) {
+    const text = `${product.name} ${product.description}`.toLowerCase();
+
+    if (text.includes("red") || text.includes("burgundy") || text.includes("crimson")) {
+        return "red";
+    }
+    if (text.includes("pink") || text.includes("blush") || text.includes("fuchsia")) {
+        return "pink";
+    }
+    if (text.includes("white") || text.includes("ivory") || text.includes("cream")) {
+        return "white";
+    }
+    if (text.includes("yellow") || text.includes("gold")) {
+        return "yellow";
+    }
+    if (text.includes("orange") || text.includes("coral")) {
+        return "orange";
+    }
+    if (text.includes("peach") || text.includes("apricot")) {
+        return "peach";
+    }
+
+    return "pink";
 }
 
 function renderProductsPage() {
@@ -1255,6 +1291,8 @@ function renderProductCards(list) {
             <a class="product-card product-card-link" href="${getProductDetailUrl(product)}" aria-label="View details for ${product.name}">
                 <img class="product-image" src="${product.image || FALLBACK_PRODUCT_IMAGE}" alt="${product.name} arrangement image" loading="lazy" onerror="this.onerror=null;this.src='${FALLBACK_PRODUCT_IMAGE}';">
                 <h3>${product.name}</h3>
+                <p class="product-tag">Premium Rose</p>
+                <span class="product-arrow" aria-hidden="true">&rarr;</span>
             </a>
         `
         )
