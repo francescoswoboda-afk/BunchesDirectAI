@@ -1101,7 +1101,8 @@ const dom = {
     paymentTotal: document.getElementById("paymentTotal"),
     paymentForm: document.getElementById("paymentForm"),
     confirmPaymentBtn: document.getElementById("confirmPaymentBtn"),
-    paymentMessage: document.getElementById("paymentMessage")
+    paymentMessage: document.getElementById("paymentMessage"),
+    homeCartCount: document.getElementById("homeCartCount")
 };
 
 let filteredProducts = [...products];
@@ -1112,11 +1113,30 @@ function init() {
     setYear();
     wireMobileMenu();
     markActiveNav();
+    initHomeCartBadge();
     initProductsPage();
     initProductDetailPage();
     initCartPage();
     initOrderDetailsPage();
     initPaymentPage();
+}
+
+function initHomeCartBadge() {
+    if (!dom.homeCartCount) {
+        return;
+    }
+
+    renderHomeCartBadge();
+    window.addEventListener("storage", renderHomeCartBadge);
+}
+
+function renderHomeCartBadge() {
+    if (!dom.homeCartCount) {
+        return;
+    }
+
+    const totalBoxes = getCartItems().reduce((sum, item) => sum + (Number(item.quantity) || 0), 0);
+    dom.homeCartCount.textContent = String(totalBoxes);
 }
 
 function setYear() {
@@ -1396,6 +1416,7 @@ function getCartItems() {
 
 function saveCartItems(items) {
     window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
+    renderHomeCartBadge();
 }
 
 function initCartPage() {
