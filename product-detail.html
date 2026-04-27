@@ -10,25 +10,28 @@
   <link href="https://fonts.googleapis.com/css2?family=Birthstone&family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
-<body data-page="products">
-  <header class="site-header">
-    <a class="site-title" href="index.html" aria-label="Bunches Direct home">
-        <img class="site-title-banner" src="assets/header-title.png" alt="Bunches Direct" onerror="this.onerror=null;this.src='assets/header-image.png';">
+<body data-page="products" class="product-detail-page">
+  <header class="home-header">
+    <a class="home-brand" href="index.html" aria-label="Bunches Direct home">
+      <img class="home-brand-logo" src="assets/my-logo.png" alt="Bunches Direct">
+    </a>
+
+    <nav class="home-nav" aria-label="Primary">
+      <a href="index.html">Home</a>
+      <a class="is-active" href="products.html">Our Products</a>
+      <a href="about.html">About Us</a>
+    </nav>
+
+    <div class="home-header-actions">
+      <a class="home-cta" href="contact.html">Get in Touch</a>
+      <a class="home-cart-link" href="cart.html" aria-label="Open cart">
+        <svg class="home-cart-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M3 4h2l2.1 10.2a1 1 0 0 0 1 .8h9.6a1 1 0 0 0 1-.76L21 7H7.1" />
+          <circle cx="10" cy="19" r="1.5" />
+          <circle cx="17" cy="19" r="1.5" />
+        </svg>
+        <span class="home-cart-count" id="homeCartCount">0</span>
       </a>
-    <div class="nav-wrap">
-      <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation" aria-expanded="false">
-        <span></span><span></span><span></span>
-      </button>
-      <nav class="site-nav" id="siteNav">
-        <a href="index.html" data-link="home">Home</a>
-        <a href="about.html" data-link="about">About Us</a>
-        <a href="products.html" data-link="products">Our Products</a>
-        <a href="contact.html" data-link="contact">Contact Us</a>
-        <a href="cart.html" data-link="cart" class="cart-icon-link" aria-label="Cart">
-          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
-          <span class="cart-count" id="cartCount">0</span>
-        </a>
-      </nav>
     </div>
   </header>
 
@@ -40,7 +43,7 @@
         </div>
 
         <div class="product-detail-info">
-          <p class="eyebrow">Rose details</p>
+          <p class="detail-kicker">Rose details</p>
           <h1 id="detailName">Rose Name</h1>
 
           <div class="packaging-copy">
@@ -91,27 +94,6 @@
       </div>
     </section>
   </main>
-
-  <footer class="site-footer">
-    <div class="container footer-grid">
-      <div>
-        <h3>Bunches Direct</h3>
-        <p>Fresh quality roses delivered with heart.</p>
-      </div>
-      <div>
-        <h4>Visit</h4>
-        <p>Prunus 12, 1424 LD De Kwakel</p>
-      </div>
-      <div>
-        <h4><strong>Contact</strong></h4>
-        <p>Email: es@bunches-direct.com</p>
-        <p>Phone: +39 345 005 4849</p>
-        <p>Hours: Mon-Sat, 8:00 AM - 6:00 PM</p>
-        <p>Address: Prunus 12, 1424 LD De Kwakel</p>
-      </div>
-    </div>
-    <p class="copyright">&copy; <span id="year"></span>Bunches Direct. All rights reserved.</p>
-  </footer>
 
   <script src="products-data.js"></script>
   <script src="script.js"></script>
