@@ -898,6 +898,258 @@ body.product-detail-page .next-flower-link {
   background: #ffffff;
 }
 
+body.order-details-page {
+  background: linear-gradient(90deg, #ffffff 0%, #fff9fb 64%, #ffeef5 100%);
+}
+
+body.order-details-page main {
+  margin-top: 0;
+}
+
+body.order-details-page .home-header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: linear-gradient(90deg, #ffffff 0%, #fff9fb 64%, #ffeef5 100%);
+  border-bottom: none;
+}
+
+body.order-details-page .page-hero {
+  background: transparent;
+  padding-top: clamp(1.6rem, 3.6vw, 2.6rem);
+  padding-bottom: clamp(1rem, 2.4vw, 1.6rem);
+}
+
+body.order-details-page .page-hero .narrow {
+  width: min(920px, 92vw);
+}
+
+body.order-details-page .order-kicker {
+  margin: 0 0 0.7rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #c91b1d;
+  font-weight: 800;
+  font-size: 0.72rem;
+}
+
+body.order-details-page .order-kicker::before {
+  content: "";
+  width: 18px;
+  height: 2px;
+  border-radius: 999px;
+  background: #c91b1d;
+}
+
+body.order-details-page .order-display {
+  margin: 0 0 0.8rem;
+  color: #121212;
+  font-family: "Cormorant Garamond", serif;
+  font-size: clamp(3rem, 5.8vw, 4.8rem);
+  line-height: 0.95;
+}
+
+body.order-details-page .order-display span {
+  color: #c91b1d;
+}
+
+body.order-details-page .page-hero .lead {
+  max-width: 46ch;
+  color: #2f2f2f;
+  font-size: 1.03rem;
+  line-height: 1.6;
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+body.order-details-page .checkout-content {
+  background: transparent;
+  padding-top: clamp(0.85rem, 2vw, 1.3rem);
+  padding-bottom: clamp(2.4rem, 4.7vw, 3.6rem);
+}
+
+body.order-details-page .checkout-grid {
+  grid-template-columns: minmax(300px, 0.92fr) minmax(470px, 1.08fr);
+  gap: clamp(1.15rem, 2.4vw, 2rem);
+}
+
+body.order-details-page .checkout-grid .section-title {
+  color: #121212;
+  font-family: "Cormorant Garamond", serif;
+  font-size: clamp(1.85rem, 3vw, 2.4rem);
+  line-height: 0.94;
+  margin-bottom: 0.7rem;
+}
+
+body.order-details-page .selected-products-panel {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.07);
+  border-radius: 18px;
+  box-shadow: 0 14px 34px rgba(20, 14, 14, 0.07);
+  padding: 1rem;
+}
+
+body.order-details-page .selected-products-panel .section-title {
+  margin-bottom: 0.9rem;
+}
+
+body.order-details-page .selected-products-panel .cart-items {
+  gap: 0.72rem;
+}
+
+body.order-details-page .selected-products-panel .cart-item-card {
+  grid-template-columns: 84px 1fr;
+  gap: 0.75rem;
+  background: #fff8fa;
+  border: 1px solid rgba(200, 0, 0, 0.1);
+  border-radius: 13px;
+  box-shadow: none;
+  color: #1f1f1f;
+  padding: 0.72rem;
+}
+
+body.order-details-page .selected-products-panel .cart-item-image {
+  width: 84px;
+  border: 0;
+  border-radius: 10px;
+  object-fit: contain;
+  background: #ffffff;
+}
+
+body.order-details-page .selected-products-panel .cart-item-copy h3 {
+  font-size: 0.96rem;
+  margin-bottom: 0.26rem;
+}
+
+body.order-details-page .selected-products-panel .cart-item-copy p {
+  color: #3c3c3c;
+  font-size: 0.84rem;
+  line-height: 1.35;
+}
+
+body.order-details-page #deliveryForm {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.07);
+  border-radius: 18px;
+  box-shadow: 0 14px 34px rgba(20, 14, 14, 0.07);
+  padding: 1rem;
+  gap: 0.72rem 0.78rem;
+}
+
+body.order-details-page #deliveryForm .order-form-title {
+  grid-column: 1 / -1;
+  margin-bottom: 0.2rem;
+  color: #121212;
+}
+
+body.order-details-page #deliveryForm .order-field {
+  display: grid;
+  gap: 0.3rem;
+}
+
+body.order-details-page #deliveryForm .order-field-wide {
+  grid-column: 1 / -1;
+}
+
+body.order-details-page #deliveryForm #deliveryMessage,
+body.order-details-page #deliveryForm .checkout-next-row {
+  grid-column: 1 / -1;
+}
+
+body.order-details-page #deliveryForm label {
+  color: #b51618;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.045em;
+}
+
+body.order-details-page #deliveryForm input,
+body.order-details-page #deliveryForm select {
+  width: 100%;
+  border: 1px solid rgba(0, 0, 0, 0.16);
+  border-radius: 9px;
+  background: #ffffff;
+  color: #171717;
+  min-height: 42px;
+  padding: 0 0.72rem;
+  font-size: 0.92rem;
+}
+
+body.order-details-page #deliveryMessage {
+  display: none;
+}
+
+body.order-details-page #deliveryForm .checkout-next-row {
+  margin-top: 0.22rem;
+}
+
+body.order-details-page #toPaymentBtn {
+  min-width: 84px;
+  min-height: 42px;
+  padding: 0.58rem 1.16rem;
+  background: #c10000;
+  color: #ffffff;
+  border-color: #c10000;
+  box-shadow: 0 10px 24px rgba(181, 7, 13, 0.22);
+}
+
+body.order-details-page .order-confirmation {
+  padding-top: clamp(2rem, 5vw, 4rem);
+  padding-bottom: clamp(2.5rem, 6vw, 5rem);
+}
+
+body.order-details-page .order-confirm-card {
+  max-width: 540px;
+  margin: 0 auto;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.07);
+  border-radius: 20px;
+  box-shadow: 0 16px 40px rgba(20, 14, 14, 0.09);
+  padding: clamp(2rem, 4vw, 3rem) clamp(1.5rem, 4vw, 2.8rem);
+  text-align: center;
+}
+
+body.order-details-page .order-confirm-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: #c10000;
+  color: #ffffff;
+  font-size: 1.8rem;
+  line-height: 60px;
+  margin: 0 auto 1.4rem;
+}
+
+body.order-details-page .order-confirm-title {
+  font-family: "Cormorant Garamond", serif;
+  font-size: clamp(2.4rem, 4vw, 3.4rem);
+  color: #121212;
+  margin-bottom: 0.7rem;
+}
+
+body.order-details-page .order-confirm-lead {
+  color: #3c3c3c;
+  font-size: 1rem;
+  line-height: 1.6;
+  max-width: 40ch;
+  margin: 0 auto 1.6rem;
+}
+
+body.order-details-page .order-confirm-btn {
+  background: #c10000;
+  color: #ffffff;
+  border-color: #c10000;
+  box-shadow: 0 10px 24px rgba(181, 7, 13, 0.2);
+  padding: 0.7rem 1.4rem;
+}
+
 .cart-items {
   display: grid;
   gap: 0.9rem;
@@ -1631,9 +1883,8 @@ body[data-page="about"] .about-hero {
   padding-bottom: clamp(1.25rem, 2.8vw, 1.9rem);
 }
 
-body[data-page="about"] .about-hero .narrow {
+body[data-page="about"] .about-hero .container {
   text-align: center;
-  width: min(920px, 92vw);
 }
 
 body[data-page="about"] .about-hero h1,
@@ -2033,6 +2284,19 @@ body[data-page="contact"] .contact-form .btn-solid {
     max-width: min(94vw, 760px);
   }
 
+  body.order-details-page .checkout-grid {
+    grid-template-columns: 1fr;
+  }
+
+  body.order-details-page #deliveryForm {
+    grid-template-columns: 1fr;
+  }
+
+  body.order-details-page #deliveryForm input,
+  body.order-details-page #deliveryForm select {
+    min-height: 44px;
+  }
+
   .product-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -2285,6 +2549,15 @@ body[data-page="contact"] .contact-form .btn-solid {
   body[data-page="contact"] .page-hero .lead {
     font-size: 0.95rem;
     max-width: 33ch;
+  }
+
+  body.order-details-page .order-display {
+    font-size: clamp(2.3rem, 11.6vw, 3rem);
+  }
+
+  body.order-details-page .page-hero .lead {
+    max-width: 34ch;
+    font-size: 0.95rem;
   }
 
   body.product-detail-page .product-detail-section {

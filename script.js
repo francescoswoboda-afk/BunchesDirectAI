@@ -1,6 +1,6 @@
 // Product data lives in products-data.js and is loaded only on pages that need it.
 const FALLBACK_PRODUCT_IMAGE = "assets/flower-card.svg";
-const PRODUCTS_PER_PAGE = 18;
+const PRODUCTS_PER_PAGE = 20;
 const CART_STORAGE_KEY = "bunchesDirectCart";
 const ORDER_DETAILS_STORAGE_KEY = "bunchesDirectOrderDetails";
 const CHECKOUT_SESSION_ENDPOINT = "/api/create-checkout-session";
@@ -45,7 +45,7 @@ const dom = {
 };
 
 let filteredProducts = [...products];
-let currentProductPage = 1;
+let visibleProductCount = PRODUCTS_PER_PAGE;
 let activeDetailProduct = null;
 
 function setupSmoothPageNavigation() {
@@ -249,7 +249,7 @@ function initProductsPage() {
     }
 
     filteredProducts = [...products];
-    currentProductPage = 1;
+    visibleProductCount = PRODUCTS_PER_PAGE;
     renderProductsPage();
 
     if (dom.productSearch) {
@@ -275,7 +275,7 @@ function filterAndRenderProducts() {
         return textMatch && inferProductColor(product) === selectedColor;
     });
 
-    currentProductPage = 1;
+    visibleProductCount = PRODUCTS_PER_PAGE;
     renderProductsPage();
 }
 
@@ -305,12 +305,10 @@ function inferProductColor(product) {
 }
 
 function renderProductsPage() {
-    const totalPages = Math.max(1, Math.ceil(filteredProducts.length / PRODUCTS_PER_PAGE));
-    const start = (currentProductPage - 1) * PRODUCTS_PER_PAGE;
-    const pageItems = filteredProducts.slice(start, start + PRODUCTS_PER_PAGE);
+    const pageItems = filteredProducts.slice(0, visibleProductCount);
 
     renderProductCards(pageItems);
-    renderProductPagination(totalPages);
+    renderProductPagination();
 }
 
 function renderProductCards(list) {
@@ -600,7 +598,7 @@ function initOrderDetailsPage() {
 
     hydrateDeliveryForm();
 
-    dom.toPaymentBtn.addEventListener("click", () => {
+    dom.toPaymentBtn.addEventListener("click", async () => {
         if (!dom.deliveryForm.reportValidity()) {
             return;
         }
@@ -616,8 +614,44 @@ function initOrderDetailsPage() {
             deliveryDate: String(formData.get("deliveryDate") || "")
         };
 
-        saveOrderDetails(details);
-        window.location.href = "payment.html";
+        // Disable button and show loading state
+        dom.toPaymentBtn.disabled = true;
+        const originalLabel = dom.toPaymentBtn.textContent;
+        dom.toPaymentBtn.textContent = "Placing order…";
+
+        try {
+            const cart = getCartItems();
+            const response = await fetch("/api/place-order", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ cartItems: cart, deliveryDetails: details })
+            });
+
+            if (!response.ok) {
+                const data = await response.json().catch(() => ({}));
+                throw new Error(data.error || "Server error. Please try again.");
+            }
+
+            saveOrderDetails(details);
+
+            // Show confirmation panel, hide checkout content
+            const confirmSection = document.getElementById("orderConfirmation");
+            const checkoutSection = document.querySelector(".checkout-content");
+            if (checkoutSection) checkoutSection.hidden = true;
+            if (confirmSection) {
+                confirmSection.hidden = false;
+                confirmSection.scrollIntoView({ behavior: "smooth", block: "start" });
+            }
+
+            // Clear cart after confirmed order
+            localStorage.removeItem(CART_STORAGE_KEY);
+            localStorage.removeItem(ORDER_DETAILS_STORAGE_KEY);
+        } catch (err) {
+            dom.toPaymentBtn.disabled = false;
+            dom.toPaymentBtn.textContent = originalLabel;
+            const msg = err instanceof Error ? err.message : "Something went wrong.";
+            alert(`Could not place order: ${msg}`);
+        }
     });
 }
 
@@ -657,15 +691,14 @@ function hydrateDeliveryForm() {
     });
 
     dom.deliveryDateSelect.innerHTML = optionsHtml;
-    dom.deliveryMessage.textContent = "Select your preferred delivery date.";
+    if (dom.deliveryMessage) {
+        dom.deliveryMessage.textContent = "";
+    }
 
     // Add change listener to update message
     dom.deliveryDateSelect.addEventListener("change", () => {
-        if (dom.deliveryDateSelect.value) {
-            const selectedText = dom.deliveryDateSelect.options[dom.deliveryDateSelect.selectedIndex].text;
-            dom.deliveryMessage.textContent = `Selected: ${selectedText}`;
-        } else {
-            dom.deliveryMessage.textContent = "Select your preferred delivery date.";
+        if (dom.deliveryMessage) {
+            dom.deliveryMessage.textContent = "";
         }
     });
 }
@@ -854,99 +887,31 @@ function updateSelectionSummary() {
     dom.selectionSummary.textContent = `Selected: ${qty} box(es), ${boxType}, ${stemLength} cm stems.`;
 }
 
-function renderProductPagination(totalPages) {
+function renderProductPagination() {
     if (!dom.productPagination) {
         return;
     }
 
-    if (filteredProducts.length === 0 || totalPages <= 1) {
+    if (filteredProducts.length === 0 || filteredProducts.length <= visibleProductCount) {
         dom.productPagination.innerHTML = "";
         return;
     }
 
-    const prevDisabled = currentProductPage <= 1 ? "disabled" : "";
-    const nextDisabled = currentProductPage >= totalPages ? "disabled" : "";
-    const pageTokens = getPageTokens(totalPages, currentProductPage);
-    const pageButtons = pageTokens
-        .map((token) => {
-            if (token === "ellipsis") {
-                return "<span class=\"page-ellipsis\" aria-hidden=\"true\">...</span>";
-            }
-
-            const activeClass = token === currentProductPage ? "is-active" : "";
-            const ariaCurrent = token === currentProductPage ? "aria-current=\"page\"" : "";
-            return `<button class="page-jump-btn ${activeClass}" data-page="${token}" ${ariaCurrent}>${token}</button>`;
-        })
-        .join("");
+    const shownCount = Math.min(visibleProductCount, filteredProducts.length);
 
     dom.productPagination.innerHTML = `
-        <button class="btn btn-outline" id="productsPrevBtn" ${prevDisabled}>View Previous Products</button>
-        <p class="page-indicator">Page ${currentProductPage} of ${totalPages}</p>
-        <div class="page-jump-wrap" aria-label="Select product page">${pageButtons}</div>
-        <button class="btn btn-solid" id="productsNextBtn" ${nextDisabled}>View More Products</button>
+        <p class="page-indicator">Showing ${shownCount} of ${filteredProducts.length} roses</p>
+        <button class="btn btn-solid" id="productsLoadMoreBtn" type="button">Load More Roses</button>
     `;
 
-    const prevButton = document.getElementById("productsPrevBtn");
-    const nextButton = document.getElementById("productsNextBtn");
-    const jumpButtons = dom.productPagination.querySelectorAll(".page-jump-btn");
+    const loadMoreButton = document.getElementById("productsLoadMoreBtn");
 
-    if (prevButton) {
-        prevButton.addEventListener("click", () => {
-            if (currentProductPage > 1) {
-                currentProductPage -= 1;
-                renderProductsPage();
-                window.scrollTo({ top: 0, behavior: "smooth" });
-            }
+    if (loadMoreButton) {
+        loadMoreButton.addEventListener("click", () => {
+            visibleProductCount += PRODUCTS_PER_PAGE;
+            renderProductsPage();
         });
     }
-
-    if (nextButton) {
-        nextButton.addEventListener("click", () => {
-            if (currentProductPage < totalPages) {
-                currentProductPage += 1;
-                renderProductsPage();
-                window.scrollTo({ top: 0, behavior: "smooth" });
-            }
-        });
-    }
-
-    jumpButtons.forEach((button) => {
-        button.addEventListener("click", () => {
-            const selectedPage = Number(button.dataset.page);
-
-            if (!Number.isNaN(selectedPage) && selectedPage !== currentProductPage) {
-                currentProductPage = selectedPage;
-                renderProductsPage();
-                window.scrollTo({ top: 0, behavior: "smooth" });
-            }
-        });
-    });
-}
-
-function getPageTokens(totalPages, currentPage) {
-    if (totalPages <= 8) {
-        return Array.from({ length: totalPages }, (_, index) => index + 1);
-    }
-
-    if (currentPage <= 4) {
-        return [...createPageRange(1, 7), "ellipsis", totalPages];
-    }
-
-    if (currentPage >= totalPages - 3) {
-        return [1, "ellipsis", ...createPageRange(totalPages - 6, totalPages)];
-    }
-
-    return [
-        1,
-        "ellipsis",
-        ...createPageRange(currentPage - 1, currentPage + 3),
-        "ellipsis",
-        totalPages
-    ];
-}
-
-function createPageRange(startPage, endPage) {
-    return Array.from({ length: endPage - startPage + 1 }, (_, index) => startPage + index);
 }
 
 function updateCartBadge() {
