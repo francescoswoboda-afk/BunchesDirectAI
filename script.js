@@ -17,7 +17,6 @@ const dom = {
     productPagination: document.getElementById("productPagination"),
     detailImage: document.getElementById("detailImage"),
     detailName: document.getElementById("detailName"),
-    detailDescription: document.getElementById("detailDescription"),
     detailPackaging: document.getElementById("detailPackaging"),
     boxTypeSelect: document.getElementById("boxTypeSelect"),
     stemLengthSelect: document.getElementById("stemLengthSelect"),
@@ -386,11 +385,6 @@ function renderProductDetail(product, index) {
     dom.detailImage.src = product.image || FALLBACK_PRODUCT_IMAGE;
     dom.detailImage.alt = `${product.name} rose image`;
     dom.detailName.textContent = product.name;
-
-    if (dom.detailDescription) {
-        dom.detailDescription.textContent = "";
-        dom.detailDescription.style.display = "none";
-    }
 
     if (dom.prevFlowerBtn) {
         if (previousProduct) {
