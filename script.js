@@ -151,6 +151,7 @@ function init() {
     setupSmoothPageNavigation();
     setYear();
     wireMobileMenu();
+        wireHomeHamburger();
     markActiveNav();
     initHomeCartBadge();
     initProductsPage();
@@ -227,6 +228,37 @@ function updateResponsiveNavMode() {
     if (needsCollapse) {
         header.classList.add("nav-collapsed");
     }
+}
+
+function wireHomeHamburger() {
+    const hamburger = document.getElementById("homeHamburger");
+    const drawer = document.getElementById("homeNavDrawer");
+    const overlay = document.getElementById("homeNavOverlay");
+    const closeBtn = document.getElementById("homeNavClose");
+
+    if (!hamburger || !drawer) return;
+
+    function openDrawer() {
+        drawer.setAttribute("aria-hidden", "false");
+        drawer.classList.add("is-open");
+        hamburger.setAttribute("aria-expanded", "true");
+        document.body.classList.add("nav-drawer-open");
+    }
+
+    function closeDrawer() {
+        drawer.setAttribute("aria-hidden", "true");
+        drawer.classList.remove("is-open");
+        hamburger.setAttribute("aria-expanded", "false");
+        document.body.classList.remove("nav-drawer-open");
+    }
+
+    hamburger.addEventListener("click", openDrawer);
+    if (overlay) overlay.addEventListener("click", closeDrawer);
+    if (closeBtn) closeBtn.addEventListener("click", closeDrawer);
+
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && drawer.classList.contains("is-open")) closeDrawer();
+    });
 }
 
 function markActiveNav() {

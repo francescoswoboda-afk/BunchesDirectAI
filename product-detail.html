@@ -22,7 +22,10 @@
       <a href="about.html">About Us</a>
     </nav>
 
-    <div class="home-header-actions">
+    <button class="home-hamburger" id="homeHamburger" aria-label="Open navigation" aria-expanded="false" aria-controls="homeNavDrawer">
+          <span></span><span></span><span></span>
+        </button>
+        <div class="home-header-actions">
       <a class="home-cta" href="contact.html">Get in Touch</a>
       <a class="home-cart-link" href="cart.html" aria-label="Open cart">
         <svg class="home-cart-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
@@ -34,6 +37,16 @@
       </a>
     </div>
   </header>
+  <div class="home-nav-drawer" id="homeNavDrawer" aria-hidden="true">
+    <div class="home-nav-drawer-overlay" id="homeNavOverlay"></div>
+    <nav class="home-nav-drawer-panel" aria-label="Mobile navigation">
+      <button class="home-nav-drawer-close" id="homeNavClose" aria-label="Close navigation">&times;</button>
+      <a href="index.html">Home</a>
+      <a href="products.html">Our Products</a>
+      <a href="about.html">About Us</a>
+      <a href="contact.html">Get in Touch</a>
+    </nav>
+  </div>
 
   <main>
     <section class="section-pad product-detail-section">
