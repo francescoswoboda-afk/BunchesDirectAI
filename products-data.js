@@ -121,7 +121,7 @@ window.BUNCHES_PRODUCTS = [
     },
     {
         id: "BE-SWEET-2",
-        name: "Be Sweet 2",
+        name: "Be Sweet",
         category: "event",
         price: 120,
         description: "Large centerpiece blend for receptions and statement installations.",
