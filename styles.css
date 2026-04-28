@@ -752,6 +752,11 @@ body[data-page="products"] .product-card {
   flex-wrap: nowrap;
 }
 
+body.product-detail-page .detail-nav-row {
+  margin-top: 0;
+  transform: translateY(-2rem);
+}
+
 .detail-nav-row .next-flower-link {
   margin-top: 0;
 }
@@ -775,10 +780,13 @@ body[data-page="products"] .product-card {
 
 body.product-detail-page {
   background: linear-gradient(90deg, #ffffff 0%, #fff9fb 64%, #ffeef5 100%);
+  overflow: hidden;
+  height: 100vh;
 }
 
 body.product-detail-page main {
   margin-top: 0;
+  height: calc(100vh - 90px);
 }
 
 body.product-detail-page .home-header {
@@ -791,19 +799,24 @@ body.product-detail-page .home-header {
 
 body.product-detail-page .product-detail-section {
   background: transparent;
-  padding-top: clamp(1.4rem, 3.1vw, 2.2rem);
+  height: 100%;
+  padding-top: clamp(0.7rem, 1.8vw, 1.1rem);
+  padding-bottom: clamp(0.6rem, 1.6vw, 1rem);
 }
 
 body.product-detail-page .product-detail-layout {
+  height: 100%;
   grid-template-columns: minmax(320px, 1fr) minmax(360px, 1fr);
-  gap: clamp(2rem, 4.2vw, 3.7rem);
+  grid-template-rows: auto 1fr auto;
+  align-content: start;
+  gap: clamp(1rem, 2.6vw, 2rem);
 }
 
 body.product-detail-page .product-detail-media {
   border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 18px;
   box-shadow: 0 14px 34px rgba(20, 14, 14, 0.08);
-  padding: 0.55rem;
+  padding: 0.45rem;
 }
 
 body.product-detail-page .product-detail-media img {
@@ -811,6 +824,7 @@ body.product-detail-page .product-detail-media img {
   border-radius: 14px;
   object-fit: contain;
   background: #ffffff;
+  max-height: min(48vh, 520px);
 }
 
 body.product-detail-page .detail-kicker {
@@ -834,15 +848,38 @@ body.product-detail-page .detail-kicker::before {
 }
 
 body.product-detail-page .product-detail-info h1 {
-  margin-bottom: 0.85rem;
+  margin-bottom: 0.55rem;
   color: #121212;
   font-family: "Cormorant Garamond", serif;
-  font-size: clamp(2.7rem, 4.3vw, 4rem);
+  font-size: clamp(2.25rem, 3.8vw, 3.3rem);
   line-height: 0.95;
 }
 
+body.product-detail-page .back-to-roses-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-bottom: 0.35rem;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid rgba(233, 78, 78, 0.45);
+  border-radius: 999px;
+  background: #ffffff;
+  color: #e13232;
+  font-weight: 800;
+}
+
+body.product-detail-page .product-detail-layout > .back-to-roses-link {
+  grid-column: 1 / -1;
+  justify-self: start;
+  margin-bottom: 0.1rem;
+}
+
+body.product-detail-page .back-to-roses-link:hover {
+  transform: translateY(-1px);
+}
+
 body.product-detail-page .packaging-copy {
-  margin: 0 0 1rem;
+  margin: 0 0 0.6rem;
   color: #1f1f1f;
 }
 
@@ -852,7 +889,7 @@ body.product-detail-page .packaging-list li {
 
 body.product-detail-page .detail-controls {
   max-width: 100%;
-  gap: 0.32rem;
+  gap: 0.2rem;
 }
 
 body.product-detail-page .detail-controls label {
@@ -862,7 +899,7 @@ body.product-detail-page .detail-controls label {
 }
 
 body.product-detail-page .order-row {
-  margin-top: 0.95rem;
+  margin-top: 0.65rem;
 }
 
 body.product-detail-page .qty-control {
@@ -885,10 +922,12 @@ body.product-detail-page #addBoxBtn {
 body.product-detail-page .selection-summary {
   color: #2e2e2e;
   font-weight: 700;
+  margin-top: 0.55rem;
 }
 
 body.product-detail-page .delivery-notes {
-  margin-top: 0.95rem;
+  margin-top: 0.6rem;
+  padding-top: 0.45rem;
   border-top: 1px solid rgba(0, 0, 0, 0.08);
 }
 
