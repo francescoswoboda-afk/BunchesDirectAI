@@ -24,14 +24,6 @@ window.BUNCHES_PRODUCTS = [
         image: "assets/products/ALOHA.png"
     },
     {
-        id: "ALOHA3",
-        name: "Aloha 3",
-        category: "event",
-        price: 95,
-        description: "Premium peonies and garden roses tailored for bridal events.",
-        image: "assets/products/ALOHA3.jpg"
-    },
-    {
         id: "ALTAMIRA-",
         name: "Altamira",
         category: "romantic",
