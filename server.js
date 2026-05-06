@@ -14,6 +14,10 @@ const staticDir = __dirname;
 const port = Number(process.env.PORT) || 4242;
 const frontendUrl = process.env.FRONTEND_URL || `http://localhost:${port}`;
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
+const contactEmailFromForm = resolveContactFormEmail(path.join(__dirname, "contact.html"));
+const orderTemplatePath = process.env.ORDER_EXCEL_TEMPLATE
+  ? path.resolve(__dirname, process.env.ORDER_EXCEL_TEMPLATE)
+  : "";
 
 const stripe = stripeSecretKey ? new Stripe(stripeSecretKey) : null;
 const rosePrices = buildRosePriceMap(path.join(__dirname, "script.js"));
@@ -64,47 +68,10 @@ app.post("/api/place-order", async (req, res) => {
       return res.status(400).json({ error: "Missing delivery details." });
     }
 
-    // Build Excel workbook
-    const workbook = new ExcelJS.Workbook();
-    workbook.creator = "Bunches Direct";
-    workbook.created = new Date();
-
-    // Sheet 1 – Products
-    const productSheet = workbook.addWorksheet("Products");
-    productSheet.columns = [
-      { header: "Rose Name",   key: "roseName",   width: 28 },
-      { header: "Box Type",    key: "boxType",    width: 18 },
-      { header: "Stem Length", key: "stemLength", width: 16 },
-      { header: "Quantity",    key: "quantity",   width: 12 }
-    ];
-    productSheet.getRow(1).font = { bold: true };
-    cartItems.forEach((item) => {
-      productSheet.addRow({
-        roseName:   String(item.roseName   || ""),
-        boxType:    String(item.boxType    || ""),
-        stemLength: item.stemLength ? `${item.stemLength} cm` : "",
-        quantity:   Number(item.quantity)  || 1
-      });
-    });
-
-    // Sheet 2 – Delivery Details
-    const deliverySheet = workbook.addWorksheet("Delivery Details");
-    deliverySheet.columns = [
-      { header: "Field", key: "field", width: 30 },
-      { header: "Value", key: "value", width: 40 }
-    ];
-    deliverySheet.getRow(1).font = { bold: true };
-    const fields = [
-      ["Company Name",                deliveryDetails.companyName],
-      ["Tax / VAT #",                 deliveryDetails.taxVat],
-      ["Delivery Address",            deliveryDetails.deliveryAddress],
-      ["Phone",                       deliveryDetails.phone],
-      ["Contact Person",              deliveryDetails.contactPerson],
-      ["Truck Company in Aalsmeer",   deliveryDetails.truckCompany],
-      ["Delivery Date",               deliveryDetails.deliveryDate]
-    ];
-    fields.forEach(([field, value]) => {
-      deliverySheet.addRow({ field, value: String(value || "") });
+    const workbook = await buildOrderWorkbook({
+      templatePath: orderTemplatePath,
+      cartItems,
+      deliveryDetails
     });
 
     // Write workbook to buffer
@@ -113,7 +80,7 @@ app.post("/api/place-order", async (req, res) => {
     // Send email
     const smtpUser   = process.env.SMTP_USER   || "";
     const smtpPass   = process.env.SMTP_PASS   || "";
-    const orderEmail = process.env.ORDER_TO_EMAIL || smtpUser;
+    const orderEmail = process.env.ORDER_TO_EMAIL || contactEmailFromForm || smtpUser;
 
     if (!smtpUser || !smtpPass) {
       return res.status(500).json({ error: "Email is not configured on the server." });
@@ -202,4 +169,82 @@ function buildStripeLineItems(cartItems, prices) {
       }
     };
   });
+}
+
+async function buildOrderWorkbook({ templatePath, cartItems, deliveryDetails }) {
+  const workbook = new ExcelJS.Workbook();
+  workbook.creator = "Bunches Direct";
+  workbook.created = new Date();
+
+  if (templatePath && fs.existsSync(templatePath)) {
+    await workbook.xlsx.readFile(templatePath);
+  }
+
+  const productSheet = getOrCreateSheet(workbook, "Products");
+  productSheet.columns = [
+    { header: "Rose Name", key: "roseName", width: 28 },
+    { header: "Box Type", key: "boxType", width: 18 },
+    { header: "Stem Length", key: "stemLength", width: 16 },
+    { header: "Quantity", key: "quantity", width: 12 }
+  ];
+  productSheet.getRow(1).font = { bold: true };
+  clearSheetRows(productSheet, 2);
+  cartItems.forEach((item) => {
+    productSheet.addRow({
+      roseName: String(item.roseName || ""),
+      boxType: String(item.boxType || ""),
+      stemLength: item.stemLength ? `${item.stemLength} cm` : "",
+      quantity: Number(item.quantity) || 1
+    });
+  });
+
+  const deliverySheet = getOrCreateSheet(workbook, "Delivery Details");
+  deliverySheet.columns = [
+    { header: "Field", key: "field", width: 30 },
+    { header: "Value", key: "value", width: 40 }
+  ];
+  deliverySheet.getRow(1).font = { bold: true };
+  clearSheetRows(deliverySheet, 2);
+
+  const fields = [
+    ["Company Name", deliveryDetails.companyName],
+    ["Tax / VAT #", deliveryDetails.taxVat],
+    ["Delivery Address", deliveryDetails.deliveryAddress],
+    ["Phone", deliveryDetails.phone],
+    ["Contact Person", deliveryDetails.contactPerson],
+    ["Truck Company in Aalsmeer", deliveryDetails.truckCompany],
+    ["Delivery Date", deliveryDetails.deliveryDate]
+  ];
+
+  fields.forEach(([field, value]) => {
+    deliverySheet.addRow({ field, value: String(value || "") });
+  });
+
+  return workbook;
+}
+
+function getOrCreateSheet(workbook, name) {
+  return workbook.getWorksheet(name) || workbook.addWorksheet(name);
+}
+
+function clearSheetRows(sheet, startRowNumber) {
+  const rowsToRemove = sheet.rowCount - startRowNumber + 1;
+  if (rowsToRemove > 0) {
+    sheet.spliceRows(startRowNumber, rowsToRemove);
+  }
+}
+
+function resolveContactFormEmail(contactPath) {
+  try {
+    const html = fs.readFileSync(contactPath, "utf8");
+    const actionMatch = html.match(/action\s*=\s*["']https?:\/\/formsubmit\.co\/([^"'\s>]+)["']/i);
+    if (!actionMatch || !actionMatch[1]) {
+      return "";
+    }
+
+    const decoded = decodeURIComponent(actionMatch[1]).trim();
+    return /^\S+@\S+\.\S+$/.test(decoded) ? decoded : "";
+  } catch {
+    return "";
+  }
 }
