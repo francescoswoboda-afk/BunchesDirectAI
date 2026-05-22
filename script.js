@@ -4,6 +4,7 @@ const PRODUCTS_PER_PAGE = 20;
 const CART_STORAGE_KEY = "bunchesDirectCart";
 const ORDER_DETAILS_STORAGE_KEY = "bunchesDirectOrderDetails";
 const CHECKOUT_SESSION_ENDPOINT = "/api/create-checkout-session";
+const COOKIE_CONSENT_STORAGE_KEY = "bunchesDirectCookieConsent";
 
 const products = Array.isArray(window.BUNCHES_PRODUCTS) ? window.BUNCHES_PRODUCTS : [];
 
@@ -149,6 +150,7 @@ function prefetchPage(href, asType = "document") {
 
 function init() {
     setupSmoothPageNavigation();
+    initCookieConsentBanner();
     setYear();
     wireMobileMenu();
         wireHomeHamburger();
@@ -638,12 +640,15 @@ function initOrderDetailsPage() {
         const formData = new FormData(dom.deliveryForm);
         const details = {
             companyName: String(formData.get("companyName") || ""),
+            companyEmail: String(formData.get("companyEmail") || ""),
             deliveryAddress: String(formData.get("deliveryAddress") || ""),
             taxVat: String(formData.get("taxVat") || ""),
             phone: String(formData.get("phone") || ""),
             contactPerson: String(formData.get("contactPerson") || ""),
             truckCompany: String(formData.get("truckCompany") || ""),
-            deliveryDate: String(formData.get("deliveryDate") || "")
+            deliveryDate: String(formData.get("deliveryDate") || ""),
+            privacyConsent: formData.get("privacyConsent") === "on",
+            termsConsent: formData.get("termsConsent") === "on"
         };
 
         // Disable button and show loading state
@@ -701,6 +706,7 @@ function hydrateDeliveryForm() {
     };
 
     setIfPresent("companyName", details.companyName);
+    setIfPresent("companyEmail", details.companyEmail);
     setIfPresent("deliveryAddress", details.deliveryAddress);
     setIfPresent("taxVat", details.taxVat);
     setIfPresent("phone", details.phone);
@@ -953,6 +959,56 @@ function updateCartBadge() {
     const total = items.reduce((sum, item) => sum + (item.quantity || 1), 0);
     badge.textContent = total;
     badge.style.display = total > 0 ? "flex" : "none";
+}
+
+function initCookieConsentBanner() {
+    if (!document.body) {
+        return;
+    }
+
+    try {
+        const existingConsent = window.localStorage.getItem(COOKIE_CONSENT_STORAGE_KEY);
+        if (existingConsent) {
+            return;
+        }
+    } catch {
+        return;
+    }
+
+    const banner = document.createElement("section");
+    banner.className = "cookie-banner";
+    banner.id = "cookieConsentBanner";
+    banner.setAttribute("role", "dialog");
+    banner.setAttribute("aria-live", "polite");
+    banner.innerHTML = `
+        <div class="cookie-banner-inner">
+            <p class="cookie-banner-title">Cookie Notice</p>
+            <p class="cookie-banner-copy">We use essential cookies and local storage to keep cart and checkout features working correctly. Read our <a href="cookie-policy.html">Cookie Policy</a> and <a href="privacy-policy.html">Privacy Policy</a>.</p>
+            <div class="cookie-banner-actions">
+                <button type="button" class="btn btn-outline" data-consent="essential">Essential Only</button>
+                <button type="button" class="btn btn-solid" data-consent="all">Accept</button>
+            </div>
+        </div>
+    `;
+
+    const saveConsent = (value) => {
+        try {
+            window.localStorage.setItem(COOKIE_CONSENT_STORAGE_KEY, value);
+        } catch {
+            // Ignore storage errors and still close the banner.
+        }
+
+        banner.remove();
+    };
+
+    const buttons = banner.querySelectorAll("button[data-consent]");
+    buttons.forEach((button) => {
+        button.addEventListener("click", () => {
+            saveConsent(button.dataset.consent || "essential");
+        });
+    });
+
+    document.body.appendChild(banner);
 }
 
 init();

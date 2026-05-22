@@ -10,13 +10,14 @@ Multi-page website for **Bunches Direct** with secure Stripe card checkout.
 npm install
 ```
 
-2. Create your environment file and add your Stripe secret key:
+2. Create your environment files:
 
 ```bash
 cp .env.example .env
+touch .env.local
 ```
 
-3. Update `.env`:
+3. Put real secrets in `.env.local` and keep `.env` as the committed template:
 
 ```env
 STRIPE_SECRET_KEY=sk_test_your_key_here
@@ -30,6 +31,8 @@ SMTP_PASS=your_app_password
 ORDER_TO_EMAIL=
 ORDER_EXCEL_TEMPLATE=
 ```
+
+` .env ` is safe to commit. ` .env.local ` is ignored by git and should hold the real secrets.
 
 4. Start the app:
 
@@ -51,6 +54,8 @@ npm start
 
 - Clicking `Place Order` on `order-details.html` sends delivery form data and selected boxes to `/api/place-order`.
 - The server generates an Excel file and emails it as an attachment.
+- If SMTP is fully configured (`SMTP_USER` + real `SMTP_PASS`), the order is sent via SMTP.
+- If SMTP is not configured, the server falls back to the same `formsubmit.co` action used by the `Get in Touch` form in `contact.html`.
 - Recipient priority is:
 	1. `ORDER_TO_EMAIL` (if set)
 	2. The email used in the `Get in Touch` form action in `contact.html`
