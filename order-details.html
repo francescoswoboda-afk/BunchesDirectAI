@@ -79,7 +79,7 @@
 
           <div class="order-field">
             <label for="taxVatField">Tax / VAT #</label>
-            <input id="taxVatField" name="taxVat" type="text" required placeholder="Example: NL123456789B01">
+            <input id="taxVatField" name="taxVat" type="text" placeholder="Optional (example: NL123456789B01)">
           </div>
 
           <div class="order-field order-field-wide">
@@ -111,12 +111,12 @@
 
           <label class="check-row legal-check-row order-field order-field-wide" for="privacyConsentField">
             <input id="privacyConsentField" name="privacyConsent" type="checkbox" required>
-            I confirm I have read and accept the <a href="privacy-policy.html" target="_blank" rel="noopener">Privacy Policy</a> and <a href="cookie-policy.html" target="_blank" rel="noopener">Cookie Policy</a>.
+            <span class="legal-check-copy">I confirm I have read and accept the <a href="privacy-policy.html" target="_blank" rel="noopener">Privacy Policy</a> and <a href="cookie-policy.html" target="_blank" rel="noopener">Cookie Policy</a>.<span class="legal-required">Required</span></span>
           </label>
 
           <label class="check-row legal-check-row order-field order-field-wide" for="termsConsentField">
             <input id="termsConsentField" name="termsConsent" type="checkbox" required>
-            I agree to the <a href="terms-and-conditions.html" target="_blank" rel="noopener">Terms &amp; Conditions</a>.
+            <span class="legal-check-copy">I agree to the <a href="terms-and-conditions.html" target="_blank" rel="noopener">Terms &amp; Conditions</a>.<span class="legal-required">Required</span></span>
           </label>
 
           <p id="deliveryMessage" class="selection-summary"></p>

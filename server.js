@@ -80,10 +80,7 @@ app.post("/api/place-order", async (req, res) => {
       });
     }
 
-    const vatValidation = await validateVatNumber(deliveryDetails.taxVat);
-    if (!vatValidation.valid) {
-      return res.status(400).json({ error: vatValidation.message });
-    }
+    deliveryDetails.taxVat = String(deliveryDetails.taxVat || "").trim();
 
     const workbook = await buildOrderWorkbook({
       templatePath: orderTemplatePath,
@@ -139,6 +136,12 @@ app.post("/api/place-order", async (req, res) => {
 
     return res.json({ ok: true });
   } catch (err) {
+    if (isSmtpAuthError(err)) {
+      return res.status(500).json({
+        error: "SMTP login failed. Check SMTP_USER and generate a fresh Gmail App Password for SMTP_PASS."
+      });
+    }
+
     const message = err instanceof Error ? err.message : "Failed to place order.";
     return res.status(500).json({ error: message });
   }
@@ -418,6 +421,22 @@ function extractViesErrorMessage(payload) {
   }
 
   return "";
+}
+
+function isSmtpAuthError(error) {
+  if (!error || typeof error !== "object") {
+    return false;
+  }
+
+  const maybeCode = String(error.code || "").toUpperCase();
+  const maybeResponseCode = String(error.responseCode || "");
+  const maybeMessage = String(error.message || "").toLowerCase();
+  return (
+    maybeCode === "EAUTH" ||
+    maybeResponseCode === "535" ||
+    maybeMessage.includes("username and password not accepted") ||
+    maybeMessage.includes("badcredentials")
+  );
 }
 
 function createSmtpTransport({

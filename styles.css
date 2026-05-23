@@ -1129,6 +1129,87 @@ body.order-details-page #deliveryForm .checkout-next-row {
   margin-top: 0.22rem;
 }
 
+body.order-details-page #deliveryForm label.legal-check-row {
+  display: grid;
+  grid-template-columns: 18px 1fr;
+  align-items: start;
+  gap: 0.72rem;
+  margin-top: 0.06rem;
+  padding: 0.76rem 0.82rem;
+  border: 1px solid rgba(193, 0, 0, 0.14);
+  border-radius: 12px;
+  background: linear-gradient(180deg, #fff9fa 0%, #ffffff 100%);
+  color: #2a2a2a;
+  font-size: 0.89rem;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0;
+  line-height: 1.4;
+}
+
+body.order-details-page #deliveryForm .legal-check-row input[type="checkbox"] {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  min-height: 18px;
+  margin-top: 0.09rem;
+  padding: 0;
+  border: 1.5px solid #970408;
+  border-radius: 5px;
+  background: #ffffff;
+  position: relative;
+}
+
+body.order-details-page #deliveryForm .legal-check-row input[type="checkbox"]:checked {
+  background: #c10000;
+  border-color: #c10000;
+}
+
+body.order-details-page #deliveryForm .legal-check-row input[type="checkbox"]:checked::after {
+  content: "";
+  position: absolute;
+  left: 5px;
+  top: 2px;
+  width: 4px;
+  height: 8px;
+  border: solid #ffffff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+body.order-details-page #deliveryForm .legal-check-row input[type="checkbox"]:focus-visible {
+  outline: 2px solid rgba(193, 0, 0, 0.38);
+  outline-offset: 2px;
+}
+
+body.order-details-page #deliveryForm .legal-check-copy {
+  display: block;
+  text-transform: none;
+}
+
+body.order-details-page #deliveryForm .legal-check-row a {
+  color: #8d0308;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+body.order-details-page #deliveryForm .legal-check-row a:hover {
+  color: #c10000;
+}
+
+body.order-details-page #deliveryForm .legal-required {
+  display: inline-block;
+  margin-left: 0.5rem;
+  padding: 0.06rem 0.42rem;
+  border-radius: 999px;
+  background: rgba(193, 0, 0, 0.1);
+  color: #8d0308;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
 body.order-details-page #toPaymentBtn {
   min-width: 84px;
   min-height: 42px;
