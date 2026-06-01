@@ -1829,11 +1829,20 @@ body[data-page="products"] .products-hero-copy h1::after {
 
 body[data-page="products"] .products-hero-copy .lead {
   margin: 0.15rem 0 0;
-  max-width: 37ch;
+  max-width: 42ch;
   text-align: left;
   color: #2f2f2f;
   font-size: 0.88rem;
-  line-height: 1.4;
+  line-height: 1.55;
+}
+
+body[data-page="products"] .products-hero-actions {
+  margin-top: 1rem;
+}
+
+body[data-page="products"] .products-hero-actions .home-btn-primary {
+  padding: 0.72rem 1.3rem;
+  font-size: 0.92rem;
 }
 
 body[data-page="products"] .products-hero-image {
@@ -2650,6 +2659,11 @@ body[data-page="contact"] .contact-form .btn-solid {
     margin-right: auto;
   }
 
+  body[data-page="products"] .products-hero-actions {
+    display: flex;
+    justify-content: center;
+  }
+
   body[data-page="products"] .products-hero-image {
     justify-content: center;
   }
@@ -3226,6 +3240,10 @@ body.nav-drawer-open {
     text-align: center;
     font-size: 0.91rem;
     line-height: 1.5;
+  }
+
+  body[data-page="products"] .products-hero-actions {
+    margin-top: 0.85rem;
   }
 
   body[data-page="products"] .products-hero-image {

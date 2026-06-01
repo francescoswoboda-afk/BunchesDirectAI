@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Check current rose availability from Bunches Direct and request your preferred varieties.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://bunches-direct.com/availability.html">
+  <meta property="og:title" content="Our Availability | Bunches Direct">
+  <meta property="og:description" content="Check current rose availability from Bunches Direct and request your preferred varieties.">
+  <meta property="og:image" content="https://bunches-direct.com/assets/social-preview.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Our Availability | Bunches Direct">
+  <meta name="twitter:description" content="Check current rose availability from Bunches Direct and request your preferred varieties.">
+  <meta name="twitter:image" content="https://bunches-direct.com/assets/social-preview.png">
+  <title>Our Availability | Bunches Direct</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Birthstone&family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="availability">
+  <header class="home-header">
+    <a class="home-brand" href="index.html" aria-label="Bunches Direct home">
+      <img class="home-brand-logo" src="assets/my-logo.png" alt="Bunches Direct">
+    </a>
+
+    <nav class="home-nav" aria-label="Primary">
+      <a href="index.html">Home</a>
+      <a class="is-active" href="products.html">Our Products</a>
+      <a href="about.html">About Us</a>
+    </nav>
+
+    <button class="home-hamburger" id="homeHamburger" aria-label="Open navigation" aria-expanded="false" aria-controls="homeNavDrawer">
+      <span></span><span></span><span></span>
+    </button>
+
+    <div class="home-header-actions">
+      <a class="home-cta" href="contact.html">Get in Touch</a>
+      <a class="home-cart-link" href="cart.html" aria-label="Open cart">
+        <svg class="home-cart-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M3 4h2l2.1 10.2a1 1 0 0 0 1 .8h9.6a1 1 0 0 0 1-.76L21 7H7.1" />
+          <circle cx="10" cy="19" r="1.5" />
+          <circle cx="17" cy="19" r="1.5" />
+        </svg>
+        <span class="home-cart-count" id="homeCartCount">0</span>
+      </a>
+    </div>
+  </header>
+
+  <div class="home-nav-drawer" id="homeNavDrawer" aria-hidden="true">
+    <div class="home-nav-drawer-overlay" id="homeNavOverlay"></div>
+    <nav class="home-nav-drawer-panel" aria-label="Mobile navigation">
+      <button class="home-nav-drawer-close" id="homeNavClose" aria-label="Close navigation">&times;</button>
+      <a href="index.html">Home</a>
+      <a href="products.html">Our Products</a>
+      <a href="about.html">About Us</a>
+      <a href="contact.html">Get in Touch</a>
+    </nav>
+  </div>
+
+  <main>
+    <section class="section-pad page-hero">
+      <div class="container narrow">
+        <p class="eyebrow">Weekly Stock Outlook</p>
+        <h1>Our Availability</h1>
+        <p class="lead">Share your desired varieties and quantities, and our team will confirm current farm availability and quote options quickly.</p>
+      </div>
+    </section>
+
+    <section class="section-pad">
+      <div class="container split">
+        <article class="info-panel">
+          <h2 class="section-title">How It Works</h2>
+          <p>Tell us the varieties, stem length, and volumes you are targeting for your next purchase window.</p>
+          <p>We coordinate directly with our partner farms in Ecuador and send you a precise availability update with your best offer.</p>
+          <a class="btn btn-solid" href="contact.html">Request Availability</a>
+        </article>
+
+        <article class="info-panel">
+          <h2 class="section-title">What to Include</h2>
+          <p>To speed up confirmation, include these details in your request:</p>
+          <ul>
+            <li>Preferred rose varieties</li>
+            <li>Target stem lengths</li>
+            <li>Estimated box quantity</li>
+            <li>Desired delivery week</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
