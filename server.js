@@ -37,10 +37,10 @@ const rosePrices = buildRosePriceMap(path.join(__dirname, "script.js"));
 app.use(cors());
 app.use(express.json({ limit: "20mb" }));
 app.get(availabilityAdminPath, (_req, res) => {
-  return res.type("html").send(buildAvailabilityAdminHtml(availabilityAdminPath));
+  return res.sendFile(path.join(__dirname, "availability-upload-8k2m.html"));
 });
 app.get("/api/availability/admin-page", (_req, res) => {
-  return res.type("html").send(buildAvailabilityAdminHtml("/api/availability/admin-page"));
+  return res.sendFile(path.join(__dirname, "availability-upload-8k2m.html"));
 });
 app.use(express.static(staticDir));
 

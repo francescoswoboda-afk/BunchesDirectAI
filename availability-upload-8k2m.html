@@ -19,26 +19,36 @@
       display: flex;
       flex-direction: column;
       min-height: 100vh;
+      background: #fafafa;
+      color: #111111;
+      font-family: "Manrope", Arial, sans-serif;
     }
     header {
-      padding: 1.5rem 2rem;
-      border-bottom: 1px solid #f0f0f0;
+      padding: 1.55rem 2.9rem;
+      border-bottom: 1px solid #ececec;
       flex-shrink: 0;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      background: #ffffff;
+    }
+    .home-brand-logo {
+      width: 168px;
+      max-width: 42vw;
+      display: block;
+      height: auto;
     }
     .header-badge {
       display: flex;
       align-items: center;
-      gap: 0.4rem;
-      font-size: 0.85rem;
-      color: #666;
+      gap: 0.42rem;
+      font-size: 0.93rem;
+      color: #72767f;
       font-weight: 500;
     }
     .header-badge svg {
-      width: 16px;
-      height: 16px;
+      width: 15px;
+      height: 15px;
     }
     main {
       flex: 1;
@@ -46,91 +56,155 @@
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      padding: 2rem 1rem;
+      padding: 2.25rem 1rem 1.4rem;
     }
-    .section-pad {
-      width: 100%;
-      max-width: 600px;
+    .upload-shell {
+      width: min(94vw, 720px);
+      text-align: center;
+    }
+    .access-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.38rem 0.95rem;
+      border-radius: 999px;
+      background: #f8ecee;
+      color: #bf1d26;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 0.74rem;
+      font-weight: 700;
+      margin-bottom: 1.25rem;
+    }
+    .access-pill svg {
+      width: 12px;
+      height: 12px;
     }
     .page-hero {
       text-align: center;
-      margin-bottom: 1rem;
-    }
-    .page-hero p.eyebrow,
-    .page-hero .eyebrow {
-      display: none !important;
+      margin-bottom: 2rem;
     }
     .page-hero h1 {
-      margin: 0 0 0.8rem 0;
-      font-size: 2rem;
-      font-weight: 700;
-      color: #000;
+      margin: 0 0 0.95rem 0;
+      font-size: clamp(2rem, 4.5vw, 2.8rem);
+      font-weight: 800;
+      color: #0b0b0d;
+      letter-spacing: -0.02em;
     }
     .page-hero p.lead {
       margin: 0 auto;
-      font-size: 0.95rem;
-      color: #555;
-      line-height: 1.5;
+      max-width: 35ch;
+      font-size: 1.01rem;
+      color: #626873;
+      line-height: 1.45;
       text-align: center;
     }
     .upload-card {
       background: #fff;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      padding: 2rem;
+      border: 1px solid #e1e3e8;
+      border-radius: 10px;
+      padding: 1.7rem 1.85rem 1.6rem;
       width: 100%;
-      max-width: 360px;
+      max-width: 498px;
       margin: 0 auto;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      box-shadow: 0 1px 2px rgba(18, 23, 35, 0.04);
     }
     .upload-card h2 {
-      margin: 0 0 1.25rem 0;
-      font-size: 1.25rem;
-      font-weight: 600;
+      margin: 0;
+      font-size: 2.05rem;
+      line-height: 1;
+      font-weight: 800;
+      letter-spacing: -0.02em;
       text-align: center;
     }
     .upload-card .subtitle {
-      margin: 0 0 1.5rem 0;
-      font-size: 0.9rem;
-      color: #666;
+      margin: 0.55rem 0 1.55rem 0;
+      font-size: 1rem;
+      color: #6a707a;
       text-align: center;
     }
     .upload-field {
       display: flex;
       flex-direction: column;
       gap: 0.3rem;
-      margin-bottom: 0.95rem;
+      margin-bottom: 1.15rem;
+      text-align: left;
     }
     .upload-field label {
-      font-weight: 600;
-      font-size: 0.88rem;
-      color: #333;
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: #17191c;
+      margin-bottom: 0.2rem;
+    }
+    .password-input-wrap {
+      position: relative;
     }
     .upload-field input[type="password"],
     .upload-field input[type="file"] {
-      padding: 0.5rem 0.6rem;
-      border: 1px solid #ddd;
+      padding: 0.77rem 2.4rem 0.77rem 0.82rem;
+      border: 1px solid #d7dce4;
       border-radius: 6px;
       font-family: inherit;
-      font-size: 0.95rem;
+      font-size: 0.97rem;
       width: 100%;
+      background: #ffffff;
+      color: #1f2328;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .upload-field input[type="password"]::placeholder { color: #9aa0a9; }
+    .upload-field input[type="password"]:focus,
+    .upload-field input[type="file"]:focus {
+      outline: none;
+      border-color: #c81a23;
+      box-shadow: 0 0 0 3px rgba(200, 26, 35, 0.12);
+    }
+    .password-input-icon {
+      position: absolute;
+      right: 0.7rem;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 16px;
+      height: 16px;
+      color: #9298a1;
+      pointer-events: none;
     }
     .upload-field input[type="file"] {
-      background: #faf8f6;
+      background: #fafbfc;
       cursor: pointer;
+      padding-right: 0.82rem;
     }
     .upload-message {
-      margin-top: 0.6rem;
-      font-size: 0.88rem;
+      margin-top: 0.72rem;
+      font-size: 0.9rem;
       min-height: 1.2em;
-      font-weight: 500;
+      font-weight: 600;
       text-align: center;
     }
     .upload-message.success { color: #2a7a4b; }
     .upload-message.error   { color: #c0392b; }
     .upload-submit {
       width: 100%;
-      margin-top: 0.1rem;
+      margin-top: 0.2rem;
+      min-height: 46px;
+      border-radius: 6px;
+      background: #cc0310;
+      border: 1px solid #cc0310;
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 1rem;
+      letter-spacing: 0;
+      padding: 0.74rem 1rem;
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+    .upload-submit:hover {
+      background: #b9020e;
+      border-color: #b9020e;
+      transform: translateY(-1px);
+    }
+    .upload-submit:disabled {
+      opacity: 0.72;
+      cursor: not-allowed;
+      transform: none;
     }
     #loginSection { display: block; }
     #uploadSection { display: none; }
@@ -146,6 +220,43 @@
     }
     .current-pdf-wrap a {
       font-size: 0.8rem;
+    }
+    .site-footnote {
+      text-align: center;
+      color: #7f858f;
+      font-size: 0.95rem;
+      padding: 1rem 1rem 2.6rem;
+      font-weight: 500;
+    }
+    @media (max-width: 760px) {
+      header {
+        padding: 1rem 1rem;
+      }
+      .home-brand-logo {
+        width: 145px;
+      }
+      .header-badge {
+        font-size: 0.8rem;
+      }
+      main {
+        padding-top: 1.6rem;
+      }
+      .page-hero {
+        margin-bottom: 1.4rem;
+      }
+      .page-hero h1 {
+        font-size: 2.05rem;
+      }
+      .page-hero p.lead {
+        font-size: 0.96rem;
+      }
+      .upload-card {
+        max-width: 100%;
+        padding: 1.35rem 1rem 1.25rem;
+      }
+      .upload-card h2 {
+        font-size: 1.85rem;
+      }
     }
   </style>
 </head>
@@ -164,15 +275,20 @@
   </header>
 
   <main>
-    <section class="section-pad page-hero">
-      <div class="container narrow">
+    <div class="upload-shell">
+      <section class="page-hero">
+        <span class="access-pill">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="5" y="11" width="14" height="10" rx="2"></rect>
+            <path d="M8 11V8a4 4 0 0 1 8 0v3"></path>
+          </svg>
+          Private Family Access
+        </span>
         <h1>Upload Availability PDF</h1>
         <p class="lead">Upload today's availability PDF. It will appear on the website within about 30 seconds.</p>
-      </div>
-    </section>
+      </section>
 
-    <section class="section-pad">
-      <div class="container narrow">
+      <section>
 
         <!-- Step 1: Password gate -->
         <div class="upload-card" id="loginSection">
@@ -181,7 +297,13 @@
           <form id="loginForm" novalidate>
             <div class="upload-field">
               <label for="loginPassword">Password</label>
-              <input id="loginPassword" type="password" autocomplete="current-password" placeholder="Enter password" required>
+              <div class="password-input-wrap">
+                <input id="loginPassword" type="password" autocomplete="current-password" placeholder="Enter password" required>
+                <svg class="password-input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect x="5" y="11" width="14" height="10" rx="2"></rect>
+                  <path d="M8 11V8a4 4 0 0 1 8 0v3"></path>
+                </svg>
+              </div>
             </div>
             <button type="submit" class="btn btn-solid upload-submit">Continue</button>
             <p class="upload-message error" id="loginMessage" aria-live="polite"></p>
@@ -206,13 +328,14 @@
           </div>
         </div>
 
-      </div>
-    </section>
+      </section>
+    </div>
   </main>
 
+  <footer class="site-footnote">© 2026 Bunches Direct. All rights reserved.</footer>
+
   <script>
-    // ⚠️ Replace this URL with your Cloudflare Worker URL after deploying it
-    const WORKER_URL = "https://bunchesdirectaiworker.francesco-swoboda.workers.dev/";
+    const AVAILABILITY_UPLOAD_URL = "/api/availability/upload";
 
     const loginSection  = document.getElementById("loginSection");
     const uploadSection = document.getElementById("uploadSection");
@@ -234,17 +357,21 @@
       }
       loginMessage.textContent = "";
 
-      // Do a quick test upload with no file to verify password
+      // Do a quick password verification request.
       try {
-        const res = await fetch(WORKER_URL, {
+        const res = await fetch(AVAILABILITY_UPLOAD_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ password: pw, fileDataBase64: "" }),
+          body: JSON.stringify({ adminPassword: pw, fileDataBase64: "" }),
         });
-        const data = await res.json();
+        const data = await res.json().catch(() => ({}));
 
         if (res.status === 401) {
           loginMessage.textContent = "Wrong password. Try again.";
+          return;
+        }
+        if (!res.ok && res.status !== 400) {
+          loginMessage.textContent = data.error || "Could not verify password. Please try again.";
           return;
         }
         // Any response other than 401 means password is correct
@@ -278,10 +405,10 @@
       try {
         const base64 = await fileToBase64(file);
 
-        const res = await fetch(WORKER_URL, {
+        const res = await fetch(AVAILABILITY_UPLOAD_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ password: confirmedPassword, fileDataBase64: base64 }),
+          body: JSON.stringify({ adminPassword: confirmedPassword, fileDataBase64: base64 }),
         });
 
         const data = await res.json();
