@@ -5,6 +5,9 @@ const CART_STORAGE_KEY = "bunchesDirectCart";
 const ORDER_DETAILS_STORAGE_KEY = "bunchesDirectOrderDetails";
 const CHECKOUT_SESSION_ENDPOINT = "/api/create-checkout-session";
 const COOKIE_CONSENT_STORAGE_KEY = "bunchesDirectCookieConsent";
+const AVAILABILITY_ENDPOINT = "/api/availability";
+const AVAILABILITY_UPLOAD_ENDPOINT = "/api/availability/upload";
+const MAX_AVAILABILITY_UPLOAD_SIZE_BYTES = 8 * 1024 * 1024;
 
 const products = Array.isArray(window.BUNCHES_PRODUCTS) ? window.BUNCHES_PRODUCTS : [];
 
@@ -42,7 +45,14 @@ const dom = {
     paymentForm: document.getElementById("paymentForm"),
     confirmPaymentBtn: document.getElementById("confirmPaymentBtn"),
     paymentMessage: document.getElementById("paymentMessage"),
-    homeCartCount: document.getElementById("homeCartCount")
+    homeCartCount: document.getElementById("homeCartCount"),
+    availabilityStatus: document.getElementById("availabilityStatus"),
+    availabilityDocumentWrap: document.getElementById("availabilityDocumentWrap"),
+    availabilityFrame: document.getElementById("availabilityFrame"),
+    availabilityDownloadLink: document.getElementById("availabilityDownloadLink"),
+    availabilityUploadForm: document.getElementById("availabilityUploadForm"),
+    availabilityUploadBtn: document.getElementById("availabilityUploadBtn"),
+    availabilityUploadMessage: document.getElementById("availabilityUploadMessage")
 };
 
 let filteredProducts = [...products];
@@ -161,6 +171,7 @@ function init() {
     initCartPage();
     initOrderDetailsPage();
     initPaymentPage();
+    initAvailabilityPage();
 }
 
 function initHomeCartBadge() {
@@ -1009,6 +1020,195 @@ function initCookieConsentBanner() {
     });
 
     document.body.appendChild(banner);
+}
+
+async function initAvailabilityPage() {
+    const hasViewer = Boolean(dom.availabilityStatus);
+    const hasUploader = Boolean(dom.availabilityUploadForm && dom.availabilityUploadBtn && dom.availabilityUploadMessage);
+
+    if (!hasViewer && !hasUploader) {
+        return;
+    }
+
+    if (hasViewer) {
+        await refreshAvailabilityDocument();
+    }
+
+    if (!hasUploader) {
+        return;
+    }
+
+    dom.availabilityUploadForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const formData = new FormData(dom.availabilityUploadForm);
+        const adminPassword = String(formData.get("adminPassword") || "").trim();
+        const file = formData.get("availabilityPdf");
+
+        if (!adminPassword) {
+            setAvailabilityUploadMessage("Enter the admin password.", true);
+            return;
+        }
+
+        if (!(file instanceof File) || file.size === 0) {
+            setAvailabilityUploadMessage("Select a PDF file to upload.", true);
+            return;
+        }
+
+        if (!file.name.toLowerCase().endsWith(".pdf")) {
+            setAvailabilityUploadMessage("Only PDF files are allowed.", true);
+            return;
+        }
+
+        if (file.size > MAX_AVAILABILITY_UPLOAD_SIZE_BYTES) {
+            const maxMb = Math.round(MAX_AVAILABILITY_UPLOAD_SIZE_BYTES / (1024 * 1024));
+            setAvailabilityUploadMessage(`PDF is too large. Maximum file size is ${maxMb} MB.`, true);
+            return;
+        }
+
+        dom.availabilityUploadBtn.disabled = true;
+        const originalLabel = dom.availabilityUploadBtn.textContent;
+        dom.availabilityUploadBtn.textContent = "Uploading...";
+        setAvailabilityUploadMessage("Uploading the latest availability PDF...", false);
+
+        try {
+            const fileDataBase64 = await readFileAsBase64(file);
+            const response = await fetch(AVAILABILITY_UPLOAD_ENDPOINT, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    adminPassword,
+                    fileDataBase64
+                })
+            });
+
+            const payload = await response.json().catch(() => ({}));
+            if (!response.ok) {
+                throw new Error(payload.error || "Upload failed. Please try again.");
+            }
+
+            setAvailabilityUploadMessage("Availability PDF updated successfully.", false);
+            dom.availabilityUploadForm.reset();
+            await refreshAvailabilityDocument(payload);
+        } catch (error) {
+            const message = error instanceof Error ? error.message : "Upload failed. Please try again.";
+            setAvailabilityUploadMessage(message, true);
+        } finally {
+            dom.availabilityUploadBtn.disabled = false;
+            dom.availabilityUploadBtn.textContent = originalLabel;
+        }
+    });
+}
+
+async function refreshAvailabilityDocument(prefetchedPayload) {
+    if (!dom.availabilityStatus) {
+        return;
+    }
+
+    dom.availabilityStatus.textContent = "Loading the latest availability file...";
+
+    try {
+        const payload = prefetchedPayload || await fetchAvailabilityPayload();
+        const hasPdf = payload && payload.available === true && typeof payload.url === "string" && payload.url;
+
+        if (!hasPdf) {
+            dom.availabilityStatus.textContent = "No availability PDF has been uploaded yet. Please check again later.";
+            if (dom.availabilityDocumentWrap) {
+                dom.availabilityDocumentWrap.hidden = true;
+            }
+            return;
+        }
+
+        const versionedUrl = buildVersionedAvailabilityUrl(payload.url, payload.updatedAt);
+
+        if (dom.availabilityFrame) {
+            dom.availabilityFrame.src = versionedUrl;
+        }
+
+        if (dom.availabilityDownloadLink) {
+            dom.availabilityDownloadLink.href = versionedUrl;
+        }
+
+        if (dom.availabilityDocumentWrap) {
+            dom.availabilityDocumentWrap.hidden = false;
+        }
+
+        const updatedText = formatAvailabilityUpdatedAt(payload.updatedAt);
+        dom.availabilityStatus.textContent = updatedText
+            ? `Latest file updated on ${updatedText}.`
+            : "Latest availability file:";
+    } catch {
+        dom.availabilityStatus.textContent = "Unable to load the availability PDF right now. Please refresh and try again.";
+        if (dom.availabilityDocumentWrap) {
+            dom.availabilityDocumentWrap.hidden = true;
+        }
+    }
+}
+
+async function fetchAvailabilityPayload() {
+    const response = await fetch(AVAILABILITY_ENDPOINT, {
+        cache: "no-store"
+    });
+
+    const payload = await response.json().catch(() => ({}));
+    if (!response.ok) {
+        throw new Error(payload.error || "Could not fetch availability data.");
+    }
+
+    return payload;
+}
+
+function buildVersionedAvailabilityUrl(url, updatedAt) {
+    const baseUrl = String(url || "").trim();
+    const version = Number(updatedAt) || Date.now();
+    const separator = baseUrl.includes("?") ? "&" : "?";
+    return `${baseUrl}${separator}v=${version}`;
+}
+
+function formatAvailabilityUpdatedAt(updatedAt) {
+    const numericValue = Number(updatedAt);
+    if (!Number.isFinite(numericValue) || numericValue <= 0) {
+        return "";
+    }
+
+    return new Date(numericValue).toLocaleString("en-GB", {
+        dateStyle: "medium",
+        timeStyle: "short"
+    });
+}
+
+function readFileAsBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+
+        reader.onload = () => {
+            const dataUrl = String(reader.result || "");
+            const commaIndex = dataUrl.indexOf(",");
+            if (commaIndex < 0) {
+                reject(new Error("Invalid file encoding."));
+                return;
+            }
+
+            resolve(dataUrl.slice(commaIndex + 1));
+        };
+
+        reader.onerror = () => {
+            reject(new Error("Could not read the selected PDF file."));
+        };
+
+        reader.readAsDataURL(file);
+    });
+}
+
+function setAvailabilityUploadMessage(message, isError) {
+    if (!dom.availabilityUploadMessage) {
+        return;
+    }
+
+    dom.availabilityUploadMessage.textContent = message;
+    dom.availabilityUploadMessage.classList.toggle("is-error", isError);
 }
 
 init();

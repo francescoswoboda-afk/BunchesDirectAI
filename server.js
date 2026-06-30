@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const crypto = require("crypto");
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
@@ -22,13 +23,72 @@ const viesCheckVatUrl = "https://ec.europa.eu/taxation_customs/vies/rest-api/che
 const orderTemplatePath = process.env.ORDER_EXCEL_TEMPLATE
   ? path.resolve(__dirname, process.env.ORDER_EXCEL_TEMPLATE)
   : "";
+const availabilityAdminPassword = String(process.env.AVAILABILITY_ADMIN_PASSWORD || "").trim();
+const availabilityDirectory = path.join(staticDir, "assets", "availability");
+const availabilityFileName = "latest-availability.pdf";
+const availabilityFilePath = path.join(availabilityDirectory, availabilityFileName);
+const availabilityPublicUrl = `/assets/availability/${availabilityFileName}`;
+const maxAvailabilityPdfBytes = Number(process.env.AVAILABILITY_PDF_MAX_BYTES) || 8 * 1024 * 1024;
+const availabilityAdminPath = normalizeAdminPath(process.env.AVAILABILITY_ADMIN_PATH || "/family-availability-admin");
 
 const stripe = stripeSecretKey ? new Stripe(stripeSecretKey) : null;
 const rosePrices = buildRosePriceMap(path.join(__dirname, "script.js"));
 
 app.use(cors());
-app.use(express.json({ limit: "1mb" }));
+app.use(express.json({ limit: "20mb" }));
+app.get(availabilityAdminPath, (_req, res) => {
+  return res.type("html").send(buildAvailabilityAdminHtml(availabilityAdminPath));
+});
+app.get("/api/availability/admin-page", (_req, res) => {
+  return res.type("html").send(buildAvailabilityAdminHtml("/api/availability/admin-page"));
+});
 app.use(express.static(staticDir));
+
+app.get("/api/availability", (_req, res) => {
+  return res.json(getAvailabilityResponse());
+});
+
+app.post("/api/availability/upload", (req, res) => {
+  try {
+    if (!availabilityAdminPassword) {
+      return res.status(500).json({
+        error: "Availability admin password is not configured on the server."
+      });
+    }
+
+    const adminPassword = String(req.body?.adminPassword || "");
+    const fileDataBase64 = String(req.body?.fileDataBase64 || "").trim();
+
+    if (!isValidAdminPassword(adminPassword)) {
+      return res.status(401).json({ error: "Invalid admin password." });
+    }
+
+    if (!fileDataBase64) {
+      return res.status(400).json({ error: "Missing PDF file data." });
+    }
+
+    const pdfBuffer = decodeAvailabilityPdf(fileDataBase64);
+    if (!pdfBuffer) {
+      return res.status(400).json({ error: "Uploaded file is not a valid PDF." });
+    }
+
+    if (pdfBuffer.length > maxAvailabilityPdfBytes) {
+      const maxMb = Math.round(maxAvailabilityPdfBytes / (1024 * 1024));
+      return res.status(413).json({
+        error: `PDF is too large. Maximum size is ${maxMb} MB.`
+      });
+    }
+
+    fs.mkdirSync(availabilityDirectory, { recursive: true });
+    fs.writeFileSync(availabilityFilePath, pdfBuffer);
+
+    return res.json(getAvailabilityResponse());
+  } catch {
+    return res.status(500).json({
+      error: "Could not save the availability PDF. Please try again."
+    });
+  }
+});
 
 app.post("/api/create-checkout-session", async (req, res) => {
   if (!stripe) {
@@ -639,4 +699,132 @@ function escapeHtml(value) {
     .replace(/>/g, "&gt;")
     .replace(/\"/g, "&quot;")
     .replace(/'/g, "&#39;");
+}
+
+function getAvailabilityResponse() {
+  if (!fs.existsSync(availabilityFilePath)) {
+    return {
+      available: false,
+      url: "",
+      updatedAt: 0
+    };
+  }
+
+  const stats = fs.statSync(availabilityFilePath);
+  return {
+    available: true,
+    url: availabilityPublicUrl,
+    updatedAt: stats.mtimeMs
+  };
+}
+
+function isValidAdminPassword(inputPassword) {
+  const expected = Buffer.from(availabilityAdminPassword, "utf8");
+  const received = Buffer.from(String(inputPassword || ""), "utf8");
+
+  if (expected.length === 0 || expected.length !== received.length) {
+    return false;
+  }
+
+  return crypto.timingSafeEqual(expected, received);
+}
+
+function decodeAvailabilityPdf(base64Content) {
+  const cleanedBase64 = String(base64Content || "").replace(/\s/g, "");
+
+  if (!cleanedBase64 || !/^[A-Za-z0-9+/=]+$/.test(cleanedBase64)) {
+    return null;
+  }
+
+  const buffer = Buffer.from(cleanedBase64, "base64");
+  if (!buffer || buffer.length === 0) {
+    return null;
+  }
+
+  const pdfSignature = "%PDF-";
+  const fileHeader = buffer.subarray(0, 5).toString("utf8");
+  if (fileHeader !== pdfSignature) {
+    return null;
+  }
+
+  return buffer;
+}
+
+function normalizeAdminPath(rawPath) {
+  const safePath = String(rawPath || "")
+    .trim()
+    .replace(/[?#].*$/, "")
+    .replace(/\s+/g, "-")
+    .replace(/\/+/g, "/");
+
+  if (!safePath || safePath === "/") {
+    return "/family-availability-admin";
+  }
+
+  return safePath.startsWith("/") ? safePath : `/${safePath}`;
+}
+
+function buildAvailabilityAdminHtml(adminPath) {
+  const safeAdminPath = escapeHtml(adminPath);
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Availability Admin | Bunches Direct</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Birthstone&family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body data-page="availability-admin">
+  <main>
+    <section class="section-pad page-hero">
+      <div class="container narrow">
+        <p class="eyebrow">Private Family Access</p>
+        <h1>Availability Upload Admin</h1>
+        <p class="lead">Use this private URL only inside your family team. Keep it unlisted and share carefully.</p>
+      </div>
+    </section>
+
+    <section class="section-pad alt-bg">
+      <div class="container narrow">
+        <article class="info-panel availability-viewer-panel">
+          <h2 class="section-title">Current Published PDF</h2>
+          <p id="availabilityStatus">Loading the latest availability file...</p>
+          <div class="availability-document-wrap" id="availabilityDocumentWrap" hidden>
+            <iframe id="availabilityFrame" title="Bunches Direct daily rose availability" loading="lazy"></iframe>
+            <p class="availability-download-row">
+              <a class="btn btn-outline" id="availabilityDownloadLink" href="#" target="_blank" rel="noopener noreferrer">Open / Download PDF</a>
+            </p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section-pad">
+      <div class="container narrow">
+        <article class="availability-admin-panel">
+          <h2 class="section-title">Upload Today's PDF</h2>
+          <form id="availabilityUploadForm" class="availability-upload-form" novalidate>
+            <label for="availabilityAdminPassword">Admin Password</label>
+            <input id="availabilityAdminPassword" name="adminPassword" type="password" autocomplete="current-password" required>
+
+            <label for="availabilityPdfFile">Availability PDF</label>
+            <input id="availabilityPdfFile" name="availabilityPdf" type="file" accept="application/pdf,.pdf" required>
+
+            <button type="submit" class="btn btn-solid" id="availabilityUploadBtn">Upload Today's PDF</button>
+            <p id="availabilityUploadMessage" class="availability-upload-message" aria-live="polite"></p>
+          </form>
+          <p style="margin-top:1rem;font-size:0.92rem;">Private URL: <strong>${safeAdminPath}</strong></p>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <script src="/script.js"></script>
+</body>
+</html>`;
 }

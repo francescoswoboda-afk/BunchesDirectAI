@@ -476,6 +476,69 @@ body[data-page="products"] .product-card p {
   background: #ffffff;
 }
 
+.availability-viewer-panel {
+  color: #240303;
+}
+
+.availability-document-wrap {
+  margin-top: 1rem;
+}
+
+#availabilityFrame {
+  width: 100%;
+  min-height: 70vh;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: #ffffff;
+}
+
+.availability-download-row {
+  margin-top: 0.85rem;
+  text-align: center;
+}
+
+.availability-admin-panel {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: #fff;
+  box-shadow: var(--shadow);
+  padding: 0.8rem 1rem;
+}
+
+.availability-admin-panel summary {
+  cursor: pointer;
+  font-weight: 800;
+  color: #8d0308;
+}
+
+.availability-upload-form {
+  margin-top: 1rem;
+  display: grid;
+  gap: 0.65rem;
+}
+
+.availability-upload-form label {
+  font-weight: 700;
+}
+
+.availability-upload-form input[type="password"],
+.availability-upload-form input[type="file"] {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.58rem 0.7rem;
+}
+
+.availability-upload-message {
+  margin: 0.2rem 0 0;
+  font-weight: 600;
+  color: #1f5f2b;
+}
+
+.availability-upload-message.is-error {
+  color: #8d0308;
+}
+
 .section-title {
   font-size: clamp(1.8rem, 3.6vw, 2.8rem);
   margin-bottom: 0.8rem;
