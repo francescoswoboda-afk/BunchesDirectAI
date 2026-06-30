@@ -335,7 +335,9 @@
   <footer class="site-footnote">© 2026 Bunches Direct. All rights reserved.</footer>
 
   <script>
-    const AVAILABILITY_UPLOAD_URL = "/api/availability/upload";
+    const CLOUDFLARE_WORKER_URL = "https://bunchesdirectaiworker.francesco-swoboda.workers.dev/";
+    const isLocalHost = ["localhost", "127.0.0.1"].includes(window.location.hostname);
+    const AVAILABILITY_UPLOAD_URL = isLocalHost ? "/api/availability/upload" : CLOUDFLARE_WORKER_URL;
 
     const loginSection  = document.getElementById("loginSection");
     const uploadSection = document.getElementById("uploadSection");
@@ -347,7 +349,7 @@
 
     let confirmedPassword = "";
 
-    // Step 1 — password check (verified by the worker, not here)
+    // Step 1 — password check (verified by the target backend)
     loginForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       const pw = document.getElementById("loginPassword").value.trim();
@@ -362,7 +364,7 @@
         const res = await fetch(AVAILABILITY_UPLOAD_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ adminPassword: pw, fileDataBase64: "" }),
+          body: JSON.stringify(buildUploadPayload(pw, "")),
         });
         const data = await res.json().catch(() => ({}));
 
@@ -408,7 +410,7 @@
         const res = await fetch(AVAILABILITY_UPLOAD_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ adminPassword: confirmedPassword, fileDataBase64: base64 }),
+          body: JSON.stringify(buildUploadPayload(confirmedPassword, base64)),
         });
 
         const data = await res.json();
@@ -443,6 +445,13 @@
     function showUploadMessage(text, type) {
       uploadMessage.textContent = text;
       uploadMessage.className = "upload-message" + (type ? " " + type : "");
+    }
+
+    function buildUploadPayload(password, fileDataBase64) {
+      if (isLocalHost) {
+        return { adminPassword: password, fileDataBase64 };
+      }
+      return { password, fileDataBase64 };
     }
   </script>
 </body>
