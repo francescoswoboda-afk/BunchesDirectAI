@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Availability Upload | Bunches Direct</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Birthstone&family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .upload-card {
+      background: #fff;
+      border: 1px solid #e8e0d8;
+      border-radius: 12px;
+      padding: 2.5rem 2rem;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+    .upload-card h2 {
+      margin-top: 0;
+    }
+    .upload-field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      margin-bottom: 1.25rem;
+    }
+    .upload-field label {
+      font-weight: 600;
+      font-size: 0.92rem;
+    }
+    .upload-field input[type="password"],
+    .upload-field input[type="file"] {
+      padding: 0.6rem 0.75rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 1rem;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .upload-field input[type="file"] {
+      padding: 0.45rem 0.75rem;
+      background: #faf8f6;
+      cursor: pointer;
+    }
+    .upload-message {
+      margin-top: 1rem;
+      font-size: 0.95rem;
+      min-height: 1.4em;
+      font-weight: 500;
+    }
+    .upload-message.success { color: #2a7a4b; }
+    .upload-message.error   { color: #c0392b; }
+    .upload-submit {
+      width: 100%;
+      margin-top: 0.25rem;
+    }
+    #loginSection { display: block; }
+    #uploadSection { display: none; }
+    .current-pdf-wrap {
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid #e8e0d8;
+    }
+    .current-pdf-wrap p {
+      font-size: 0.9rem;
+      color: #666;
+      margin-bottom: 0.5rem;
+    }
+    .current-pdf-wrap a {
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body data-page="availability-admin">
+
+  <header class="home-header">
+    <a class="home-brand" href="index.html" aria-label="Bunches Direct home">
+      <img class="home-brand-logo" src="assets/my-logo.png" alt="Bunches Direct">
+    </a>
+  </header>
+
+  <main>
+    <section class="section-pad page-hero">
+      <div class="container narrow">
+        <p class="eyebrow">Private Family Access</p>
+        <h1>Upload Availability PDF</h1>
+        <p class="lead">Upload today's availability PDF. It will appear on the website within about 30 seconds.</p>
+      </div>
+    </section>
+
+    <section class="section-pad">
+      <div class="container narrow">
+
+        <!-- Step 1: Password gate -->
+        <div class="upload-card" id="loginSection">
+          <h2 class="section-title">Enter Password</h2>
+          <form id="loginForm" novalidate>
+            <div class="upload-field">
+              <label for="loginPassword">Password</label>
+              <input id="loginPassword" type="password" autocomplete="current-password" placeholder="Enter password" required>
+            </div>
+            <button type="submit" class="btn btn-solid upload-submit">Continue</button>
+            <p class="upload-message error" id="loginMessage" aria-live="polite"></p>
+          </form>
+        </div>
+
+        <!-- Step 2: Upload form (shown after correct password) -->
+        <div class="upload-card" id="uploadSection">
+          <h2 class="section-title">Upload Today's PDF</h2>
+          <form id="uploadForm" novalidate>
+            <div class="upload-field">
+              <label for="pdfFile">Select PDF file</label>
+              <input id="pdfFile" type="file" accept="application/pdf,.pdf" required>
+            </div>
+            <button type="submit" class="btn btn-solid upload-submit" id="uploadBtn">Upload PDF</button>
+            <p class="upload-message" id="uploadMessage" aria-live="polite"></p>
+          </form>
+
+          <div class="current-pdf-wrap">
+            <p>Current availability PDF:</p>
+            <a id="currentPdfLink" href="assets/availability/latest-availability.pdf" target="_blank" rel="noopener noreferrer">View current PDF</a>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // ⚠️ Replace this URL with your Cloudflare Worker URL after deploying it
+    const WORKER_URL = "https://bunchesdirectaiworker.francesco-swoboda.workers.dev/";
+
+    const loginSection  = document.getElementById("loginSection");
+    const uploadSection = document.getElementById("uploadSection");
+    const loginForm     = document.getElementById("loginForm");
+    const loginMessage  = document.getElementById("loginMessage");
+    const uploadForm    = document.getElementById("uploadForm");
+    const uploadMessage = document.getElementById("uploadMessage");
+    const uploadBtn     = document.getElementById("uploadBtn");
+
+    let confirmedPassword = "";
+
+    // Step 1 — password check (verified by the worker, not here)
+    loginForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const pw = document.getElementById("loginPassword").value.trim();
+      if (!pw) {
+        loginMessage.textContent = "Please enter the password.";
+        return;
+      }
+      loginMessage.textContent = "";
+
+      // Do a quick test upload with no file to verify password
+      try {
+        const res = await fetch(WORKER_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ password: pw, fileDataBase64: "" }),
+        });
+        const data = await res.json();
+
+        if (res.status === 401) {
+          loginMessage.textContent = "Wrong password. Try again.";
+          return;
+        }
+        // Any response other than 401 means password is correct
+        confirmedPassword = pw;
+        loginSection.style.display = "none";
+        uploadSection.style.display = "block";
+      } catch {
+        loginMessage.textContent = "Could not connect. Please try again.";
+      }
+    });
+
+    // Step 2 — upload PDF
+    uploadForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const fileInput = document.getElementById("pdfFile");
+      const file = fileInput.files[0];
+
+      if (!file) {
+        showUploadMessage("Please select a PDF file.", "error");
+        return;
+      }
+      if (file.type !== "application/pdf" && !file.name.toLowerCase().endsWith(".pdf")) {
+        showUploadMessage("Please select a PDF file.", "error");
+        return;
+      }
+
+      uploadBtn.disabled = true;
+      uploadBtn.textContent = "Uploading…";
+      showUploadMessage("", "");
+
+      try {
+        const base64 = await fileToBase64(file);
+
+        const res = await fetch(WORKER_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ password: confirmedPassword, fileDataBase64: base64 }),
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+          showUploadMessage("✓ Uploaded successfully! The website will update in about 30 seconds.", "success");
+          fileInput.value = "";
+        } else {
+          showUploadMessage(data.error || "Upload failed. Please try again.", "error");
+        }
+      } catch (err) {
+        showUploadMessage("Connection error. Please check your internet and try again.", "error");
+      } finally {
+        uploadBtn.disabled = false;
+        uploadBtn.textContent = "Upload PDF";
+      }
+    });
+
+    function fileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          // Remove the data:application/pdf;base64, prefix
+          const base64 = reader.result.split(",")[1];
+          resolve(base64);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function showUploadMessage(text, type) {
+      uploadMessage.textContent = text;
+      uploadMessage.className = "upload-message" + (type ? " " + type : "");
+    }
+  </script>
+</body>
+</html>
