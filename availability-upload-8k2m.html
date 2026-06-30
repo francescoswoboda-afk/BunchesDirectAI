@@ -10,69 +10,103 @@
   <link href="https://fonts.googleapis.com/css2?family=Birthstone&family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   <style>
+    body {
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      flex-shrink: 0;
+    }
+    main {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .section-pad {
+      padding: 2rem 1rem !important;
+    }
+    .page-hero {
+      text-align: center;
+      padding: 1.5rem 1rem !important;
+    }
+    .page-hero p.eyebrow {
+      margin: 0 0 0.5rem 0;
+      font-size: 0.8rem;
+    }
+    .page-hero h1 {
+      margin: 0 0 0.75rem 0;
+      font-size: 2.5rem;
+    }
+    .page-hero p.lead {
+      margin: 0;
+      font-size: 1rem;
+      max-width: 600px;
+      margin: 0 auto;
+    }
     .upload-card {
       background: #fff;
       border: 1px solid #e8e0d8;
       border-radius: 12px;
-      padding: 2.5rem 2rem;
-      max-width: 480px;
+      padding: 2rem 1.5rem;
+      max-width: 420px;
       margin: 0 auto;
     }
     .upload-card h2 {
-      margin-top: 0;
-      margin-bottom: 1.5rem;
+      margin: 0 0 1.25rem 0;
+      font-size: 1.35rem;
     }
     .upload-field {
       display: flex;
       flex-direction: column;
-      gap: 0.4rem;
-      margin-bottom: 1.25rem;
+      gap: 0.35rem;
+      margin-bottom: 1rem;
     }
     .upload-field label {
       font-weight: 600;
-      font-size: 0.92rem;
+      font-size: 0.9rem;
     }
     .upload-field input[type="password"],
     .upload-field input[type="file"] {
-      padding: 0.6rem 0.75rem;
+      padding: 0.5rem 0.6rem;
       border: 1px solid #ccc;
       border-radius: 6px;
       font-family: inherit;
-      font-size: 1rem;
+      font-size: 0.95rem;
       width: 100%;
       box-sizing: border-box;
     }
     .upload-field input[type="file"] {
-      padding: 0.45rem 0.75rem;
       background: #faf8f6;
       cursor: pointer;
     }
     .upload-message {
-      margin-top: 1rem;
-      font-size: 0.95rem;
-      min-height: 1.4em;
+      margin-top: 0.75rem;
+      font-size: 0.9rem;
+      min-height: 1.3em;
       font-weight: 500;
     }
     .upload-message.success { color: #2a7a4b; }
     .upload-message.error   { color: #c0392b; }
     .upload-submit {
       width: 100%;
-      margin-top: 0.25rem;
+      margin-top: 0.15rem;
+      font-size: 0.95rem;
     }
     #loginSection { display: block; }
     #uploadSection { display: none; }
     .current-pdf-wrap {
-      margin-top: 1.5rem;
-      padding-top: 1.5rem;
+      margin-top: 1.2rem;
+      padding-top: 1.2rem;
       border-top: 1px solid #e8e0d8;
     }
     .current-pdf-wrap p {
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       color: #666;
-      margin-bottom: 0.5rem;
+      margin: 0 0 0.4rem 0;
     }
     .current-pdf-wrap a {
-      font-size: 0.9rem;
+      font-size: 0.85rem;
     }
   </style>
 </head>
