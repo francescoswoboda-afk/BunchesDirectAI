@@ -486,7 +486,7 @@ body[data-page="products"] .product-card p {
 
 #availabilityFrame {
   width: 100%;
-  min-height: 70vh;
+  min-height: 90vh;
   border: 1px solid var(--border);
   border-radius: 12px;
   background: #ffffff;
