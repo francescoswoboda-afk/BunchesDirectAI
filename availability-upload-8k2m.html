@@ -21,9 +21,24 @@
       min-height: 100vh;
     }
     header {
-      padding: 1rem;
+      padding: 1rem 1.5rem;
       border-bottom: 1px solid #f0f0f0;
       flex-shrink: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .header-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.85rem;
+      color: #666;
+      font-weight: 500;
+    }
+    .header-badge svg {
+      width: 16px;
+      height: 16px;
     }
     main {
       flex: 1;
@@ -72,6 +87,12 @@
       margin: 0 0 1.25rem 0;
       font-size: 1.25rem;
       font-weight: 600;
+      text-align: center;
+    }
+    .upload-card .subtitle {
+      margin: 0 0 1.5rem 0;
+      font-size: 0.9rem;
+      color: #666;
       text-align: center;
     }
     .upload-field {
@@ -134,6 +155,12 @@
     <a class="home-brand" href="index.html" aria-label="Bunches Direct home">
       <img class="home-brand-logo" src="assets/my-logo.png" alt="Bunches Direct">
     </a>
+    <div class="header-badge">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+      </svg>
+      <span>Private Family Access</span>
+    </div>
   </header>
 
   <main>
@@ -151,6 +178,7 @@
         <!-- Step 1: Password gate -->
         <div class="upload-card" id="loginSection">
           <h2 class="section-title">Enter Password</h2>
+          <p class="subtitle">Please enter the password to continue</p>
           <form id="loginForm" novalidate>
             <div class="upload-field">
               <label for="loginPassword">Password</label>
