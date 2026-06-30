@@ -3,90 +3,514 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Check current rose availability from Bunches Direct and request your preferred varieties.">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://bunches-direct.com/availability.html">
-  <meta property="og:title" content="Our Availability | Bunches Direct">
-  <meta property="og:description" content="Check current rose availability from Bunches Direct and request your preferred varieties.">
-  <meta property="og:image" content="https://bunches-direct.com/assets/social-preview.png">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Our Availability | Bunches Direct">
-  <meta name="twitter:description" content="Check current rose availability from Bunches Direct and request your preferred varieties.">
-  <meta name="twitter:image" content="https://bunches-direct.com/assets/social-preview.png">
-  <title>Our Availability | Bunches Direct</title>
+  <meta name="robots" content="noindex, nofollow">
+  <title>Upload Availability PDF | Bunches Direct</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Birthstone&family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=availability-v2">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      height: 100vh;
+      font-family: "Manrope", Arial, sans-serif;
+      color: #15181e;
+      background: linear-gradient(90deg, #ffffff 0%, #fff8fb 64%, #ffeef4 100%);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .topbar {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 2rem 0.3rem;
+      min-height: 62px;
+    }
+
+    .brand-logo {
+      width: 150px;
+      max-width: 42vw;
+      height: auto;
+      display: block;
+    }
+
+    .header-badge {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      color: #74808e;
+      font-weight: 500;
+      font-size: 0.95rem;
+      white-space: nowrap;
+    }
+
+    .header-badge svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.4rem 1rem 0.6rem;
+    }
+
+    .shell {
+      width: min(92vw, 820px);
+      text-align: center;
+      max-height: calc(100vh - 86px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .access-pill {
+      display: inline-flex;
+      align-self: center;
+      align-items: center;
+      gap: 0.4rem;
+      border-radius: 999px;
+      background: #f8e9ee;
+      color: #be1f2a;
+      width: fit-content;
+      padding: 0.45rem 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 0.72rem;
+      font-weight: 700;
+      margin-bottom: 0.7rem;
+    }
+
+    .access-pill svg {
+      width: 12px;
+      height: 12px;
+    }
+
+    .hero-title {
+      margin: 0;
+      font-family: "Cormorant Garamond", serif;
+      font-size: clamp(2.8rem, 4.8vw, 3.85rem);
+      font-weight: 700;
+      line-height: 0.95;
+      letter-spacing: -0.02em;
+    }
+
+    .hero-title .title-main { color: #111111; }
+    .hero-title .title-accent { color: #b1050d; }
+
+    .hero-subtitle {
+      margin: 0.7rem auto 1.05rem;
+      max-width: 500px;
+      color: #58606d;
+      font-size: 0.92rem;
+      line-height: 1.45;
+    }
+
+    .card {
+      width: min(100%, 560px);
+      margin: 0 auto;
+      background: #ffffff;
+      border-radius: 16px;
+      border: 1px solid #eceef2;
+      box-shadow: 0 12px 24px rgba(17, 22, 30, 0.07);
+      padding: 1rem 1.15rem 1rem;
+    }
+
+    .card-icon-wrap {
+      width: 54px;
+      height: 54px;
+      margin: 0 auto 0.55rem;
+      border-radius: 50%;
+      background: #fdeef2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card-icon-wrap svg {
+      width: 27px;
+      height: 27px;
+      color: #cd141f;
+    }
+
+    .card h2 {
+      margin: 0;
+      font-family: "Cormorant Garamond", serif;
+      font-size: 2.25rem;
+      font-weight: 700;
+      color: #111111;
+      line-height: 1;
+    }
+
+    .card .subtitle {
+      margin: 0.45rem 0 0.8rem;
+      color: #6b7380;
+      font-size: 0.9rem;
+    }
+
+    .field {
+      text-align: left;
+      margin-bottom: 0.72rem;
+    }
+
+    .field label {
+      display: block;
+      margin: 0 0 0.35rem;
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: #222631;
+    }
+
+    .password-input-wrap {
+      position: relative;
+    }
+
+    .field input[type="password"],
+    .field input[type="file"] {
+      width: 100%;
+      border: 1px solid #d1d7df;
+      border-radius: 8px;
+      background: #ffffff;
+      font: inherit;
+      color: #1f2328;
+      padding: 0.7rem 2.2rem 0.7rem 0.82rem;
+      font-size: 0.95rem;
+    }
+
+    .field input::placeholder { color: #98a0ab; }
+
+    .field input:focus {
+      outline: none;
+      border-color: #c5151f;
+      box-shadow: 0 0 0 3px rgba(197, 21, 31, 0.12);
+    }
+
+    .field .lock-icon {
+      position: absolute;
+      right: 0.78rem;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 17px;
+      height: 17px;
+      color: #8f96a1;
+      pointer-events: none;
+    }
+
+    .submit-btn {
+      width: 100%;
+      border: 1px solid #c9000d;
+      border-radius: 8px;
+      background: #c9000d;
+      color: #ffffff;
+      font-size: 1.1rem;
+      font-weight: 700;
+      font-family: "Manrope", Arial, sans-serif;
+      min-height: 46px;
+      padding: 0.62rem 0.9rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .submit-btn:hover {
+      background: #b4020d;
+      border-color: #b4020d;
+    }
+
+    .submit-btn:disabled {
+      opacity: 0.75;
+      cursor: not-allowed;
+    }
+
+    .upload-message {
+      min-height: 1.2rem;
+      margin: 0.5rem 0 0;
+      font-size: 0.84rem;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    .upload-message.error { color: #c0392b; }
+    .upload-message.success { color: #257444; }
+
+    #loginSection { display: block; }
+    #uploadSection { display: none; }
+
+    .current-pdf-wrap {
+      border-top: 1px solid #eceef2;
+      margin-top: 0.72rem;
+      padding-top: 0.72rem;
+      color: #67707c;
+      font-size: 0.82rem;
+      text-align: left;
+    }
+
+    .current-pdf-wrap a {
+      color: #b1050d;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .site-footnote {
+      text-align: center;
+      font-size: 0.78rem;
+      color: #7f8997;
+      padding: 0 1rem 0.7rem;
+    }
+
+    @media (max-width: 760px) {
+      .topbar {
+        padding: 0.8rem 0.9rem 0.3rem;
+        min-height: 56px;
+      }
+
+      .brand-logo { width: 132px; }
+
+      .header-badge {
+        position: static;
+        transform: none;
+        margin-left: auto;
+        font-size: 0.82rem;
+      }
+
+      .hero-title {
+        font-size: 2.35rem;
+      }
+
+      .hero-subtitle {
+        font-size: 0.86rem;
+        margin-bottom: 0.9rem;
+      }
+
+      .card {
+        border-radius: 12px;
+        padding: 0.95rem 0.82rem;
+      }
+
+      .card h2 {
+        font-size: 1.85rem;
+      }
+
+      .site-footnote {
+        padding-bottom: 0.55rem;
+      }
+    }
+  </style>
 </head>
-<body data-page="availability">
-  <header class="home-header">
-    <a class="home-brand" href="index.html" aria-label="Bunches Direct home">
-      <img class="home-brand-logo" src="assets/my-logo.png" alt="Bunches Direct">
+<body data-page="availability-admin">
+  <header class="topbar">
+    <a href="index.html" aria-label="Bunches Direct home">
+      <img class="brand-logo" src="assets/my-logo.png" alt="Bunches Direct">
     </a>
-
-    <nav class="home-nav" aria-label="Primary">
-      <a href="index.html">Home</a>
-      <a class="is-active" href="products.html">Our Products</a>
-      <a href="about.html">About Us</a>
-    </nav>
-
-    <button class="home-hamburger" id="homeHamburger" aria-label="Open navigation" aria-expanded="false" aria-controls="homeNavDrawer">
-      <span></span><span></span><span></span>
-    </button>
-
-    <div class="home-header-actions">
-      <a class="home-cta" href="contact.html">Get in Touch</a>
-      <a class="home-cart-link" href="cart.html" aria-label="Open cart">
-        <svg class="home-cart-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-          <path d="M3 4h2l2.1 10.2a1 1 0 0 0 1 .8h9.6a1 1 0 0 0 1-.76L21 7H7.1" />
-          <circle cx="10" cy="19" r="1.5" />
-          <circle cx="17" cy="19" r="1.5" />
-        </svg>
-        <span class="home-cart-count" id="homeCartCount">0</span>
-      </a>
+    <div class="header-badge">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+      </svg>
+      <span>Private Family Access</span>
     </div>
   </header>
 
-  <div class="home-nav-drawer" id="homeNavDrawer" aria-hidden="true">
-    <div class="home-nav-drawer-overlay" id="homeNavOverlay"></div>
-    <nav class="home-nav-drawer-panel" aria-label="Mobile navigation">
-      <button class="home-nav-drawer-close" id="homeNavClose" aria-label="Close navigation">&times;</button>
-      <a href="index.html">Home</a>
-      <a href="products.html">Our Products</a>
-      <a href="about.html">About Us</a>
-      <a href="contact.html">Get in Touch</a>
-    </nav>
-  </div>
-
   <main>
-    <section class="section-pad page-hero availability-hero">
-      <div class="container narrow">
-        <p class="eyebrow">Weekly Stock Outlook</p>
-        <h1 class="availability-title"><span class="title-main">Our</span> <span class="title-accent">Availability</span></h1>
-        <p class="lead">Share your desired varieties and quantities, and our team will confirm current farm availability and quote options quickly.</p>
-      </div>
-    </section>
+    <div class="shell">
+      <span class="access-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="5" y="11" width="14" height="10" rx="2"></rect>
+          <path d="M8 11V8a4 4 0 0 1 8 0v3"></path>
+        </svg>
+        Private Family Access
+      </span>
 
-    <section class="section-pad alt-bg availability-panel-section">
-      <div class="container narrow availability-panel-wrap">
-        <article class="info-panel availability-viewer-panel">
-          <div class="availability-panel-header">
-            <h2 class="section-title">Daily Rose Availability (PDF)</h2>
-            <p class="availability-download-row">
-              <a class="btn btn-outline" id="availabilityDownloadLink" href="#" target="_blank" rel="noopener noreferrer">↓ Download PDF</a>
-            </p>
-          </div>
-          <p id="availabilityStatus">Loading the latest availability file...</p>
-          <div class="availability-document-wrap" id="availabilityDocumentWrap" hidden>
-            <iframe id="availabilityFrame" title="Bunches Direct daily rose availability" loading="lazy"></iframe>
-          </div>
-        </article>
-      </div>
-    </section>
+      <h1 class="hero-title"><span class="title-main">Upload</span> <span class="title-accent">Availability PDF</span></h1>
+      <p class="hero-subtitle">Upload today's availability PDF. It will appear on the website within about 30 seconds.</p>
 
+      <section class="card" id="loginSection">
+        <div class="card-icon-wrap" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H7a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7z"></path>
+            <path d="M14 2v5h5"></path>
+            <path d="M8.5 14h7"></path>
+            <path d="M8.5 17h7"></path>
+            <path d="M8.5 11h3.5"></path>
+          </svg>
+        </div>
+        <h2>Enter Password</h2>
+        <p class="subtitle">Please enter the password to continue</p>
+        <form id="loginForm" novalidate>
+          <div class="field">
+            <label for="loginPassword">Password</label>
+            <div class="password-input-wrap">
+              <input id="loginPassword" type="password" autocomplete="current-password" placeholder="Enter password" required>
+              <svg class="lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="5" y="11" width="14" height="10" rx="2"></rect>
+                <path d="M8 11V8a4 4 0 0 1 8 0v3"></path>
+              </svg>
+            </div>
+          </div>
+          <button type="submit" class="submit-btn">Continue <span aria-hidden="true">→</span></button>
+          <p class="upload-message error" id="loginMessage" aria-live="polite"></p>
+        </form>
+      </section>
+
+      <section class="card" id="uploadSection">
+        <div class="card-icon-wrap" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H7a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7z"></path>
+            <path d="M14 2v5h5"></path>
+            <path d="M12 18v-7"></path>
+            <path d="M9 14l3-3 3 3"></path>
+          </svg>
+        </div>
+        <h2>Upload Today's PDF</h2>
+        <p class="subtitle">Select a PDF and publish it to availability</p>
+        <form id="uploadForm" novalidate>
+          <div class="field">
+            <label for="pdfFile">PDF file</label>
+            <input id="pdfFile" type="file" accept="application/pdf,.pdf" required>
+          </div>
+          <button type="submit" class="submit-btn" id="uploadBtn">Upload PDF</button>
+          <p class="upload-message" id="uploadMessage" aria-live="polite"></p>
+        </form>
+        <div class="current-pdf-wrap">
+          <p>Current availability PDF:</p>
+          <a id="currentPdfLink" href="assets/availability/latest-availability.pdf" target="_blank" rel="noopener noreferrer">View current PDF</a>
+        </div>
+      </section>
+    </div>
   </main>
 
-  <script src="script.js"></script>
+  <footer class="site-footnote">© 2026 Bunches Direct. All rights reserved.</footer>
+
+  <script>
+    const CLOUDFLARE_WORKER_URL = "https://bunchesdirectaiworker.francesco-swoboda.workers.dev/";
+    const isLocalHost = ["localhost", "127.0.0.1"].includes(window.location.hostname);
+    const AVAILABILITY_UPLOAD_URL = isLocalHost ? "/api/availability/upload" : CLOUDFLARE_WORKER_URL;
+
+    const loginSection = document.getElementById("loginSection");
+    const uploadSection = document.getElementById("uploadSection");
+    const loginForm = document.getElementById("loginForm");
+    const loginMessage = document.getElementById("loginMessage");
+    const uploadForm = document.getElementById("uploadForm");
+    const uploadMessage = document.getElementById("uploadMessage");
+    const uploadBtn = document.getElementById("uploadBtn");
+
+    let confirmedPassword = "";
+
+    loginForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const password = document.getElementById("loginPassword").value.trim();
+      if (!password) {
+        loginMessage.textContent = "Please enter the password.";
+        return;
+      }
+
+      loginMessage.textContent = "";
+
+      try {
+        const response = await fetch(AVAILABILITY_UPLOAD_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(buildUploadPayload(password, ""))
+        });
+
+        const data = await response.json().catch(() => ({}));
+
+        if (response.status === 401) {
+          loginMessage.textContent = "Wrong password. Try again.";
+          return;
+        }
+
+        if (!response.ok && response.status !== 400) {
+          loginMessage.textContent = data.error || "Could not verify password. Please try again.";
+          return;
+        }
+
+        confirmedPassword = password;
+        loginSection.style.display = "none";
+        uploadSection.style.display = "block";
+      } catch {
+        loginMessage.textContent = "Could not connect. Please try again.";
+      }
+    });
+
+    uploadForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const fileInput = document.getElementById("pdfFile");
+      const file = fileInput.files[0];
+
+      if (!file || (file.type !== "application/pdf" && !file.name.toLowerCase().endsWith(".pdf"))) {
+        showUploadMessage("Please select a PDF file.", "error");
+        return;
+      }
+
+      uploadBtn.disabled = true;
+      uploadBtn.textContent = "Uploading...";
+      showUploadMessage("", "");
+
+      try {
+        const base64 = await fileToBase64(file);
+
+        const response = await fetch(AVAILABILITY_UPLOAD_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(buildUploadPayload(confirmedPassword, base64))
+        });
+
+        const data = await response.json().catch(() => ({}));
+
+        if (data.success) {
+          showUploadMessage("Uploaded successfully. The website will update in about 30 seconds.", "success");
+          fileInput.value = "";
+        } else {
+          showUploadMessage(data.error || "Upload failed. Please try again.", "error");
+        }
+      } catch {
+        showUploadMessage("Connection error. Please try again.", "error");
+      } finally {
+        uploadBtn.disabled = false;
+        uploadBtn.textContent = "Upload PDF";
+      }
+    });
+
+    function fileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const base64 = reader.result.split(",")[1];
+          resolve(base64);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function showUploadMessage(text, type) {
+      uploadMessage.textContent = text;
+      uploadMessage.className = "upload-message" + (type ? " " + type : "");
+    }
+
+    function buildUploadPayload(password, fileDataBase64) {
+      if (isLocalHost) {
+        return { adminPassword: password, fileDataBase64 };
+      }
+      return { password, fileDataBase64 };
+    }
+  </script>
 </body>
 </html>
