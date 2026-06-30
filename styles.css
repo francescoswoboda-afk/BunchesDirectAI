@@ -497,6 +497,157 @@ body[data-page="products"] .product-card p {
   text-align: center;
 }
 
+body[data-page="availability"] {
+  background: linear-gradient(90deg, #ffffff 0%, #fff9fb 66%, #ffeef4 100%);
+  font-size: 16px;
+}
+
+body[data-page="availability"] .alt-bg {
+  background: transparent;
+}
+
+body[data-page="availability"] main {
+  margin-top: 0;
+}
+
+body[data-page="availability"] .home-header {
+  border-bottom: none;
+  padding-top: 1.15rem;
+  padding-bottom: 1.05rem;
+}
+
+body[data-page="availability"] .home-brand-logo {
+  width: 182px;
+}
+
+body[data-page="availability"] .home-nav {
+  font-size: 0.98rem;
+  gap: 1.65rem;
+}
+
+body[data-page="availability"] .home-cta {
+  padding: 0.62rem 1.45rem;
+  font-size: 0.98rem;
+}
+
+body[data-page="availability"] .availability-hero {
+  padding-top: clamp(2.25rem, 4.4vw, 3.15rem);
+  padding-bottom: clamp(1.55rem, 3vw, 2.05rem);
+}
+
+body[data-page="availability"] .page-hero h1 {
+  margin-bottom: 0.62rem;
+  font-family: "Cormorant Garamond", serif;
+  font-size: clamp(3rem, 5.5vw, 4.15rem);
+  font-weight: 700;
+  line-height: 0.94;
+  letter-spacing: -0.01em;
+}
+
+body[data-page="availability"] .availability-title .title-main {
+  color: #111111;
+}
+
+body[data-page="availability"] .availability-title .title-accent {
+  color: #b1060d;
+}
+
+body[data-page="availability"] .page-hero .lead {
+  max-width: 610px;
+  margin-left: auto;
+  margin-right: auto;
+  color: #434343;
+  font-size: 1.02rem;
+  line-height: 1.5;
+  text-align: center;
+}
+
+body[data-page="availability"] .availability-panel-section {
+  padding-top: 0;
+  padding-bottom: 1.3rem;
+  background: transparent;
+}
+
+body[data-page="availability"] .availability-panel-wrap {
+  width: min(900px, 92vw);
+}
+
+body[data-page="availability"] .availability-viewer-panel {
+  padding: 1.45rem 1.4rem 1.25rem;
+  border: 1px solid #e1e1e1;
+  box-shadow: none;
+  border-radius: 9px;
+  color: #232323;
+}
+
+body[data-page="availability"] .availability-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+body[data-page="availability"] .availability-viewer-panel .section-title {
+  margin: 0;
+  font-size: clamp(1.95rem, 2.7vw, 2.35rem);
+  color: #2a2a2a;
+  line-height: 1.05;
+}
+
+body[data-page="availability"] #availabilityStatus {
+  margin: 0.6rem 0 0;
+  color: #727272;
+  font-size: 0.9rem;
+  text-align: left;
+}
+
+body[data-page="availability"] .availability-download-row {
+  margin: 0;
+  text-align: right;
+}
+
+body[data-page="availability"] #availabilityDownloadLink {
+  border-radius: 9px;
+  padding: 0.64rem 1.08rem;
+  border-color: #e0e0e0;
+  color: #ba0000;
+  font-weight: 700;
+  font-size: 0.92rem;
+  white-space: nowrap;
+}
+
+body[data-page="availability"] .availability-document-wrap {
+  margin-top: 1.05rem;
+}
+
+body[data-page="availability"] #availabilityFrame {
+  min-height: 420px;
+  border: 1px solid #dedede;
+  border-radius: 6px;
+}
+
+body[data-page="availability"] .site-footnote {
+  text-align: center;
+  color: #8b8b8b;
+  font-size: 0.95rem;
+  padding: 1.2rem 1rem 2rem;
+}
+
+@media (max-width: 760px) {
+  body[data-page="availability"] .availability-panel-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  body[data-page="availability"] .availability-download-row {
+    text-align: left;
+  }
+
+  body[data-page="availability"] #availabilityFrame {
+    min-height: 380px;
+  }
+}
+
 .availability-admin-panel {
   border: 1px solid var(--border);
   border-radius: var(--radius);

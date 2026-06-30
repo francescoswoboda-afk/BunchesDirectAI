@@ -457,6 +457,8 @@ function wireDetailQuantityControls() {
         return;
     }
 
+    const defaultAddBoxLabel = dom.addBoxBtn.textContent;
+
     dom.qtyMinus.addEventListener("click", () => {
         const currentValue = Number(dom.qtyValue.textContent) || 1;
         const nextValue = Math.max(1, currentValue - 1);
@@ -484,8 +486,12 @@ function wireDetailQuantityControls() {
         dom.addBoxBtn.textContent = "Added!";
         updateSelectionSummary();
 
-        window.setTimeout(() => {
-            dom.addBoxBtn.textContent = "Add box to cart";
+        if (dom.addBoxBtnResetTimer) {
+            window.clearTimeout(dom.addBoxBtnResetTimer);
+        }
+
+        dom.addBoxBtnResetTimer = window.setTimeout(() => {
+            dom.addBoxBtn.textContent = defaultAddBoxLabel;
         }, 1200);
     });
 }
@@ -1147,7 +1153,7 @@ async function refreshAvailabilityDocument(prefetchedPayload) {
         const versionedUrl = buildVersionedAvailabilityUrl(payload.url, payload.updatedAt);
 
         if (dom.availabilityFrame) {
-            dom.availabilityFrame.src = versionedUrl;
+            dom.availabilityFrame.src = `${versionedUrl}#toolbar=1&navpanes=0`;
         }
 
         if (dom.availabilityDownloadLink) {

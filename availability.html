@@ -17,7 +17,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Birthstone&family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=availability-v2">
 </head>
 <body data-page="availability">
   <header class="home-header">
@@ -60,24 +60,26 @@
   </div>
 
   <main>
-    <section class="section-pad page-hero">
+    <section class="section-pad page-hero availability-hero">
       <div class="container narrow">
         <p class="eyebrow">Weekly Stock Outlook</p>
-        <h1>Our Availability</h1>
+        <h1 class="availability-title"><span class="title-main">Our</span> <span class="title-accent">Availability</span></h1>
         <p class="lead">Share your desired varieties and quantities, and our team will confirm current farm availability and quote options quickly.</p>
       </div>
     </section>
 
-    <section class="section-pad alt-bg">
-      <div class="container narrow">
+    <section class="section-pad alt-bg availability-panel-section">
+      <div class="container narrow availability-panel-wrap">
         <article class="info-panel availability-viewer-panel">
-          <h2 class="section-title">Daily Rose Availability (PDF)</h2>
+          <div class="availability-panel-header">
+            <h2 class="section-title">Daily Rose Availability (PDF)</h2>
+            <p class="availability-download-row">
+              <a class="btn btn-outline" id="availabilityDownloadLink" href="#" target="_blank" rel="noopener noreferrer">↓ Download PDF</a>
+            </p>
+          </div>
           <p id="availabilityStatus">Loading the latest availability file...</p>
           <div class="availability-document-wrap" id="availabilityDocumentWrap" hidden>
             <iframe id="availabilityFrame" title="Bunches Direct daily rose availability" loading="lazy"></iframe>
-            <p class="availability-download-row">
-              <a class="btn btn-outline" id="availabilityDownloadLink" href="#" target="_blank" rel="noopener noreferrer">Open / Download PDF</a>
-            </p>
           </div>
         </article>
       </div>
