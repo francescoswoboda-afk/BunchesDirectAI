@@ -1110,7 +1110,30 @@ async function refreshAvailabilityDocument(prefetchedPayload) {
     dom.availabilityStatus.textContent = "Loading the latest availability file...";
 
     try {
-        const payload = prefetchedPayload || await fetchAvailabilityPayload();
+        // First try to fetch from API (if server is available)
+        let payload = prefetchedPayload;
+        if (!payload) {
+            try {
+                payload = await fetchAvailabilityPayload();
+            } catch {
+                // API unavailable (GitHub Pages static site), use direct file path
+                payload = null;
+            }
+        }
+
+        // If no API payload, try direct file path
+        if (!payload) {
+            const directUrl = "/assets/availability/latest-availability.pdf";
+            const headResponse = await fetch(directUrl, { method: "HEAD", cache: "no-store" }).catch(() => null);
+            if (headResponse && headResponse.ok) {
+                payload = {
+                    available: true,
+                    url: directUrl,
+                    updatedAt: Date.now()
+                };
+            }
+        }
+
         const hasPdf = payload && payload.available === true && typeof payload.url === "string" && payload.url;
 
         if (!hasPdf) {
