@@ -370,7 +370,7 @@ function renderProductCards(list) {
         .map(
             (product) => `
             <a class="product-card product-card-link" href="${getProductDetailUrl(product)}" aria-label="View details for ${product.name}">
-                <img class="product-image" src="${product.image || FALLBACK_PRODUCT_IMAGE}" alt="${product.name} arrangement image" loading="lazy" onerror="this.onerror=null;this.src='${FALLBACK_PRODUCT_IMAGE}';">
+                <img class="product-image" src="${product.image || FALLBACK_PRODUCT_IMAGE}" alt="${product.name} arrangement image" loading="lazy" decoding="async" fetchpriority="low" onerror="this.onerror=null;this.src='${FALLBACK_PRODUCT_IMAGE}';">
                 <h3>${product.name}</h3>
                 <p class="product-tag">Premium Rose</p>
                 <span class="product-arrow" aria-hidden="true">&rarr;</span>
@@ -425,6 +425,9 @@ function renderProductDetail(product, index) {
     const nextProduct = index < products.length - 1 ? products[index + 1] : null;
     activeDetailProduct = product;
 
+    dom.detailImage.loading = "eager";
+    dom.detailImage.decoding = "async";
+    dom.detailImage.setAttribute("fetchpriority", "high");
     dom.detailImage.src = product.image || FALLBACK_PRODUCT_IMAGE;
     dom.detailImage.alt = `${product.name} rose image`;
     dom.detailName.textContent = product.name;
@@ -581,7 +584,7 @@ function renderCartPage() {
         .map(
             (item, index) => `
             <article class="cart-item-card">
-                <img class="cart-item-image" src="${item.image || FALLBACK_PRODUCT_IMAGE}" alt="${item.roseName} rose image" loading="lazy" onerror="this.onerror=null;this.src='${FALLBACK_PRODUCT_IMAGE}';">
+                <img class="cart-item-image" src="${item.image || FALLBACK_PRODUCT_IMAGE}" alt="${item.roseName} rose image" loading="lazy" decoding="async" fetchpriority="low" onerror="this.onerror=null;this.src='${FALLBACK_PRODUCT_IMAGE}';">
                 <div class="cart-item-copy">
                     <h3>${item.roseName}</h3>
                     <p>Packaging: ${item.boxType}</p>
@@ -621,7 +624,7 @@ function buildCartItemsHtml(cart) {
         .map(
             (item) => `
             <article class="cart-item-card">
-                <img class="cart-item-image" src="${item.image || FALLBACK_PRODUCT_IMAGE}" alt="${item.roseName} rose image" loading="lazy" onerror="this.onerror=null;this.src='${FALLBACK_PRODUCT_IMAGE}';">
+                <img class="cart-item-image" src="${item.image || FALLBACK_PRODUCT_IMAGE}" alt="${item.roseName} rose image" loading="lazy" decoding="async" fetchpriority="low" onerror="this.onerror=null;this.src='${FALLBACK_PRODUCT_IMAGE}';">
                 <div class="cart-item-copy">
                     <h3>${item.roseName}</h3>
                     <p>Packaging: ${item.boxType}</p>

@@ -42,7 +42,23 @@ app.get(availabilityAdminPath, (_req, res) => {
 app.get("/api/availability/admin-page", (_req, res) => {
   return res.sendFile(path.join(__dirname, "availability-upload-8k2m.html"));
 });
-app.use(express.static(staticDir));
+app.use(express.static(staticDir, {
+  maxAge: 0,
+  setHeaders: (res, filePath) => {
+    const relativePath = path.relative(staticDir, filePath).replace(/\\/g, "/");
+
+    // Keep the latest availability PDF always fresh after uploads.
+    if (relativePath === "assets/availability/latest-availability.pdf") {
+      res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+      return;
+    }
+
+    // Aggressive cache for static assets to speed up repeat page visits.
+    if (/\.(?:avif|webp|png|jpe?g|svg|gif|ico|css|js|woff2?|ttf)$/i.test(relativePath)) {
+      res.setHeader("Cache-Control", "public, max-age=2592000, immutable");
+    }
+  }
+}));
 
 app.get("/api/availability", (_req, res) => {
   return res.json(getAvailabilityResponse());

@@ -96,14 +96,6 @@ window.BUNCHES_PRODUCTS = [
         image: "assets/products/Atomic1.jpg"
     },
     {
-        id: "Atomic3",
-        name: "Atomic 3",
-        category: "romantic",
-        price: 58,
-        description: "Blush pink mix with ranunculus and textural seasonal stems.",
-        image: "assets/products/Atomic3.jpg"
-    },
-    {
         id: "AVALANCH-",
         name: "Avalanch",
         category: "bright",
