@@ -14,5 +14,8 @@
     "express": "^4.21.2",
     "nodemailer": "^8.0.6",
     "stripe": "^17.5.0"
+  },
+  "devDependencies": {
+    "sharp": "^0.35.3"
   }
 }
