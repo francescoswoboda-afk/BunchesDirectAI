@@ -19,7 +19,7 @@
       display: flex;
       flex-direction: column;
       min-height: 100vh;
-      background: #fafafa;
+      background: linear-gradient(180deg, #fff7f7 0%, #fafafa 220px);
       color: #111111;
       font-family: "Manrope", Arial, sans-serif;
     }
@@ -56,7 +56,7 @@
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      padding: 2.25rem 1rem 1.4rem;
+      padding: 2.5rem 1rem 1.4rem;
     }
     .upload-shell {
       width: min(94vw, 720px);
@@ -101,25 +101,41 @@
     }
     .upload-card {
       background: #fff;
-      border: 1px solid #e1e3e8;
-      border-radius: 10px;
-      padding: 1.7rem 1.85rem 1.6rem;
+      border: 1px solid #ececee;
+      border-radius: 18px;
+      padding: 2.1rem 2rem 1.9rem;
       width: 100%;
       max-width: 498px;
       margin: 0 auto;
-      box-shadow: 0 1px 2px rgba(18, 23, 35, 0.04);
+      box-shadow: 0 12px 34px rgba(20, 15, 20, 0.07);
+    }
+    .card-icon {
+      width: 56px;
+      height: 56px;
+      margin: 0 auto 1.1rem;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #fdeceb, #fbdadc);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #b5070d;
+    }
+    .card-icon svg {
+      width: 26px;
+      height: 26px;
     }
     .upload-card h2 {
       margin: 0;
-      font-size: 2.05rem;
-      line-height: 1;
+      font-size: 1.65rem;
+      line-height: 1.2;
       font-weight: 800;
       letter-spacing: -0.02em;
       text-align: center;
+      color: #16171a;
     }
     .upload-card .subtitle {
-      margin: 0.55rem 0 1.55rem 0;
-      font-size: 1rem;
+      margin: 0.5rem 0 1.7rem 0;
+      font-size: 0.98rem;
       color: #6a707a;
       text-align: center;
     }
@@ -140,53 +156,65 @@
       position: relative;
     }
     .upload-field input[type="password"],
-    .upload-field input[type="file"] {
-      padding: 0.77rem 2.4rem 0.77rem 0.82rem;
+    .upload-field input[type="text"].password-visible {
+      padding: 0.8rem 2.7rem 0.8rem 0.9rem;
       border: 1px solid #d7dce4;
-      border-radius: 6px;
+      border-radius: 10px;
       font-family: inherit;
-      font-size: 0.97rem;
+      font-size: 0.99rem;
       width: 100%;
       background: #ffffff;
       color: #1f2328;
       transition: border-color 0.2s ease, box-shadow 0.2s ease;
     }
-    .upload-field input[type="password"]::placeholder { color: #9aa0a9; }
-    .upload-field input[type="password"]:focus,
-    .upload-field input[type="file"]:focus {
+    .upload-field input::placeholder { color: #9aa0a9; }
+    .upload-field input:focus {
       outline: none;
       border-color: #c81a23;
       box-shadow: 0 0 0 3px rgba(200, 26, 35, 0.12);
     }
-    .password-input-icon {
+    .password-toggle-btn {
       position: absolute;
-      right: 0.7rem;
+      right: 0.55rem;
       top: 50%;
       transform: translateY(-50%);
-      width: 16px;
-      height: 16px;
+      width: 30px;
+      height: 30px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      background: transparent;
       color: #9298a1;
-      pointer-events: none;
-    }
-    .upload-field input[type="file"] {
-      background: #fafbfc;
+      border-radius: 8px;
       cursor: pointer;
-      padding-right: 0.82rem;
+    }
+    .password-toggle-btn:hover {
+      background: #f4f2f0;
+      color: #5a5f66;
+    }
+    .password-toggle-btn svg {
+      width: 18px;
+      height: 18px;
     }
     .upload-message {
-      margin-top: 0.72rem;
+      margin-top: 0.85rem;
       font-size: 0.9rem;
       min-height: 1.2em;
       font-weight: 600;
       text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
     }
     .upload-message.success { color: #2a7a4b; }
     .upload-message.error   { color: #c0392b; }
     .upload-submit {
       width: 100%;
-      margin-top: 0.2rem;
-      min-height: 46px;
-      border-radius: 6px;
+      margin-top: 0.35rem;
+      min-height: 50px;
+      border-radius: 10px;
       background: #cc0310;
       border: 1px solid #cc0310;
       color: #ffffff;
@@ -194,6 +222,10 @@
       font-size: 1rem;
       letter-spacing: 0;
       padding: 0.74rem 1rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.55rem;
       transition: background 0.2s ease, transform 0.2s ease;
     }
     .upload-submit:hover {
@@ -206,20 +238,242 @@
       cursor: not-allowed;
       transform: none;
     }
+    .spinner {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 2.5px solid rgba(255, 255, 255, 0.4);
+      border-top-color: #ffffff;
+      animation: spin 0.7s linear infinite;
+      display: none;
+    }
+    .upload-submit.is-loading .spinner {
+      display: inline-block;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
     #loginSection { display: block; }
     #uploadSection { display: none; }
+
+    .dropzone {
+      position: relative;
+      border: 2px dashed #d7dce4;
+      border-radius: 14px;
+      padding: 1.9rem 1.2rem;
+      text-align: center;
+      background: #fbfbfc;
+      cursor: pointer;
+      transition: border-color 0.2s ease, background 0.2s ease;
+    }
+    .dropzone:hover,
+    .dropzone.is-dragover {
+      border-color: #cc0310;
+      background: #fff6f6;
+    }
+    .dropzone input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+    .dropzone-icon {
+      width: 44px;
+      height: 44px;
+      margin: 0 auto 0.65rem;
+      border-radius: 50%;
+      background: #f3f0ee;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #8b8f96;
+    }
+    .dropzone.is-dragover .dropzone-icon,
+    .dropzone-icon.has-file {
+      background: #fdeceb;
+      color: #b5070d;
+    }
+    .dropzone-icon svg {
+      width: 20px;
+      height: 20px;
+    }
+    .dropzone-title {
+      font-weight: 700;
+      font-size: 0.98rem;
+      color: #22242a;
+      margin-bottom: 0.2rem;
+    }
+    .dropzone-title span {
+      color: #cc0310;
+    }
+    .dropzone-hint {
+      font-size: 0.83rem;
+      color: #8b909a;
+    }
+    .file-chip {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.6rem;
+      margin-top: 0.9rem;
+      padding: 0.65rem 0.85rem;
+      border: 1px solid #e6e2de;
+      border-radius: 10px;
+      background: #fafafa;
+      text-align: left;
+    }
+    .file-chip.is-visible {
+      display: flex;
+    }
+    .file-chip-info {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      min-width: 0;
+    }
+    .file-chip-icon {
+      width: 34px;
+      height: 34px;
+      flex-shrink: 0;
+      border-radius: 8px;
+      background: #fdeceb;
+      color: #b5070d;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .file-chip-icon svg {
+      width: 17px;
+      height: 17px;
+    }
+    .file-chip-text {
+      min-width: 0;
+    }
+    .file-chip-name {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #1f2328;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .file-chip-size {
+      font-size: 0.78rem;
+      color: #8b909a;
+    }
+    .file-chip-remove {
+      flex-shrink: 0;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      border: none;
+      background: transparent;
+      color: #9298a1;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .file-chip-remove:hover {
+      background: #efeceb;
+      color: #55585e;
+    }
+    .file-chip-remove svg {
+      width: 15px;
+      height: 15px;
+    }
+    .upload-signed-in-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.3rem;
+      margin-top: -0.4rem;
+      margin-bottom: 1.5rem;
+      font-size: 0.85rem;
+      color: #8b909a;
+    }
+    .upload-signed-in-row button {
+      border: none;
+      background: none;
+      color: #b5070d;
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      padding: 0;
+    }
+    .upload-signed-in-row button:hover {
+      text-decoration: underline;
+    }
     .current-pdf-wrap {
-      margin-top: 1rem;
-      padding-top: 1rem;
-      border-top: 1px solid #e8e0d8;
+      margin-top: 1.6rem;
+      padding-top: 1.4rem;
+      border-top: 1px solid #edeae7;
     }
-    .current-pdf-wrap p {
-      font-size: 0.8rem;
-      color: #777;
-      margin: 0 0 0.35rem 0;
+    .current-pdf-wrap .current-pdf-label {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #9aa0a9;
+      font-weight: 700;
+      margin-bottom: 0.7rem;
+      text-align: left;
     }
-    .current-pdf-wrap a {
+    .current-pdf-card {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 0.9rem;
+      border: 1px solid #e6e2de;
+      border-radius: 12px;
+      background: #fafafa;
+      text-align: left;
+      text-decoration: none;
+      transition: border-color 0.2s ease, background 0.2s ease;
+    }
+    .current-pdf-card:hover {
+      border-color: #cc0310;
+      background: #fff6f6;
+    }
+    .current-pdf-icon {
+      width: 38px;
+      height: 38px;
+      flex-shrink: 0;
+      border-radius: 9px;
+      background: #fdeceb;
+      color: #b5070d;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .current-pdf-icon svg {
+      width: 18px;
+      height: 18px;
+    }
+    .current-pdf-text {
+      min-width: 0;
+      flex: 1;
+    }
+    .current-pdf-title {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: #1f2328;
+    }
+    .current-pdf-meta {
       font-size: 0.8rem;
+      color: #8b909a;
+      margin-top: 0.1rem;
+    }
+    .current-pdf-arrow {
+      flex-shrink: 0;
+      color: #9298a1;
+      width: 16px;
+      height: 16px;
+    }
+    .current-pdf-empty {
+      font-size: 0.88rem;
+      color: #8b909a;
+      text-align: left;
+      padding: 0.4rem 0.1rem;
     }
     .site-footnote {
       text-align: center;
@@ -252,10 +506,10 @@
       }
       .upload-card {
         max-width: 100%;
-        padding: 1.35rem 1rem 1.25rem;
+        padding: 1.6rem 1.2rem 1.4rem;
       }
       .upload-card h2 {
-        font-size: 1.85rem;
+        font-size: 1.4rem;
       }
     }
   </style>
@@ -292,6 +546,12 @@
 
         <!-- Step 1: Password gate -->
         <div class="upload-card" id="loginSection">
+          <div class="card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="5" y="11" width="14" height="10" rx="2"></rect>
+              <path d="M8 11V8a4 4 0 0 1 8 0v3"></path>
+            </svg>
+          </div>
           <h2 class="section-title">Enter Password</h2>
           <p class="subtitle">Please enter the password to continue</p>
           <form id="loginForm" novalidate>
@@ -299,32 +559,84 @@
               <label for="loginPassword">Password</label>
               <div class="password-input-wrap">
                 <input id="loginPassword" type="password" autocomplete="current-password" placeholder="Enter password" required>
-                <svg class="password-input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <rect x="5" y="11" width="14" height="10" rx="2"></rect>
-                  <path d="M8 11V8a4 4 0 0 1 8 0v3"></path>
-                </svg>
+                <button type="button" class="password-toggle-btn" id="togglePasswordBtn" aria-label="Show password">
+                  <svg id="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                  </svg>
+                </button>
               </div>
             </div>
-            <button type="submit" class="btn btn-solid upload-submit">Continue</button>
+            <button type="submit" class="btn btn-solid upload-submit" id="loginBtn">
+              <span class="spinner" aria-hidden="true"></span>
+              <span id="loginBtnLabel">Continue</span>
+            </button>
             <p class="upload-message error" id="loginMessage" aria-live="polite"></p>
           </form>
         </div>
 
         <!-- Step 2: Upload form (shown after correct password) -->
         <div class="upload-card" id="uploadSection">
+          <div class="card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 16V4"></path>
+              <path d="M6 10l6-6 6 6"></path>
+              <path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"></path>
+            </svg>
+          </div>
           <h2 class="section-title">Upload Today's PDF</h2>
+          <p class="subtitle">Drop your file below or choose one from your device</p>
+
+          <div class="upload-signed-in-row">
+            <span>Signed in</span>
+            <button type="button" id="switchAccountBtn">Not you? Sign out</button>
+          </div>
+
           <form id="uploadForm" novalidate>
             <div class="upload-field">
-              <label for="pdfFile">Select PDF file</label>
-              <input id="pdfFile" type="file" accept="application/pdf,.pdf" required>
+              <div class="dropzone" id="dropzone">
+                <input id="pdfFile" type="file" accept="application/pdf,.pdf" required>
+                <div class="dropzone-icon" id="dropzoneIcon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M12 16V4"></path>
+                    <path d="M6 10l6-6 6 6"></path>
+                    <path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"></path>
+                  </svg>
+                </div>
+                <p class="dropzone-title">Drag &amp; drop your PDF here, or <span>browse</span></p>
+                <p class="dropzone-hint">Only PDF files are accepted</p>
+              </div>
+              <div class="file-chip" id="fileChip">
+                <div class="file-chip-info">
+                  <div class="file-chip-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                      <path d="M14 2v6h6"></path>
+                    </svg>
+                  </div>
+                  <div class="file-chip-text">
+                    <div class="file-chip-name" id="fileChipName"></div>
+                    <div class="file-chip-size" id="fileChipSize"></div>
+                  </div>
+                </div>
+                <button type="button" class="file-chip-remove" id="fileChipRemove" aria-label="Remove selected file">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M18 6 6 18"></path>
+                    <path d="M6 6l12 12"></path>
+                  </svg>
+                </button>
+              </div>
             </div>
-            <button type="submit" class="btn btn-solid upload-submit" id="uploadBtn">Upload PDF</button>
+            <button type="submit" class="btn btn-solid upload-submit" id="uploadBtn">
+              <span class="spinner" aria-hidden="true"></span>
+              <span id="uploadBtnLabel">Upload PDF</span>
+            </button>
             <p class="upload-message" id="uploadMessage" aria-live="polite"></p>
           </form>
 
           <div class="current-pdf-wrap">
-            <p>Current availability PDF:</p>
-            <a id="currentPdfLink" href="assets/availability/latest-availability.pdf" target="_blank" rel="noopener noreferrer">View current PDF</a>
+            <p class="current-pdf-label">Current availability PDF</p>
+            <div id="currentPdfWrap"></div>
           </div>
         </div>
 
@@ -336,28 +648,45 @@
 
   <script>
     const AVAILABILITY_UPLOAD_URL = "/api/availability/upload";
+    const AVAILABILITY_STATUS_URL = "/api/availability";
 
-    const loginSection  = document.getElementById("loginSection");
-    const uploadSection = document.getElementById("uploadSection");
-    const loginForm     = document.getElementById("loginForm");
-    const loginMessage  = document.getElementById("loginMessage");
-    const uploadForm    = document.getElementById("uploadForm");
-    const uploadMessage = document.getElementById("uploadMessage");
-    const uploadBtn     = document.getElementById("uploadBtn");
+    const loginSection    = document.getElementById("loginSection");
+    const uploadSection   = document.getElementById("uploadSection");
+    const loginForm       = document.getElementById("loginForm");
+    const loginMessage    = document.getElementById("loginMessage");
+    const loginBtn        = document.getElementById("loginBtn");
+    const loginBtnLabel   = document.getElementById("loginBtnLabel");
+    const loginPasswordEl = document.getElementById("loginPassword");
+    const togglePasswordBtn = document.getElementById("togglePasswordBtn");
+    const eyeIcon         = document.getElementById("eyeIcon");
+    const switchAccountBtn = document.getElementById("switchAccountBtn");
+
+    const uploadForm     = document.getElementById("uploadForm");
+    const uploadMessage  = document.getElementById("uploadMessage");
+    const uploadBtn      = document.getElementById("uploadBtn");
+    const uploadBtnLabel = document.getElementById("uploadBtnLabel");
+    const fileInput      = document.getElementById("pdfFile");
+    const dropzone        = document.getElementById("dropzone");
+    const dropzoneIcon    = document.getElementById("dropzoneIcon");
+    const fileChip        = document.getElementById("fileChip");
+    const fileChipName    = document.getElementById("fileChipName");
+    const fileChipSize    = document.getElementById("fileChipSize");
+    const fileChipRemove  = document.getElementById("fileChipRemove");
+    const currentPdfWrap  = document.getElementById("currentPdfWrap");
 
     let confirmedPassword = "";
 
     // Step 1 — password check (verified by the target backend)
     loginForm.addEventListener("submit", async (e) => {
       e.preventDefault();
-      const pw = document.getElementById("loginPassword").value.trim();
+      const pw = loginPasswordEl.value.trim();
       if (!pw) {
         loginMessage.textContent = "Please enter the password.";
         return;
       }
       loginMessage.textContent = "";
+      setButtonLoading(loginBtn, loginBtnLabel, true, "Checking…");
 
-      // Do a quick password verification request.
       try {
         const res = await fetch(AVAILABILITY_UPLOAD_URL, {
           method: "POST",
@@ -378,15 +707,88 @@
         confirmedPassword = pw;
         loginSection.style.display = "none";
         uploadSection.style.display = "block";
+        loadCurrentAvailability();
       } catch {
         loginMessage.textContent = "Could not connect. Please try again.";
+      } finally {
+        setButtonLoading(loginBtn, loginBtnLabel, false, "Continue");
       }
     });
+
+    togglePasswordBtn.addEventListener("click", () => {
+      const showing = loginPasswordEl.type === "text";
+      loginPasswordEl.type = showing ? "password" : "text";
+      loginPasswordEl.classList.toggle("password-visible", !showing);
+      togglePasswordBtn.setAttribute("aria-label", showing ? "Show password" : "Hide password");
+      eyeIcon.innerHTML = showing
+        ? '<path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"></path><circle cx="12" cy="12" r="3"></circle>'
+        : '<path d="M17.94 17.94A10.94 10.94 0 0 1 12 19c-7 0-11-7-11-7a19.87 19.87 0 0 1 4.22-5.19"></path><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 7 11 7a19.86 19.86 0 0 1-2.27 3.36"></path><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"></path><path d="M1 1l22 22"></path>';
+    });
+
+    switchAccountBtn.addEventListener("click", () => {
+      confirmedPassword = "";
+      loginPasswordEl.value = "";
+      loginMessage.textContent = "";
+      uploadSection.style.display = "none";
+      loginSection.style.display = "block";
+      loginPasswordEl.focus();
+    });
+
+    // Drag & drop wiring
+    dropzone.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      dropzone.classList.add("is-dragover");
+    });
+    dropzone.addEventListener("dragleave", () => {
+      dropzone.classList.remove("is-dragover");
+    });
+    dropzone.addEventListener("drop", (e) => {
+      e.preventDefault();
+      dropzone.classList.remove("is-dragover");
+      const dropped = e.dataTransfer.files[0];
+      if (dropped) {
+        fileInput.files = e.dataTransfer.files;
+        handleFileSelected(dropped);
+      }
+    });
+    fileInput.addEventListener("change", () => {
+      const file = fileInput.files[0];
+      if (file) {
+        handleFileSelected(file);
+      }
+    });
+    fileChipRemove.addEventListener("click", () => {
+      fileInput.value = "";
+      fileChip.classList.remove("is-visible");
+      dropzoneIcon.classList.remove("has-file");
+      showUploadMessage("", "");
+    });
+
+    function handleFileSelected(file) {
+      const isPdf = file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf");
+      if (!isPdf) {
+        showUploadMessage("Please select a PDF file.", "error");
+        fileInput.value = "";
+        fileChip.classList.remove("is-visible");
+        dropzoneIcon.classList.remove("has-file");
+        return;
+      }
+      showUploadMessage("", "");
+      fileChipName.textContent = file.name;
+      fileChipSize.textContent = formatFileSize(file.size);
+      fileChip.classList.add("is-visible");
+      dropzoneIcon.classList.add("has-file");
+    }
+
+    function formatFileSize(bytes) {
+      if (bytes < 1024) return bytes + " B";
+      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
+      return (bytes / (1024 * 1024)).toFixed(1) + " MB";
+    }
 
     // Step 2 — upload PDF
     uploadForm.addEventListener("submit", async (e) => {
       e.preventDefault();
-      const fileInput = document.getElementById("pdfFile");
       const file = fileInput.files[0];
 
       if (!file) {
@@ -398,8 +800,7 @@
         return;
       }
 
-      uploadBtn.disabled = true;
-      uploadBtn.textContent = "Uploading…";
+      setButtonLoading(uploadBtn, uploadBtnLabel, true, "Uploading…");
       showUploadMessage("", "");
 
       try {
@@ -416,16 +817,24 @@
         if (res.ok && data.available) {
           showUploadMessage("✓ Uploaded successfully! The website will update in about 30 seconds.", "success");
           fileInput.value = "";
+          fileChip.classList.remove("is-visible");
+          dropzoneIcon.classList.remove("has-file");
+          loadCurrentAvailability();
         } else {
           showUploadMessage(data.error || "Upload failed. Please try again.", "error");
         }
       } catch (err) {
         showUploadMessage("Connection error. Please check your internet and try again.", "error");
       } finally {
-        uploadBtn.disabled = false;
-        uploadBtn.textContent = "Upload PDF";
+        setButtonLoading(uploadBtn, uploadBtnLabel, false, "Upload PDF");
       }
     });
+
+    function setButtonLoading(button, labelEl, isLoading, label) {
+      button.disabled = isLoading;
+      button.classList.toggle("is-loading", isLoading);
+      labelEl.textContent = label;
+    }
 
     function fileToBase64(file) {
       return new Promise((resolve, reject) => {
@@ -447,6 +856,61 @@
 
     function buildUploadPayload(password, fileDataBase64) {
       return { adminPassword: password, fileDataBase64 };
+    }
+
+    async function loadCurrentAvailability() {
+      currentPdfWrap.innerHTML = '<p class="current-pdf-empty">Loading…</p>';
+      try {
+        const res = await fetch(AVAILABILITY_STATUS_URL, { cache: "no-store" });
+        const data = await res.json();
+
+        if (!data.available) {
+          currentPdfWrap.innerHTML = '<p class="current-pdf-empty">No availability PDF uploaded yet.</p>';
+          return;
+        }
+
+        const updatedAt = Number(data.updatedAt) || 0;
+        const updatedLabel = updatedAt ? formatUpdatedAt(updatedAt) : "";
+        const cacheBustedUrl = data.url + (data.url.includes("?") ? "&" : "?") + "t=" + updatedAt;
+
+        currentPdfWrap.innerHTML = "";
+        const link = document.createElement("a");
+        link.className = "current-pdf-card";
+        link.href = cacheBustedUrl;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.innerHTML = `
+          <div class="current-pdf-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <path d="M14 2v6h6"></path>
+            </svg>
+          </div>
+          <div class="current-pdf-text">
+            <div class="current-pdf-title">View current availability PDF</div>
+            <div class="current-pdf-meta">${updatedLabel ? "Last updated " + updatedLabel : "Live on the website"}</div>
+          </div>
+          <svg class="current-pdf-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M7 17 17 7"></path>
+            <path d="M7 7h10v10"></path>
+          </svg>
+        `;
+        currentPdfWrap.appendChild(link);
+      } catch {
+        currentPdfWrap.innerHTML = '<p class="current-pdf-empty">Could not load the current PDF status.</p>';
+      }
+    }
+
+    function formatUpdatedAt(timestampMs) {
+      const date = new Date(timestampMs);
+      const now = new Date();
+      const isToday = date.toDateString() === now.toDateString();
+      const timeLabel = date.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+      if (isToday) {
+        return "today at " + timeLabel;
+      }
+      const dateLabel = date.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+      return "on " + dateLabel + " at " + timeLabel;
     }
   </script>
 </body>
