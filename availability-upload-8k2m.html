@@ -335,9 +335,7 @@
   <footer class="site-footnote">© 2026 Bunches Direct. All rights reserved.</footer>
 
   <script>
-    const CLOUDFLARE_WORKER_URL = "https://bunchesdirectaiworker.francesco-swoboda.workers.dev/";
-    const isLocalHost = ["localhost", "127.0.0.1"].includes(window.location.hostname);
-    const AVAILABILITY_UPLOAD_URL = isLocalHost ? "/api/availability/upload" : CLOUDFLARE_WORKER_URL;
+    const AVAILABILITY_UPLOAD_URL = "/api/availability/upload";
 
     const loginSection  = document.getElementById("loginSection");
     const uploadSection = document.getElementById("uploadSection");
@@ -415,7 +413,7 @@
 
         const data = await res.json();
 
-        if (data.success) {
+        if (res.ok && data.available) {
           showUploadMessage("✓ Uploaded successfully! The website will update in about 30 seconds.", "success");
           fileInput.value = "";
         } else {
@@ -448,10 +446,7 @@
     }
 
     function buildUploadPayload(password, fileDataBase64) {
-      if (isLocalHost) {
-        return { adminPassword: password, fileDataBase64 };
-      }
-      return { password, fileDataBase64 };
+      return { adminPassword: password, fileDataBase64 };
     }
   </script>
 </body>
