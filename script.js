@@ -52,7 +52,11 @@ const dom = {
     availabilityDownloadLink: document.getElementById("availabilityDownloadLink"),
     availabilityUploadForm: document.getElementById("availabilityUploadForm"),
     availabilityUploadBtn: document.getElementById("availabilityUploadBtn"),
-    availabilityUploadMessage: document.getElementById("availabilityUploadMessage")
+    availabilityUploadMessage: document.getElementById("availabilityUploadMessage"),
+    pdfViewerOverlay: document.getElementById("pdfViewerOverlay"),
+    pdfViewerFrame: document.getElementById("pdfViewerFrame"),
+    pdfViewerClose: document.getElementById("pdfViewerClose"),
+    openAvailabilityBtn: document.getElementById("openAvailabilityBtn")
 };
 
 let filteredProducts = [...products];
@@ -172,6 +176,56 @@ function init() {
     initOrderDetailsPage();
     initPaymentPage();
     initAvailabilityPage();
+    initPdfViewerModal();
+}
+
+function initPdfViewerModal() {
+    const trigger = dom.openAvailabilityBtn;
+    const overlay = dom.pdfViewerOverlay;
+    const frame = dom.pdfViewerFrame;
+    const closeBtn = dom.pdfViewerClose;
+
+    if (!trigger || !overlay || !frame) {
+        return;
+    }
+
+    const pdfUrl = trigger.getAttribute("href");
+
+    function openViewer() {
+        if (!frame.getAttribute("src")) {
+            frame.setAttribute("src", pdfUrl);
+        }
+        overlay.classList.add("is-open");
+        overlay.setAttribute("aria-hidden", "false");
+        document.body.classList.add("pdf-viewer-locked");
+    }
+
+    function closeViewer() {
+        overlay.classList.remove("is-open");
+        overlay.setAttribute("aria-hidden", "true");
+        document.body.classList.remove("pdf-viewer-locked");
+    }
+
+    trigger.addEventListener("click", (event) => {
+        event.preventDefault();
+        openViewer();
+    });
+
+    if (closeBtn) {
+        closeBtn.addEventListener("click", closeViewer);
+    }
+
+    overlay.addEventListener("click", (event) => {
+        if (event.target === overlay) {
+            closeViewer();
+        }
+    });
+
+    document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && overlay.classList.contains("is-open")) {
+            closeViewer();
+        }
+    });
 }
 
 function initHomeCartBadge() {

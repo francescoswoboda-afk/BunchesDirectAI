@@ -68,7 +68,7 @@
           <h1>The <span>Roses</span></h1>
           <p class="lead">Reserve your preferred rose varieties today. We'll confirm availability and send our best offer on top-of-the-line roses cultivated at high altitudes in Ecuador.</p>
           <div class="products-hero-actions">
-            <a class="home-btn-primary" href="assets/availability/latest-availability.pdf" target="_blank" rel="noopener noreferrer">Our Availability</a>
+            <a class="home-btn-primary" id="openAvailabilityBtn" href="assets/availability/latest-availability.pdf" data-pdf-viewer-trigger>Our Availability</a>
           </div>
         </div>
         <div class="products-hero-image" aria-hidden="true">
@@ -106,6 +106,21 @@
     </section>
 
   </main>
+
+  <div class="pdf-viewer-overlay" id="pdfViewerOverlay" aria-hidden="true">
+    <div class="pdf-viewer-modal" role="dialog" aria-modal="true" aria-label="Availability PDF">
+      <div class="pdf-viewer-toolbar">
+        <span class="pdf-viewer-title">Our Availability</span>
+        <div class="pdf-viewer-toolbar-actions">
+          <a id="pdfViewerDownload" class="pdf-viewer-download" href="assets/availability/latest-availability.pdf" download>Download PDF</a>
+          <button type="button" class="pdf-viewer-close" id="pdfViewerClose" aria-label="Close PDF viewer">&times;</button>
+        </div>
+      </div>
+      <div class="pdf-viewer-body">
+        <iframe id="pdfViewerFrame" title="Availability PDF" src=""></iframe>
+      </div>
+    </div>
+  </div>
 
   <script src="products-data.js"></script>
   <script src="script.js"></script>
