@@ -5,7 +5,7 @@ window.BUNCHES_PRODUCTS = [
         category: "romantic",
         price: 65,
         description: "Classic red roses with burgundy foliage and silk ribbon wrap.",
-        image: "assets/products/ALL-FOR-LOVE-.webp"
+        image: "assets/products/optimized/ALL-FOR-LOVE-.webp"
     },
     {
         id: "ABSOLUTPINK2",
@@ -13,7 +13,7 @@ window.BUNCHES_PRODUCTS = [
         category: "bright",
         price: 42,
         description: "Yellow daisies, orange spray roses, and mint for a cheerful look.",
-        image: "assets/products/ABSOLUTPINK2.webp"
+        image: "assets/products/optimized/ABSOLUTPINK2.webp"
     },
     {
         id: "ALOHA",
@@ -21,7 +21,7 @@ window.BUNCHES_PRODUCTS = [
         category: "minimal",
         price: 48,
         description: "A calm palette of white lisianthus, ivory roses, and eucalyptus.",
-        image: "assets/products/ALOHA.webp"
+        image: "assets/products/optimized/ALOHA.webp"
     },
     {
         id: "ALTAMIRA-",
@@ -29,7 +29,7 @@ window.BUNCHES_PRODUCTS = [
         category: "romantic",
         price: 58,
         description: "Blush pink mix with ranunculus and textural seasonal stems.",
-        image: "assets/products/ALTAMIRA-.webp"
+        image: "assets/products/optimized/ALTAMIRA-.webp"
     },
     {
         id: "AMARETTO",
@@ -37,7 +37,7 @@ window.BUNCHES_PRODUCTS = [
         category: "bright",
         price: 55,
         description: "Orange tulips, coral carnations, and lemon button mums.",
-        image: "assets/products/AMARETTO.webp"
+        image: "assets/products/optimized/AMARETTO.webp"
     },
     {
         id: "ANDREA-",
@@ -45,7 +45,7 @@ window.BUNCHES_PRODUCTS = [
         category: "minimal",
         price: 44,
         description: "Modern foliage-forward bunch with white accents and clean lines.",
-        image: "assets/products/ANDREA-.webp"
+        image: "assets/products/optimized/ANDREA-.webp"
     },
     {
         id: "ANTONIAGARDEN1",
@@ -53,7 +53,7 @@ window.BUNCHES_PRODUCTS = [
         category: "event",
         price: 120,
         description: "Large centerpiece blend for receptions and statement installations.",
-        image: "assets/products/ANTONIAGARDEN1.webp"
+        image: "assets/products/optimized/ANTONIAGARDEN1.webp"
     },
         {
         id: "Art+Deco-1",
@@ -61,7 +61,7 @@ window.BUNCHES_PRODUCTS = [
         category: "event",
         price: 120,
         description: "Large centerpiece blend for receptions and statement installations.",
-        image: "assets/products/Art+Deco-1.webp"
+        image: "assets/products/optimized/Art+Deco-1.webp"
     },
     {
         id: "ARTICA-",
@@ -69,7 +69,7 @@ window.BUNCHES_PRODUCTS = [
         category: "romantic",
         price: 65,
         description: "Classic red roses with burgundy foliage and silk ribbon wrap.",
-        image: "assets/products/ARTICA-.webp"
+        image: "assets/products/optimized/ARTICA-.webp"
     },
     {
         id: "ARYA",
@@ -77,7 +77,7 @@ window.BUNCHES_PRODUCTS = [
         category: "bright",
         price: 42,
         description: "Yellow daisies, orange spray roses, and mint for a cheerful look.",
-        image: "assets/products/ARYA.webp"
+        image: "assets/products/optimized/ARYA.webp"
     },
     {
         id: "ATLAS2",
@@ -85,7 +85,7 @@ window.BUNCHES_PRODUCTS = [
         category: "minimal",
         price: 48,
         description: "A calm palette of white lisianthus, ivory roses, and eucalyptus.",
-        image: "assets/products/ATLAS2.webp"
+        image: "assets/products/optimized/ATLAS2.webp"
     },
     {
         id: "Atomic1",
@@ -93,7 +93,7 @@ window.BUNCHES_PRODUCTS = [
         category: "event",
         price: 95,
         description: "Premium peonies and garden roses tailored for bridal events.",
-        image: "assets/products/Atomic1.webp"
+        image: "assets/products/optimized/Atomic1.webp"
     },
     {
         id: "AVALANCH-",
@@ -101,7 +101,7 @@ window.BUNCHES_PRODUCTS = [
         category: "bright",
         price: 55,
         description: "Orange tulips, coral carnations, and lemon button mums.",
-        image: "assets/products/AVALANCH-.webp"
+        image: "assets/products/optimized/AVALANCH-.webp"
     },
     {
         id: "babbaloo-rose",
@@ -109,7 +109,7 @@ window.BUNCHES_PRODUCTS = [
         category: "minimal",
         price: 44,
         description: "Modern foliage-forward bunch with white accents and clean lines.",
-        image: "assets/products/babaloo-rose.webp"
+        image: "assets/products/optimized/babaloo-rose.webp"
     },
     {
         id: "BE-SWEET-2",
@@ -117,7 +117,7 @@ window.BUNCHES_PRODUCTS = [
         category: "event",
         price: 120,
         description: "Large centerpiece blend for receptions and statement installations.",
-        image: "assets/products/BE-SWEET-2.webp"
+        image: "assets/products/optimized/BE-SWEET-2.webp"
     },
         {
         id: "Bimba",
@@ -125,7 +125,7 @@ window.BUNCHES_PRODUCTS = [
         category: "event",
         price: 120,
         description: "Large centerpiece blend for receptions and statement installations.",
-        image: "assets/products/Bimba.webp"
+        image: "assets/products/optimized/Bimba.webp"
     },
     {
         id: "BLESSING",
@@ -133,7 +133,7 @@ window.BUNCHES_PRODUCTS = [
         category: "romantic",
         price: 65,
         description: "Classic red roses with burgundy foliage and silk ribbon wrap.",
-        image: "assets/products/BLESSING.webp"
+        image: "assets/products/optimized/BLESSING.webp"
     },
     {
         id: "Blue Dream",
@@ -141,7 +141,7 @@ window.BUNCHES_PRODUCTS = [
         category: "bright",
         price: 42,
         description: "Yellow daisies, orange spray roses, and mint for a cheerful look.",
-        image: "assets/products/Blue Dream.webp"
+        image: "assets/products/optimized/Blue Dream.webp"
     },
     {
         id: "BLUEBERRY-",
@@ -149,7 +149,7 @@ window.BUNCHES_PRODUCTS = [
         category: "minimal",
         price: 48,
         description: "A calm palette of white lisianthus, ivory roses, and eucalyptus.",
-        image: "assets/products/BLUEBERRY-.webp"
+        image: "assets/products/optimized/BLUEBERRY-.webp"
     },
     {
         id: "BLUEZ-3-",
@@ -157,7 +157,7 @@ window.BUNCHES_PRODUCTS = [
         category: "event",
         price: 95,
         description: "Premium peonies and garden roses tailored for bridal events.",
-        image: "assets/products/BLUEZ-3-.webp"
+        image: "assets/products/optimized/BLUEZ-3-.webp"
     },
     {
         id: "BOULEVARD3_ALISROSES-2",
@@ -165,7 +165,7 @@ window.BUNCHES_PRODUCTS = [
         category: "romantic",
         price: 58,
         description: "Blush pink mix with ranunculus and textural seasonal stems.",
-        image: "assets/products/BOULEVARD3_ALISROSES-2.jpg"
+        image: "assets/products/optimized/BOULEVARD3_ALISROSES-2.webp"
     },
     {
         id: "BOUNTYWAY",
@@ -173,7 +173,7 @@ window.BUNCHES_PRODUCTS = [
         category: "bright",
         price: 55,
         description: "Orange tulips, coral carnations, and lemon button mums.",
-        image: "assets/products/BOUNTYWAY.png"
+        image: "assets/products/optimized/BOUNTYWAY.webp"
     },
     {
         id: "Brighton20",
@@ -181,7 +181,7 @@ window.BUNCHES_PRODUCTS = [
         category: "minimal",
         price: 44,
         description: "Modern foliage-forward bunch with white accents and clean lines.",
-        image: "assets/products/Brighton20.png"
+        image: "assets/products/optimized/Brighton20.webp"
     },
     {
         id: "BUMBLEBEE-",
@@ -189,7 +189,7 @@ window.BUNCHES_PRODUCTS = [
         category: "event",
         price: 120,
         description: "Large centerpiece blend for receptions and statement installations.",
-        image: "assets/products/BUMBLEBEE-.png"
+        image: "assets/products/optimized/BUMBLEBEE-.webp"
     },
         {
         id: "CABARET-",
@@ -197,7 +197,7 @@ window.BUNCHES_PRODUCTS = [
         category: "event",
         price: 120,
         description: "Large centerpiece blend for receptions and statement installations.",
-        image: "assets/products/CABARET-.png"
+        image: "assets/products/optimized/CABARET-.webp"
     },
     {
         id: "Candlelight-1",
@@ -205,7 +205,7 @@ window.BUNCHES_PRODUCTS = [
         category: "romantic",
         price: 65,
         description: "Classic red roses with burgundy foliage and silk ribbon wrap.",
-        image: "assets/products/Candlelight-1.jpeg"
+        image: "assets/products/optimized/Candlelight-1.webp"
     },
     {
         id: "CANDY-X-PRESSION",
@@ -213,7 +213,7 @@ window.BUNCHES_PRODUCTS = [
         category: "bright",
         price: 42,
         description: "Yellow daisies, orange spray roses, and mint for a cheerful look.",
-        image: "assets/products/CANDY-X-PRESSION.png"
+        image: "assets/products/optimized/CANDY-X-PRESSION.webp"
     },
     {
         id: "Caraluna-1",
@@ -221,7 +221,7 @@ window.BUNCHES_PRODUCTS = [
         category: "minimal",
         price: 48,
         description: "A calm palette of white lisianthus, ivory roses, and eucalyptus.",
-        image: "assets/products/Caraluna-1.jpeg"
+        image: "assets/products/optimized/Caraluna-1.webp"
     },
     {
         id: "CarpeDiem-1",
@@ -229,7 +229,7 @@ window.BUNCHES_PRODUCTS = [
         category: "event",
         price: 95,
         description: "Premium peonies and garden roses tailored for bridal events.",
-        image: "assets/products/CarpeDiem-1.jpeg"
+        image: "assets/products/optimized/CarpeDiem-1.webp"
     },
     {
         id: "Carrousel20",
@@ -237,7 +237,7 @@ window.BUNCHES_PRODUCTS = [
         category: "romantic",
         price: 58,
         description: "Blush pink mix with ranunculus and textural seasonal stems.",
-        image: "assets/products/Carrousel20.png"
+        image: "assets/products/optimized/Carrousel20.webp"
     },
     {
         id: "CHAMPAGNER1",
@@ -245,7 +245,7 @@ window.BUNCHES_PRODUCTS = [
         category: "bright",
         price: 55,
         description: "Orange tulips, coral carnations, and lemon button mums.",
-        image: "assets/products/CHAMPAGNER1.jpg"
+        image: "assets/products/optimized/CHAMPAGNER1.webp"
     },
     {
         id: "Cherry_Brandy-C",
@@ -253,7 +253,7 @@ window.BUNCHES_PRODUCTS = [
         category: "minimal",
         price: 44,
         description: "Modern foliage-forward bunch with white accents and clean lines.",
-        image: "assets/products/Cherry_Brandy-C.jpg"
+        image: "assets/products/optimized/Cherry_Brandy-C.webp"
     },
     {
         id: "CherryOh21",
@@ -261,7 +261,7 @@ window.BUNCHES_PRODUCTS = [
         category: "event",
         price: 120,
         description: "Large centerpiece blend for receptions and statement installations.",
-        image: "assets/products/CherryOh21.png"
+        image: "assets/products/optimized/CherryOh21.webp"
     },
         {
         id: "ChilliLove",
@@ -269,7 +269,7 @@ window.BUNCHES_PRODUCTS = [
         category: "event",
         price: 120,
         description: "Large centerpiece blend for receptions and statement installations.",
-        image: "assets/products/ChilliLove.jpg"
+        image: "assets/products/optimized/ChilliLove.webp"
     },
     {
         id: "christa-2",
@@ -277,7 +277,7 @@ window.BUNCHES_PRODUCTS = [
         category: "romantic",
         price: 65,
         description: "Classic red roses with burgundy foliage and silk ribbon wrap.",
-        image: "assets/products/christa-2.jpg"
+        image: "assets/products/optimized/christa-2.webp"
     },
     {
         id: "CLOWN",
@@ -285,7 +285,7 @@ window.BUNCHES_PRODUCTS = [
         category: "bright",
         price: 42,
         description: "Yellow daisies, orange spray roses, and mint for a cheerful look.",
-        image: "assets/products/CLOWN.jpg"
+        image: "assets/products/optimized/CLOWN.webp"
     },
     {
         id: "COLDPLAY",
@@ -293,7 +293,7 @@ window.BUNCHES_PRODUCTS = [
         category: "minimal",
         price: 48,
         description: "A calm palette of white lisianthus, ivory roses, and eucalyptus.",
-        image: "assets/products/COLDPLAY.png"
+        image: "assets/products/optimized/COLDPLAY.webp"
     },
     {
         id: "CONSTANZA-2-",
@@ -301,7 +301,7 @@ window.BUNCHES_PRODUCTS = [
         category: "event",
         price: 95,
         description: "Premium peonies and garden roses tailored for bridal events.",
-        image: "assets/products/CONSTANZA-2-.png"
+        image: "assets/products/optimized/CONSTANZA-2-.webp"
     },
     {
         id: "CoolDown",
@@ -309,7 +309,7 @@ window.BUNCHES_PRODUCTS = [
         category: "romantic",
         price: 58,
         description: "Blush pink mix with ranunculus and textural seasonal stems.",
-        image: "assets/products/CoolDown.jpg"
+        image: "assets/products/optimized/CoolDown.webp"
     },
     {
         id: "Coral_Reef-C",
@@ -317,7 +317,7 @@ window.BUNCHES_PRODUCTS = [
         category: "bright",
         price: 55,
         description: "Orange tulips, coral carnations, and lemon button mums.",
-        image: "assets/products/Coral_Reef-C.jpeg"
+        image: "assets/products/optimized/Coral_Reef-C.webp"
     },
     {
         id: "Cotton+X-Pression-1",
@@ -325,7 +325,7 @@ window.BUNCHES_PRODUCTS = [
         category: "minimal",
         price: 44,
         description: "Modern foliage-forward bunch with white accents and clean lines.",
-        image: "assets/products/Cotton+X-Pression-1.jpeg"
+        image: "assets/products/optimized/Cotton+X-Pression-1.webp"
     },
     {
         id: "COUNTRY-AQUARELL",
@@ -333,7 +333,7 @@ window.BUNCHES_PRODUCTS = [
         category: "event",
         price: 120,
         description: "Large centerpiece blend for receptions and statement installations.",
-        image: "assets/products/COUNTRY-AQUARELL.png"
+        image: "assets/products/optimized/COUNTRY-AQUARELL.webp"
     },
         {
         id: "CountryBlues_Lavender_SingleSt_X_Apertura3",
@@ -341,7 +341,7 @@ window.BUNCHES_PRODUCTS = [
         category: "event",
         price: 120,
         description: "Large centerpiece blend for receptions and statement installations.",
-        image: "assets/products/CountryBlues_Lavender_SingleSt_X_Apertura3.png"
+        image: "assets/products/optimized/CountryBlues_Lavender_SingleSt_X_Apertura3.webp"
     },
     {
         id: "CountryCandy",
@@ -349,7 +349,7 @@ window.BUNCHES_PRODUCTS = [
         category: "romantic",
         price: 65,
         description: "Classic red roses with burgundy foliage and silk ribbon wrap.",
-        image: "assets/products/CountryCandy.jpg"
+        image: "assets/products/optimized/CountryCandy.webp"
     },
     {
         id: "COUNTRY-SECRET-HojaVerde4",
@@ -357,7 +357,7 @@ window.BUNCHES_PRODUCTS = [
         category: "bright",
         price: 42,
         description: "Yellow daisies, orange spray roses, and mint for a cheerful look.",
-        image: "assets/products/COUNTRY-SECRET-HojaVerde4.png"
+        image: "assets/products/optimized/COUNTRY-SECRET-HojaVerde4.webp"
     },
     {
         id: "COUNTRY-SOUL-3-630x630",
@@ -365,7 +365,7 @@ window.BUNCHES_PRODUCTS = [
         category: "minimal",
         price: 48,
         description: "A calm palette of white lisianthus, ivory roses, and eucalyptus.",
-        image: "assets/products/COUNTRY-SOUL-3-630x630.png"
+        image: "assets/products/optimized/COUNTRY-SOUL-3-630x630.webp"
     },
     {
         id: "CREAM ESPERANCE",
@@ -373,7 +373,7 @@ window.BUNCHES_PRODUCTS = [
         category: "event",
         price: 95,
         description: "Premium peonies and garden roses tailored for bridal events.",
-        image: "assets/products/CREAM ESPERANCE.png"
+        image: "assets/products/optimized/CREAM ESPERANCE.webp"
     },
     {
         id: "cream-carpediem",
@@ -381,7 +381,7 @@ window.BUNCHES_PRODUCTS = [
         category: "romantic",
         price: 58,
         description: "Blush pink mix with ranunculus and textural seasonal stems.",
-        image: "assets/products/cream-carpediem.jpg"
+        image: "assets/products/optimized/cream-carpediem.webp"
     },
     {
         id: "CREAMSHIMMER2",
@@ -389,7 +389,7 @@ window.BUNCHES_PRODUCTS = [
         category: "bright",
         price: 55,
         description: "Orange tulips, coral carnations, and lemon button mums.",
-        image: "assets/products/CREAMSHIMMER2.jpg"
+        image: "assets/products/optimized/CREAMSHIMMER2.webp"
     },
     {
         id: "CremedelaCreme20",
@@ -397,7 +397,7 @@ window.BUNCHES_PRODUCTS = [
         category: "minimal",
         price: 44,
         description: "Modern foliage-forward bunch with white accents and clean lines.",
-        image: "assets/products/CremedelaCreme20.png"
+        image: "assets/products/optimized/CremedelaCreme20.webp"
     },
     {
         id: "Crystal Flame",
@@ -405,7 +405,7 @@ window.BUNCHES_PRODUCTS = [
         category: "event",
         price: 120,
         description: "Large centerpiece blend for receptions and statement installations.",
-        image: "assets/products/Crystal Flame.jpg"
+        image: "assets/products/optimized/Crystal Flame.webp"
     },
         {
         id: "DALLAS (1)",
@@ -413,7 +413,7 @@ window.BUNCHES_PRODUCTS = [
         category: "event",
         price: 120,
         description: "Large centerpiece blend for receptions and statement installations.",
-        image: "assets/products/DALLAS (1).png"
+        image: "assets/products/optimized/DALLAS (1).webp"
     },
     {
         id: "DEEP-PURPLE",
@@ -421,7 +421,7 @@ window.BUNCHES_PRODUCTS = [
         category: "romantic",
         price: 65,
         description: "Classic red roses with burgundy foliage and silk ribbon wrap.",
-        image: "assets/products/DEEP-PURPLE.png"
+        image: "assets/products/optimized/DEEP-PURPLE.webp"
     },
     {
         id: "DISCOVERY-HojaVerde4",
@@ -429,7 +429,7 @@ window.BUNCHES_PRODUCTS = [
         category: "bright",
         price: 42,
         description: "Yellow daisies, orange spray roses, and mint for a cheerful look.",
-        image: "assets/products/DISCOVERY-HojaVerde4.jpg"
+        image: "assets/products/optimized/DISCOVERY-HojaVerde4.webp"
     },
     {
         id: "Dragonfly-1",
@@ -437,7 +437,7 @@ window.BUNCHES_PRODUCTS = [
         category: "minimal",
         price: 48,
         description: "A calm palette of white lisianthus, ivory roses, and eucalyptus.",
-        image: "assets/products/Dragonfly-1.png"
+        image: "assets/products/optimized/Dragonfly-1.webp"
     },
     {
         id: "DYNAMIC-",
@@ -445,7 +445,7 @@ window.BUNCHES_PRODUCTS = [
         category: "event",
         price: 95,
         description: "Premium peonies and garden roses tailored for bridal events.",
-        image: "assets/products/DYNAMIC-.png"
+        image: "assets/products/optimized/DYNAMIC-.webp"
     },
     {
         id: "Encanto",
@@ -453,7 +453,7 @@ window.BUNCHES_PRODUCTS = [
         category: "romantic",
         price: 58,
         description: "Blush pink mix with ranunculus and textural seasonal stems.",
-        image: "assets/products/Encanto.jpg"
+        image: "assets/products/optimized/Encanto.webp"
     },
     {
         id: "Enchantment",
@@ -461,7 +461,7 @@ window.BUNCHES_PRODUCTS = [
         category: "bright",
         price: 55,
         description: "Orange tulips, coral carnations, and lemon button mums.",
-        image: "assets/products/Enchantment.jpeg"
+        image: "assets/products/optimized/Enchantment.webp"
     },
     {
         id: "Esperance",
@@ -469,7 +469,7 @@ window.BUNCHES_PRODUCTS = [
         category: "minimal",
         price: 44,
         description: "Modern foliage-forward bunch with white accents and clean lines.",
-        image: "assets/products/Esperance.jpg"
+        image: "assets/products/optimized/Esperance.webp"
     },
     {
         id: "EXOTIX-BERRY",
@@ -477,7 +477,7 @@ window.BUNCHES_PRODUCTS = [
         category: "event",
         price: 120,
         description: "Large centerpiece blend for receptions and statement installations.",
-        image: "assets/products/EXOTIX-BERRY.jpeg"
+        image: "assets/products/optimized/EXOTIX-BERRY.webp"
     },
         {
         id: "EXPLORER-",
@@ -485,7 +485,7 @@ window.BUNCHES_PRODUCTS = [
         category: "event",
         price: 120,
         description: "Large centerpiece blend for receptions and statement installations.",
-        image: "assets/products/EXPLORER-.png"
+        image: "assets/products/optimized/EXPLORER-.webp"
     },
     {
         id: "Faith-C",
@@ -493,7 +493,7 @@ window.BUNCHES_PRODUCTS = [
         category: "romantic",
         price: 65,
         description: "Classic red roses with burgundy foliage and silk ribbon wrap.",
-        image: "assets/products/Faith-C.jpg"
+        image: "assets/products/optimized/Faith-C.webp"
     },
     {
         id: "Fascination-Rose-4",
@@ -501,7 +501,7 @@ window.BUNCHES_PRODUCTS = [
         category: "bright",
         price: 42,
         description: "Yellow daisies, orange spray roses, and mint for a cheerful look.",
-        image: "assets/products/Fascination-Rose-4.jpg"
+        image: "assets/products/optimized/Fascination-Rose-4.webp"
     },
     {
         id: "FASHION_GOLD_cut_rose_NIRP",
@@ -509,7 +509,7 @@ window.BUNCHES_PRODUCTS = [
         category: "minimal",
         price: 48,
         description: "A calm palette of white lisianthus, ivory roses, and eucalyptus.",
-        image: "assets/products/FASHION_GOLD_cut_rose_NIRP.png.jpeg"
+        image: "assets/products/optimized/FASHION_GOLD_cut_rose_NIRP.png.webp"
     },
     {
         id: "FatimaGardenRose_1024x1024",
@@ -517,7 +517,7 @@ window.BUNCHES_PRODUCTS = [
         category: "event",
         price: 95,
         description: "Premium peonies and garden roses tailored for bridal events.",
-        image: "assets/products/FatimaGardenRose_1024x1024.png.webp"
+        image: "assets/products/optimized/FatimaGardenRose_1024x1024.png.webp"
     },
     {
         id: "FLIRTY-3-630x630",
@@ -525,7 +525,7 @@ window.BUNCHES_PRODUCTS = [
         category: "romantic",
         price: 58,
         description: "Blush pink mix with ranunculus and textural seasonal stems.",
-        image: "assets/products/FLIRTY-3-630x630.png"
+        image: "assets/products/optimized/FLIRTY-3-630x630.webp"
     },
     {
         id: "FREEDOM",
@@ -533,7 +533,7 @@ window.BUNCHES_PRODUCTS = [
         category: "bright",
         price: 55,
         description: "Orange tulips, coral carnations, and lemon button mums.",
-        image: "assets/products/FREEDOM.png"
+        image: "assets/products/optimized/FREEDOM.webp"
     },
     {
         id: "FREE-SPIRIT",
@@ -541,7 +541,7 @@ window.BUNCHES_PRODUCTS = [
         category: "minimal",
         price: 44,
         description: "Modern foliage-forward bunch with white accents and clean lines.",
-        image: "assets/products/FREE-SPIRIT.png"
+        image: "assets/products/optimized/FREE-SPIRIT.webp"
     },
     {
         id: "Frutteto-C",
@@ -549,7 +549,7 @@ window.BUNCHES_PRODUCTS = [
         category: "event",
         price: 120,
         description: "Large centerpiece blend for receptions and statement installations.",
-        image: "assets/products/Frutteto-C.jpeg"
+        image: "assets/products/optimized/Frutteto-C.webp"
     },
         {
         id: "Geraldine",
@@ -557,7 +557,7 @@ window.BUNCHES_PRODUCTS = [
         category: "event",
         price: 120,
         description: "Large centerpiece blend for receptions and statement installations.",
-        image: "assets/products/Geraldine.jpg"
+        image: "assets/products/optimized/Geraldine.webp"
     },
     {
         id: "gotcha1",
@@ -565,7 +565,7 @@ window.BUNCHES_PRODUCTS = [
         category: "romantic",
         price: 65,
         description: "Classic red roses with burgundy foliage and silk ribbon wrap.",
-        image: "assets/products/gotcha1.jpg"
+        image: "assets/products/optimized/gotcha1.webp"
     },
     {
         id: "greenfashionII",
@@ -573,7 +573,7 @@ window.BUNCHES_PRODUCTS = [
         category: "bright",
         price: 42,
         description: "Yellow daisies, orange spray roses, and mint for a cheerful look.",
-        image: "assets/products/greenfashionII.jpg"
+        image: "assets/products/optimized/greenfashionII.webp"
     },
     {
         id: "Her-Majesty",
@@ -581,7 +581,7 @@ window.BUNCHES_PRODUCTS = [
         category: "minimal",
         price: 48,
         description: "A calm palette of white lisianthus, ivory roses, and eucalyptus.",
-        image: "assets/products/Her-Majesty.jpg"
+        image: "assets/products/optimized/Her-Majesty.webp"
     },
     {
         id: "HighMagic",
@@ -589,7 +589,7 @@ window.BUNCHES_PRODUCTS = [
         category: "event",
         price: 95,
         description: "Premium peonies and garden roses tailored for bridal events.",
-        image: "assets/products/HighMagic.jpg"
+        image: "assets/products/optimized/HighMagic.webp"
     },
     {
         id: "HOT MERENGUE",
@@ -597,7 +597,7 @@ window.BUNCHES_PRODUCTS = [
         category: "romantic",
         price: 58,
         description: "Blush pink mix with ranunculus and textural seasonal stems.",
-        image: "assets/products/HOT MERENGUE.png"
+        image: "assets/products/optimized/HOT MERENGUE.webp"
     },
     {
         id: "Imagine-Web",
@@ -605,7 +605,7 @@ window.BUNCHES_PRODUCTS = [
         category: "bright",
         price: 55,
         description: "Orange tulips, coral carnations, and lemon button mums.",
-        image: "assets/products/Imagine-Web.jpeg"
+        image: "assets/products/optimized/Imagine-Web.webp"
     },
     {
         id: "Intensity",
@@ -613,7 +613,7 @@ window.BUNCHES_PRODUCTS = [
         category: "minimal",
         price: 44,
         description: "Modern foliage-forward bunch with white accents and clean lines.",
-        image: "assets/products/Intensity.jpg"
+        image: "assets/products/optimized/Intensity.webp"
     },
     {
         id: "JESSICA-2",
@@ -621,7 +621,7 @@ window.BUNCHES_PRODUCTS = [
         category: "event",
         price: 120,
         description: "Large centerpiece blend for receptions and statement installations.",
-        image: "assets/products/JESSICA-2.png"
+        image: "assets/products/optimized/JESSICA-2.webp"
     },
         {
         id: "Jessika",
@@ -629,7 +629,7 @@ window.BUNCHES_PRODUCTS = [
         category: "event",
         price: 120,
         description: "Large centerpiece blend for receptions and statement installations.",
-        image: "assets/products/Jessika.png"
+        image: "assets/products/optimized/Jessika.webp"
     },
     {
         id: "JOY",
@@ -637,7 +637,7 @@ window.BUNCHES_PRODUCTS = [
         category: "romantic",
         price: 65,
         description: "Classic red roses with burgundy foliage and silk ribbon wrap.",
-        image: "assets/products/JOY.png"
+        image: "assets/products/optimized/JOY.webp"
     },
     {
         id: "KAHALA-2-",
@@ -645,7 +645,7 @@ window.BUNCHES_PRODUCTS = [
         category: "bright",
         price: 42,
         description: "Yellow daisies, orange spray roses, and mint for a cheerful look.",
-        image: "assets/products/KAHALA-2-.jpg"
+        image: "assets/products/optimized/KAHALA-2-.webp"
     },
     {
         id: "Lighthouse-C",
@@ -653,7 +653,7 @@ window.BUNCHES_PRODUCTS = [
         category: "minimal",
         price: 48,
         description: "A calm palette of white lisianthus, ivory roses, and eucalyptus.",
-        image: "assets/products/Lighthouse-C.jpeg"
+        image: "assets/products/optimized/Lighthouse-C.webp"
     },
     {
         id: "LOLA-02",
@@ -661,7 +661,7 @@ window.BUNCHES_PRODUCTS = [
         category: "event",
         price: 95,
         description: "Premium peonies and garden roses tailored for bridal events.",
-        image: "assets/products/LOLA-02.jpg"
+        image: "assets/products/optimized/LOLA-02.webp"
     },
     {
         id: "MAMMA MIA",
@@ -669,7 +669,7 @@ window.BUNCHES_PRODUCTS = [
         category: "romantic",
         price: 58,
         description: "Blush pink mix with ranunculus and textural seasonal stems.",
-        image: "assets/products/MAMMA MIA.png"
+        image: "assets/products/optimized/MAMMA MIA.webp"
     },
     {
         id: "Mandala5_k2nsc7",
@@ -677,7 +677,7 @@ window.BUNCHES_PRODUCTS = [
         category: "bright",
         price: 55,
         description: "Orange tulips, coral carnations, and lemon button mums.",
-        image: "assets/products/Mandala5_k2nsc7.avif"
+        image: "assets/products/optimized/Mandala5_k2nsc7.webp"
     },
     {
         id: "Mandarin X-Pression07",
@@ -685,7 +685,7 @@ window.BUNCHES_PRODUCTS = [
         category: "minimal",
         price: 44,
         description: "Modern foliage-forward bunch with white accents and clean lines.",
-        image: "assets/products/Mandarin X-Pression07.avif"
+        image: "assets/products/optimized/Mandarin X-Pression07.webp"
     },
     {
         id: "MangoTango",
@@ -693,7 +693,7 @@ window.BUNCHES_PRODUCTS = [
         category: "event",
         price: 120,
         description: "Large centerpiece blend for receptions and statement installations.",
-        image: "assets/products/MangoTango.jpeg"
+        image: "assets/products/optimized/MangoTango.webp"
     },
         {
         id: "MELON-X-PRESSION",
@@ -701,7 +701,7 @@ window.BUNCHES_PRODUCTS = [
         category: "event",
         price: 120,
         description: "Large centerpiece blend for receptions and statement installations.",
-        image: "assets/products/MELON-X-PRESSION.png"
+        image: "assets/products/optimized/MELON-X-PRESSION.webp"
     },
     {
         id: "Mia1_ms7mpn",
@@ -709,7 +709,7 @@ window.BUNCHES_PRODUCTS = [
         category: "romantic",
         price: 65,
         description: "Classic red roses with burgundy foliage and silk ribbon wrap.",
-        image: "assets/products/Mia1_ms7mpn.avif"
+        image: "assets/products/optimized/Mia1_ms7mpn.webp"
     },
     {
         id: "MissPiggy",
@@ -717,7 +717,7 @@ window.BUNCHES_PRODUCTS = [
         category: "bright",
         price: 42,
         description: "Yellow daisies, orange spray roses, and mint for a cheerful look.",
-        image: "assets/products/MissPiggy.jpeg"
+        image: "assets/products/optimized/MissPiggy.webp"
     },
     {
         id: "MixColorBox",
@@ -725,7 +725,7 @@ window.BUNCHES_PRODUCTS = [
         category: "minimal",
         price: 48,
         description: "A calm palette of white lisianthus, ivory roses, and eucalyptus.",
-        image: "assets/products/MixColorBox.jpeg"
+        image: "assets/products/optimized/MixColorBox.webp"
     },
     {
         id: "Mondial-C",
@@ -733,7 +733,7 @@ window.BUNCHES_PRODUCTS = [
         category: "event",
         price: 95,
         description: "Premium peonies and garden roses tailored for bridal events.",
-        image: "assets/products/Mondial-C.jpg"
+        image: "assets/products/optimized/Mondial-C.webp"
     },
     {
         id: "MoodyBlues",
@@ -741,7 +741,7 @@ window.BUNCHES_PRODUCTS = [
         category: "romantic",
         price: 58,
         description: "Blush pink mix with ranunculus and textural seasonal stems.",
-        image: "assets/products/MoodyBlues.jpg"
+        image: "assets/products/optimized/MoodyBlues.webp"
     },
     {
         id: "MOONSTONE",
@@ -749,7 +749,7 @@ window.BUNCHES_PRODUCTS = [
         category: "bright",
         price: 55,
         description: "Orange tulips, coral carnations, and lemon button mums.",
-        image: "assets/products/MOONSTONE.png"
+        image: "assets/products/optimized/MOONSTONE.webp"
     },
     {
         id: "NewFlash-1",
@@ -757,7 +757,7 @@ window.BUNCHES_PRODUCTS = [
         category: "minimal",
         price: 44,
         description: "Modern foliage-forward bunch with white accents and clean lines.",
-        image: "assets/products/NewFlash-1.jpeg"
+        image: "assets/products/optimized/NewFlash-1.webp"
     },
     {
         id: "O'HARA",
@@ -765,7 +765,7 @@ window.BUNCHES_PRODUCTS = [
         category: "event",
         price: 120,
         description: "Large centerpiece blend for receptions and statement installations.",
-        image: "assets/products/O'HARA.jpg"
+        image: "assets/products/optimized/O'HARA.webp"
     },
         {
         id: "OrangeOnly",
@@ -773,7 +773,7 @@ window.BUNCHES_PRODUCTS = [
         category: "event",
         price: 120,
         description: "Large centerpiece blend for receptions and statement installations.",
-        image: "assets/products/OrangeOnly.png"
+        image: "assets/products/optimized/OrangeOnly.webp"
     },
     {
         id: "Paloma-C",
@@ -781,7 +781,7 @@ window.BUNCHES_PRODUCTS = [
         category: "romantic",
         price: 65,
         description: "Classic red roses with burgundy foliage and silk ribbon wrap.",
-        image: "assets/products/Paloma-C.jpeg"
+        image: "assets/products/optimized/Paloma-C.webp"
     },
     {
         id: "PEACH-AVALANCH",
@@ -789,7 +789,7 @@ window.BUNCHES_PRODUCTS = [
         category: "bright",
         price: 42,
         description: "Yellow daisies, orange spray roses, and mint for a cheerful look.",
-        image: "assets/products/PEACH-AVALANCH.png"
+        image: "assets/products/optimized/PEACH-AVALANCH.webp"
     },
     {
         id: "Pink_Floyd_3",
@@ -797,7 +797,7 @@ window.BUNCHES_PRODUCTS = [
         category: "minimal",
         price: 48,
         description: "A calm palette of white lisianthus, ivory roses, and eucalyptus.",
-        image: "assets/products/Pink_Floyd_3.jpg"
+        image: "assets/products/optimized/Pink_Floyd_3.webp"
     },
     {
         id: "Pink_Mondial-C",
@@ -805,7 +805,7 @@ window.BUNCHES_PRODUCTS = [
         category: "event",
         price: 95,
         description: "Premium peonies and garden roses tailored for bridal events.",
-        image: "assets/products/Pink_Mondial-C.jpg"
+        image: "assets/products/optimized/Pink_Mondial-C.webp"
     },
     {
         id: "PINK-AMARETTO",
@@ -813,7 +813,7 @@ window.BUNCHES_PRODUCTS = [
         category: "romantic",
         price: 58,
         description: "Blush pink mix with ranunculus and textural seasonal stems.",
-        image: "assets/products/PINK-AMARETTO.png"
+        image: "assets/products/optimized/PINK-AMARETTO.webp"
     },
     {
         id: "Pinkohara03",
@@ -821,7 +821,7 @@ window.BUNCHES_PRODUCTS = [
         category: "bright",
         price: 55,
         description: "Orange tulips, coral carnations, and lemon button mums.",
-        image: "assets/products/Pinkohara03.jpg"
+        image: "assets/products/optimized/Pinkohara03.webp"
     },
     {
         id: "PinkXpression",
@@ -829,7 +829,7 @@ window.BUNCHES_PRODUCTS = [
         category: "minimal",
         price: 44,
         description: "Modern foliage-forward bunch with white accents and clean lines.",
-        image: "assets/products/PinkXpression.jpg"
+        image: "assets/products/optimized/PinkXpression.webp"
     },
     {
         id: "Playa_Blanca",
@@ -837,7 +837,7 @@ window.BUNCHES_PRODUCTS = [
         category: "event",
         price: 120,
         description: "Large centerpiece blend for receptions and statement installations.",
-        image: "assets/products/Playa_Blanca.jpeg"
+        image: "assets/products/optimized/Playa_Blanca.webp"
     },
         {
         id: "POWDER-PUFF-HojaVerde4",
@@ -845,7 +845,7 @@ window.BUNCHES_PRODUCTS = [
         category: "event",
         price: 120,
         description: "Large centerpiece blend for receptions and statement installations.",
-        image: "assets/products/POWDER-PUFF-HojaVerde4.png"
+        image: "assets/products/optimized/POWDER-PUFF-HojaVerde4.webp"
     },
     {
         id: "princess-crown-2 copy",
@@ -853,7 +853,7 @@ window.BUNCHES_PRODUCTS = [
         category: "romantic",
         price: 65,
         description: "Classic red roses with burgundy foliage and silk ribbon wrap.",
-        image: "assets/products/princess-crown-2 copy.jpg"
+        image: "assets/products/optimized/princess-crown-2 copy.webp"
     },
     {
         id: "Purple-Moon-Kordes",
@@ -861,7 +861,7 @@ window.BUNCHES_PRODUCTS = [
         category: "bright",
         price: 42,
         description: "Yellow daisies, orange spray roses, and mint for a cheerful look.",
-        image: "assets/products/Purple-Moon-Kordes.jpeg"
+        image: "assets/products/optimized/Purple-Moon-Kordes.webp"
     },
     {
         id: "Razzmatazz",
@@ -869,7 +869,7 @@ window.BUNCHES_PRODUCTS = [
         category: "minimal",
         price: 48,
         description: "A calm palette of white lisianthus, ivory roses, and eucalyptus.",
-        image: "assets/products/Razzmatazz.jpg"
+        image: "assets/products/optimized/Razzmatazz.webp"
     },
     {
         id: "Redvolution_Red_SingleSt_X",
@@ -877,7 +877,7 @@ window.BUNCHES_PRODUCTS = [
         category: "event",
         price: 95,
         description: "Premium peonies and garden roses tailored for bridal events.",
-        image: "assets/products/Redvolution_Red_SingleSt_X.jpg"
+        image: "assets/products/optimized/Redvolution_Red_SingleSt_X.webp"
     },
     {
         id: "RHOSLYN",
@@ -885,7 +885,7 @@ window.BUNCHES_PRODUCTS = [
         category: "romantic",
         price: 58,
         description: "Blush pink mix with ranunculus and textural seasonal stems.",
-        image: "assets/products/RHOSLYN.jpg"
+        image: "assets/products/optimized/RHOSLYN.webp"
     },
     {
         id: "SALMA",
@@ -893,7 +893,7 @@ window.BUNCHES_PRODUCTS = [
         category: "bright",
         price: 55,
         description: "Orange tulips, coral carnations, and lemon button mums.",
-        image: "assets/products/SALMA.jpg"
+        image: "assets/products/optimized/SALMA.webp"
     },
     {
         id: "Secret Garden",
@@ -901,7 +901,7 @@ window.BUNCHES_PRODUCTS = [
         category: "minimal",
         price: 44,
         description: "Modern foliage-forward bunch with white accents and clean lines.",
-        image: "assets/products/Secret Garden.jpg"
+        image: "assets/products/optimized/Secret Garden.webp"
     },
     {
         id: "Shimmer-1",
@@ -909,7 +909,7 @@ window.BUNCHES_PRODUCTS = [
         category: "event",
         price: 120,
         description: "Large centerpiece blend for receptions and statement installations.",
-        image: "assets/products/Shimmer-1.jpeg"
+        image: "assets/products/optimized/Shimmer-1.webp"
     },
         {
         id: "Silantoi-C",
@@ -917,7 +917,7 @@ window.BUNCHES_PRODUCTS = [
         category: "event",
         price: 120,
         description: "Large centerpiece blend for receptions and statement installations.",
-        image: "assets/products/Silantoi-C.jpeg"
+        image: "assets/products/optimized/Silantoi-C.webp"
     },
     {
         id: "SugarMoon3",
@@ -925,7 +925,7 @@ window.BUNCHES_PRODUCTS = [
         category: "romantic",
         price: 65,
         description: "Classic red roses with burgundy foliage and silk ribbon wrap.",
-        image: "assets/products/SugarMoon3.jpeg"
+        image: "assets/products/optimized/SugarMoon3.webp"
     },
     {
         id: "SunnyGlow",
@@ -933,7 +933,7 @@ window.BUNCHES_PRODUCTS = [
         category: "bright",
         price: 42,
         description: "Yellow daisies, orange spray roses, and mint for a cheerful look.",
-        image: "assets/products/SunnyGlow.jpg"
+        image: "assets/products/optimized/SunnyGlow.webp"
     },
     {
         id: "Swan",
@@ -941,7 +941,7 @@ window.BUNCHES_PRODUCTS = [
         category: "minimal",
         price: 48,
         description: "A calm palette of white lisianthus, ivory roses, and eucalyptus.",
-        image: "assets/products/Swan.png"
+        image: "assets/products/optimized/Swan.webp"
     },
     {
         id: "SweetAvalance2",
@@ -949,7 +949,7 @@ window.BUNCHES_PRODUCTS = [
         category: "event",
         price: 95,
         description: "Premium peonies and garden roses tailored for bridal events.",
-        image: "assets/products/SweetAvalance2.jpg"
+        image: "assets/products/optimized/SweetAvalance2.webp"
     },
     {
         id: "SweetBeat_SingleSt_X",
@@ -957,7 +957,7 @@ window.BUNCHES_PRODUCTS = [
         category: "romantic",
         price: 58,
         description: "Blush pink mix with ranunculus and textural seasonal stems.",
-        image: "assets/products/SweetBeat_SingleSt_X.png"
+        image: "assets/products/optimized/SweetBeat_SingleSt_X.webp"
     },
     {
         id: "SweetCake",
@@ -965,7 +965,7 @@ window.BUNCHES_PRODUCTS = [
         category: "bright",
         price: 55,
         description: "Orange tulips, coral carnations, and lemon button mums.",
-        image: "assets/products/SweetCake.jpg"
+        image: "assets/products/optimized/SweetCake.webp"
     },
     {
         id: "SweetMemory",
@@ -973,7 +973,7 @@ window.BUNCHES_PRODUCTS = [
         category: "minimal",
         price: 44,
         description: "Modern foliage-forward bunch with white accents and clean lines.",
-        image: "assets/products/SweetMemory.png"
+        image: "assets/products/optimized/SweetMemory.webp"
     },
     {
         id: "Symbol",
@@ -981,7 +981,7 @@ window.BUNCHES_PRODUCTS = [
         category: "event",
         price: 120,
         description: "Large centerpiece blend for receptions and statement installations.",
-        image: "assets/products/Symbol.jpeg"
+        image: "assets/products/optimized/Symbol.webp"
     },
         {
         id: "TEDDYS",
@@ -989,7 +989,7 @@ window.BUNCHES_PRODUCTS = [
         category: "event",
         price: 120,
         description: "Large centerpiece blend for receptions and statement installations.",
-        image: "assets/products/TEDDYS.jpg"
+        image: "assets/products/optimized/TEDDYS.webp"
     },
     {
         id: "TieDyeRose06",
@@ -997,7 +997,7 @@ window.BUNCHES_PRODUCTS = [
         category: "romantic",
         price: 65,
         description: "Classic red roses with burgundy foliage and silk ribbon wrap.",
-        image: "assets/products/TieDyeRose06.jpg"
+        image: "assets/products/optimized/TieDyeRose06.webp"
     },
     {
         id: "Twilight",
@@ -1005,7 +1005,7 @@ window.BUNCHES_PRODUCTS = [
         category: "bright",
         price: 42,
         description: "Yellow daisies, orange spray roses, and mint for a cheerful look.",
-        image: "assets/products/Twilight.jpg"
+        image: "assets/products/optimized/Twilight.webp"
     },
     {
         id: "Tycoon",
@@ -1013,7 +1013,7 @@ window.BUNCHES_PRODUCTS = [
         category: "minimal",
         price: 48,
         description: "A calm palette of white lisianthus, ivory roses, and eucalyptus.",
-        image: "assets/products/Tycoon.jpg"
+        image: "assets/products/optimized/Tycoon.webp"
     },
     {
         id: "vicky-gardens",
@@ -1021,7 +1021,7 @@ window.BUNCHES_PRODUCTS = [
         category: "event",
         price: 95,
         description: "Premium peonies and garden roses tailored for bridal events.",
-        image: "assets/products/vicky-gardens.png"
+        image: "assets/products/optimized/vicky-gardens.webp"
     },
     {
         id: "VIPink",
@@ -1029,7 +1029,7 @@ window.BUNCHES_PRODUCTS = [
         category: "romantic",
         price: 58,
         description: "Blush pink mix with ranunculus and textural seasonal stems.",
-        image: "assets/products/VIPink.png"
+        image: "assets/products/optimized/VIPink.webp"
     },
     {
         id: "WILD CROWN",
@@ -1037,6 +1037,6 @@ window.BUNCHES_PRODUCTS = [
         category: "bright",
         price: 55,
         description: "Orange tulips, coral carnations, and lemon button mums.",
-        image: "assets/products/WILD CROWN.jpg"
+        image: "assets/products/optimized/WILD CROWN.webp"
     }
 ];

@@ -45,7 +45,6 @@ body {
   position: relative;
   min-height: 100vh;
   overflow-x: hidden;
-  cursor: url("assets/rose-cursor.svg") 10 8, auto;
 }
 
 body::before {
@@ -68,7 +67,7 @@ select,
 textarea,
 label,
 .menu-toggle {
-  cursor: url("assets/rose-cursor.svg") 10 8, pointer;
+  cursor: pointer;
 }
 
 h1,

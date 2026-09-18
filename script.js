@@ -368,14 +368,19 @@ function renderProductCards(list) {
 
     dom.productGrid.innerHTML = list
         .map(
-            (product) => `
+            (product, index) => {
+                const isAboveFold = index < 8;
+                const priority = index < 4 ? "high" : "low";
+
+                return `
             <a class="product-card product-card-link" href="${getProductDetailUrl(product)}" aria-label="View details for ${product.name}">
-                <img class="product-image" src="${product.image || FALLBACK_PRODUCT_IMAGE}" alt="${product.name} arrangement image" loading="lazy" decoding="async" fetchpriority="low" onerror="this.onerror=null;this.src='${FALLBACK_PRODUCT_IMAGE}';">
+                <img class="product-image" src="${product.image || FALLBACK_PRODUCT_IMAGE}" alt="${product.name} arrangement image" loading="${isAboveFold ? "eager" : "lazy"}" decoding="async" fetchpriority="${priority}" onerror="this.onerror=null;this.src='${FALLBACK_PRODUCT_IMAGE}';">
                 <h3>${product.name}</h3>
                 <p class="product-tag">Premium Rose</p>
                 <span class="product-arrow" aria-hidden="true">&rarr;</span>
             </a>
-        `
+        `;
+            }
         )
         .join("");
 }
