@@ -437,6 +437,10 @@ function renderProductDetail(product, index) {
     dom.detailImage.alt = `${product.name} rose image`;
     dom.detailName.textContent = product.name;
 
+    // Warm the cache for adjacent roses so Next/Previous feels instant.
+    preloadImage(previousProduct && previousProduct.image);
+    preloadImage(nextProduct && nextProduct.image);
+
     if (dom.prevFlowerBtn) {
         if (previousProduct) {
             dom.prevFlowerBtn.href = getProductDetailUrl(previousProduct);
@@ -458,6 +462,15 @@ function renderProductDetail(product, index) {
     }
 
     updateSelectionSummary();
+}
+
+function preloadImage(src) {
+    if (!src) {
+        return;
+    }
+
+    const image = new Image();
+    image.src = src;
 }
 
 function wireDetailQuantityControls() {

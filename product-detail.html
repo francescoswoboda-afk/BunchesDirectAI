@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Birthstone&family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <script src="products-data.js"></script>
 </head>
 <body data-page="products" class="product-detail-page">
   <header class="home-header">
@@ -54,8 +55,22 @@
         <a class="back-to-roses-link" href="products.html">&larr; Back to all roses</a>
 
         <div class="product-detail-media">
-          <img id="detailImage" src="assets/flower-card.svg" alt="Rose image" loading="eager" decoding="async" fetchpriority="high" onerror="this.onerror=null;this.src='assets/flower-card.svg';">
+          <img id="detailImage" alt="Rose image" loading="eager" decoding="async" fetchpriority="high" onerror="this.onerror=null;this.src='assets/flower-card.svg';">
         </div>
+        <script>
+          // Set the correct rose photo before first paint so the old
+          // placeholder bouquet icon never flashes in during navigation.
+          (function () {
+            var img = document.getElementById("detailImage");
+            var products = Array.isArray(window.BUNCHES_PRODUCTS) ? window.BUNCHES_PRODUCTS : [];
+            var roseName = (new URLSearchParams(window.location.search).get("rose") || "").trim().toLowerCase();
+            var product = products.find(function (item) {
+              return item.name.toLowerCase() === roseName;
+            }) || products[0];
+            img.src = (product && product.image) || "assets/flower-card.svg";
+            img.alt = product ? `${product.name} rose image` : "Rose image";
+          })();
+        </script>
 
         <div class="product-detail-info">
           <p class="detail-kicker">Rose details</p>
@@ -110,7 +125,6 @@
     </section>
   </main>
 
-  <script src="products-data.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
