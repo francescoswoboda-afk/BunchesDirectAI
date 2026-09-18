@@ -61,9 +61,13 @@ app.use(express.static(staticDir, {
   setHeaders: (res, filePath) => {
     const relativePath = path.relative(staticDir, filePath).replace(/\\/g, "/");
 
-    // Aggressive cache for static assets to speed up repeat page visits.
-    if (/\.(?:avif|webp|png|jpe?g|svg|gif|ico|css|js|woff2?|ttf)$/i.test(relativePath)) {
+    // Images/fonts rarely change filenames, so cache them aggressively for speed.
+    if (/\.(?:avif|webp|png|jpe?g|svg|gif|ico|woff2?|ttf)$/i.test(relativePath)) {
       res.setHeader("Cache-Control", "public, max-age=2592000, immutable");
+    } else if (/\.(?:css|js)$/i.test(relativePath)) {
+      // CSS/JS can change on every deploy without a filename change, so always
+      // revalidate with the server (fast 304s) instead of caching them for a month.
+      res.setHeader("Cache-Control", "public, max-age=0, must-revalidate");
     }
   }
 }));
