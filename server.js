@@ -40,11 +40,10 @@ ensureAvailabilitySeedFile();
 
 app.use(cors());
 app.use(express.json({ limit: "20mb" }));
-// The homepage (index.html) is temporarily disabled: the file stays on disk
-// so it can be brought back later, but visitors are redirected straight to
-// the products page instead of landing on it.
+// The homepage (index.html) is retained on disk, but the public site now
+// permanently starts at the products page.
 app.get(["/", "/index.html"], (_req, res) => {
-  return res.redirect(302, "/products.html");
+  return res.redirect(301, "/products.html");
 });
 app.get(availabilityAdminPath, (_req, res) => {
   return res.sendFile(path.join(__dirname, "availability-upload-8k2m.html"));
