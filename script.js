@@ -167,9 +167,10 @@ function init() {
     initCookieConsentBanner();
     setYear();
     wireMobileMenu();
-        wireHomeHamburger();
+    wireHomeHamburger();
     markActiveNav();
     initHomeCartBadge();
+    initProductsStickyHeader();
     initProductsPage();
     initProductDetailPage();
     initCartPage();
@@ -177,6 +178,28 @@ function init() {
     initPaymentPage();
     initAvailabilityPage();
     initPdfViewerModal();
+}
+
+function initProductsStickyHeader() {
+    if (document.body.dataset.page !== "products") {
+        return;
+    }
+
+    const topbar = document.querySelector(".products-topbar");
+    const productsContent = document.querySelector(".products-content");
+
+    if (!topbar || !productsContent) {
+        return;
+    }
+
+    const updateHeaderBackground = () => {
+        const contentTop = productsContent.getBoundingClientRect().top;
+        topbar.classList.toggle("is-scrolled", contentTop <= topbar.offsetHeight);
+    };
+
+    window.addEventListener("scroll", updateHeaderBackground, { passive: true });
+    window.addEventListener("resize", updateHeaderBackground);
+    updateHeaderBackground();
 }
 
 function initPdfViewerModal() {
