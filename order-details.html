@@ -5,12 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Provide delivery and company details for your selected rose boxes.">
   <title>Order Details | Bunches Direct</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Birthstone&family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/fonts.css">
   <link rel="stylesheet" href="styles.css">
 </head>
-<body data-page="order-details" class="order-details-page">
+<body data-page="order-details" class="delivery-page">
   <header class="home-header">
     <a class="home-brand" href="index.html" aria-label="Bunches Direct home">
       <img class="home-brand-logo" src="assets/my-logo.png" alt="Bunches Direct">
@@ -47,96 +45,119 @@
   </div>
 
   <main>
-    <section class="section-pad page-hero">
-      <div class="container narrow">
-        <p class="order-kicker">Delivery details</p>
-        <h1 class="order-display">Delivery <span>Details</span></h1>
-        <p class="lead">Confirm selected products and complete your company and delivery information.</p>
-      </div>
-    </section>
-
-    <section class="section-pad checkout-content">
-      <div class="container checkout-grid">
-        <article class="selected-products-panel">
-          <h2 class="section-title">Selected Products</h2>
-          <div id="checkoutItems" class="cart-items" aria-live="polite"></div>
-        </article>
-
-        <form id="deliveryForm" class="contact-form delivery-form-card" novalidate>
-          <h2 class="section-title order-form-title">Company and Delivery Form</h2>
-
-          <div class="order-field">
-            <label for="companyNameField">Company Name</label>
-            <input id="companyNameField" name="companyName" type="text" required>
-          </div>
-
-          <div class="order-field">
-            <label for="companyEmailField">Company Email</label>
-            <input id="companyEmailField" name="companyEmail" type="email" required>
-          </div>
-
-          <div class="order-field">
-            <label for="taxVatField">Tax / VAT #</label>
-            <input id="taxVatField" name="taxVat" type="text">
-          </div>
-
-          <div class="order-field order-field-wide">
-            <label for="deliveryAddressField">Delivery Address</label>
-            <input id="deliveryAddressField" name="deliveryAddress" type="text" required>
-          </div>
-
-          <div class="order-field">
-            <label for="phoneField">Phone</label>
-            <input id="phoneField" name="phone" type="tel" required>
-          </div>
-
-          <div class="order-field">
-            <label for="contactPersonField">Contact Person</label>
-            <input id="contactPersonField" name="contactPerson" type="text" required>
-          </div>
-
-          <div class="order-field order-field-wide">
-            <label for="truckCompanyField">Truck Company in Aalsmeer</label>
-            <input id="truckCompanyField" name="truckCompany" type="text" required>
-          </div>
-
-          <div class="order-field order-field-wide">
-            <label for="deliveryDateSelect">Delivery Date</label>
-            <select id="deliveryDateSelect" name="deliveryDate" required>
-              <option value="">-- Select a delivery date --</option>
-            </select>
-          </div>
-
-          <label class="check-row legal-check-row order-field order-field-wide" for="privacyConsentField">
-            <input id="privacyConsentField" name="privacyConsent" type="checkbox" required>
-            <span class="legal-check-copy">I confirm I have read and accept the <a href="privacy-policy.html" target="_blank" rel="noopener">Privacy Policy</a> and <a href="cookie-policy.html" target="_blank" rel="noopener">Cookie Policy</a>.<span class="legal-required">Required</span></span>
-          </label>
-
-          <label class="check-row legal-check-row order-field order-field-wide" for="termsConsentField">
-            <input id="termsConsentField" name="termsConsent" type="checkbox" required>
-            <span class="legal-check-copy">I agree to the <a href="terms-and-conditions.html" target="_blank" rel="noopener">Terms &amp; Conditions</a>.<span class="legal-required">Required</span></span>
-          </label>
-
-          <p id="deliveryMessage" class="selection-summary"></p>
-
-          <div class="checkout-next-row">
-            <button id="toPaymentBtn" class="btn btn-solid" type="button">Pre Order</button>
-          </div>
-        </form>
-      </div>
-    </section>
-
-    <section id="orderConfirmation" class="section-pad order-confirmation" hidden>
+    <section class="dp checkout-content">
       <div class="container">
-        <div class="order-confirm-card">
-          <div class="order-confirm-icon" aria-hidden="true">&#10003;</div>
-          <h2 class="order-confirm-title">Order Received</h2>
-          <p class="order-confirm-lead">Thank you! We've received your order and will be in touch shortly to confirm your delivery details.</p>
-          <a href="products.html" class="btn btn-solid order-confirm-btn">Back to Products</a>
+        <a class="dp-back" href="cart.html"><span aria-hidden="true">&larr;</span> Back to cart</a>
+        <h1 class="dp-title">Delivery <span>Details</span></h1>
+        <p class="dp-lead">Confirm selected products and complete your company and delivery information.</p>
+
+        <div class="dp-layout">
+          <form id="deliveryForm" class="dp-card" novalidate>
+            <h2 class="dp-section-title">Company</h2>
+            <div class="dp-grid">
+              <div class="dp-field">
+                <label for="companyNameField">Company name</label>
+                <input id="companyNameField" name="companyName" type="text" autocomplete="organization" required>
+              </div>
+              <div class="dp-field">
+                <label for="contactPersonField">Contact person</label>
+                <input id="contactPersonField" name="contactPerson" type="text" autocomplete="name" required>
+              </div>
+              <div class="dp-field">
+                <label for="companyEmailField">Company email</label>
+                <input id="companyEmailField" name="companyEmail" type="email" autocomplete="email" required>
+              </div>
+              <div class="dp-field">
+                <label for="phoneField">Phone</label>
+                <input id="phoneField" name="phone" type="tel" autocomplete="tel" required>
+              </div>
+              <div class="dp-field">
+                <label for="taxVatField">Tax / VAT number</label>
+                <input id="taxVatField" name="taxVat" type="text">
+              </div>
+            </div>
+
+            <hr class="dp-divider">
+
+            <h2 class="dp-section-title">Delivery</h2>
+            <div class="dp-grid">
+              <div class="dp-field dp-field-wide">
+                <label for="deliveryAddressField">Delivery address</label>
+                <input id="deliveryAddressField" name="deliveryAddress" type="text" autocomplete="street-address" required>
+              </div>
+              <div class="dp-field">
+                <label for="truckCompanyField">Truck company in Aalsmeer</label>
+                <input id="truckCompanyField" name="truckCompany" type="text" required>
+              </div>
+              <div class="dp-field">
+                <label for="deliveryDateSelect">Delivery date</label>
+                <div class="dp-select">
+                  <select id="deliveryDateSelect" name="deliveryDate" required>
+                    <option value="">Select a delivery date</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <p class="dp-hint">Pre-order by Wednesday for Monday arrival in Aalsmeer, or by Friday for Thursday arrival.</p>
+
+            <hr class="dp-divider">
+
+            <label class="dp-check" for="privacyConsentField">
+              <input id="privacyConsentField" name="privacyConsent" type="checkbox" required>
+              <span>I confirm I have read the <a href="privacy-policy.html" target="_blank" rel="noopener">Privacy Policy</a> and <a href="cookie-policy.html" target="_blank" rel="noopener">Cookie Policy</a>. <em>(required)</em></span>
+            </label>
+            <label class="dp-check" for="termsConsentField">
+              <input id="termsConsentField" name="termsConsent" type="checkbox" required>
+              <span>I agree to the <a href="terms-and-conditions.html" target="_blank" rel="noopener">Terms &amp; Conditions</a>. <em>(required)</em></span>
+            </label>
+
+            <p id="deliveryMessage" class="dp-message" role="alert"></p>
+
+            <button id="toPaymentBtn" class="dp-submit" type="button">Send Pre-Order</button>
+          </form>
+
+          <aside class="dp-summary" aria-label="Selected products">
+            <h2>Selected Products</h2>
+            <div id="checkoutItems" class="dp-items" aria-live="polite"></div>
+            <div class="dp-summary-total"><span>Total boxes</span><span id="checkoutTotal">0</span></div>
+            <a class="dp-edit" href="cart.html">Edit cart</a>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section id="orderConfirmation" class="dp dp-done" hidden>
+      <div class="container">
+        <div class="dp-done-card">
+          <span class="dp-done-icon" aria-hidden="true">&#10003;</span>
+          <h1>Pre-order received</h1>
+          <p>Thank you! We have emailed you a confirmation and will be in touch shortly to confirm availability and delivery.</p>
+          <a href="products.html" class="dp-submit dp-done-btn">Back to roses</a>
         </div>
       </div>
     </section>
   </main>
+
+  <footer class="site-foot">
+    <div class="container">
+      <div class="site-foot-row">
+        <a class="site-foot-logo" href="products.html" aria-label="Bunches Direct home"><img src="assets/email-logo.png" alt="Bunches Direct" width="96" height="54"></a>
+        <nav class="site-foot-links" aria-label="Contact">
+          <a href="mailto:es@bunches-direct.com">es@bunches-direct.com</a>
+          <a href="https://wa.me/393450054849" target="_blank" rel="noopener">+39 345 005 4849</a>
+          <a class="site-foot-cta" href="contact.html">Send a request</a>
+        </nav>
+      </div>
+      <div class="site-foot-row site-foot-meta">
+        <p>&copy; <span data-year>2026</span> Bunches Direct<span data-company-ids></span></p>
+        <nav class="site-foot-links" aria-label="Legal">
+          <a href="privacy-policy.html">Privacy Policy</a>
+          <a href="cookie-policy.html">Cookie Policy</a>
+          <a href="terms-and-conditions.html">Terms &amp; Conditions</a>
+        </nav>
+      </div>
+    </div>
+  </footer>
 
   <script src="script.js"></script>
 </body>

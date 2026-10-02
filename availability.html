@@ -5,9 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Upload Availability PDF | Bunches Direct</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/fonts.css">
   <style>
     * { box-sizing: border-box; }
 
@@ -395,7 +393,6 @@
     </div>
   </main>
 
-  <footer class="site-footnote">© 2026 Bunches Direct. All rights reserved.</footer>
 
   <script>
     const CLOUDFLARE_WORKER_URL = "https://bunchesdirectaiworker.francesco-swoboda.workers.dev/";
@@ -512,5 +509,25 @@
       return { password, fileDataBase64 };
     }
   </script>
+  <footer class="site-foot">
+    <div class="container">
+      <div class="site-foot-row">
+        <a class="site-foot-logo" href="products.html" aria-label="Bunches Direct home"><img src="assets/email-logo.png" alt="Bunches Direct" width="96" height="54"></a>
+        <nav class="site-foot-links" aria-label="Contact">
+          <a href="mailto:es@bunches-direct.com">es@bunches-direct.com</a>
+          <a href="https://wa.me/393450054849" target="_blank" rel="noopener">+39 345 005 4849</a>
+          <a class="site-foot-cta" href="contact.html">Send a request</a>
+        </nav>
+      </div>
+      <div class="site-foot-row site-foot-meta">
+        <p>&copy; <span data-year>2026</span> Bunches Direct<span data-company-ids></span></p>
+        <nav class="site-foot-links" aria-label="Legal">
+          <a href="privacy-policy.html">Privacy Policy</a>
+          <a href="cookie-policy.html">Cookie Policy</a>
+          <a href="terms-and-conditions.html">Terms &amp; Conditions</a>
+        </nav>
+      </div>
+    </div>
+  </footer>
 </body>
 </html>

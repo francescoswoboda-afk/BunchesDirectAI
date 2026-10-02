@@ -14,12 +14,10 @@
   <meta name="twitter:description" content="Premium roses imported at origin and delivered across Europe with freshness, consistency and care.">
   <meta name="twitter:image" content="https://bunches-direct.com/assets/social-preview.png">
   <title>Contact Us | Bunches Direct</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Birthstone&family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/fonts.css">
   <link rel="stylesheet" href="styles.css">
 </head>
-<body data-page="contact">
+<body data-page="contact" class="contact-page">
   <header class="home-header">
     <a class="home-brand" href="index.html" aria-label="Bunches Direct home">
       <img class="home-brand-logo" src="assets/my-logo.png" alt="Bunches Direct">
@@ -56,48 +54,71 @@
   </div>
 
   <main>
-    <section class="section-pad page-hero">
-      <div class="container narrow">
-        <p class="contact-kicker">Let&apos;s talk flowers</p>
-        <h1 class="contact-display">Contact <span>Bunches Direct</span></h1>
-        <p class="lead">Tell us what you need and we will get back to you quickly with design options, pricing, and delivery details.</p>
-      </div>
-    </section>
+    <section class="ct">
+      <div class="container ct-layout">
+        <div class="ct-intro">
+          <p class="ct-kicker">Let&apos;s talk flowers</p>
+          <h1 class="ct-title">Contact <span>Bunches Direct</span></h1>
+          <p class="ct-lead">Tell us what you need and we will get back to you quickly with design options, pricing, and delivery details.</p>
+          <p class="ct-company" data-company-details hidden></p>
+        </div>
 
-    <section class="section-pad contact-content">
-      <div class="container">
-        <form id="contactForm" class="contact-form contact-form-centered" action="https://formsubmit.co/es@bunches-direct.com" method="POST">
+        <form id="contactForm" class="ct-card" action="https://formsubmit.co/es@bunches-direct.com" method="POST">
           <input type="hidden" name="_subject" value="New contact request from Bunches Direct website">
           <input type="hidden" name="_captcha" value="false">
 
-          <label for="companyName">Company Name</label>
-          <input id="companyName" name="companyName" type="text" required>
+          <div class="ct-field">
+            <label for="companyName">Company name</label>
+            <input id="companyName" name="companyName" type="text" autocomplete="organization" required>
+          </div>
 
-          <label for="companyEmail">Company Email</label>
-          <input id="companyEmail" name="companyEmail" type="email" required>
+          <div class="ct-row">
+            <div class="ct-field">
+              <label for="companyEmail">Company email</label>
+              <input id="companyEmail" name="companyEmail" type="email" autocomplete="email" required>
+            </div>
+            <div class="ct-field">
+              <label for="companyPhone">Phone or WhatsApp</label>
+              <input id="companyPhone" name="companyPhone" type="tel" autocomplete="tel" required>
+            </div>
+          </div>
 
-          <label for="companyPhone">Company Phone Number or WhatsApp</label>
-          <input id="companyPhone" name="companyPhone" type="text" required>
+          <div class="ct-field">
+            <label for="message">Message</label>
+            <textarea id="message" name="message" rows="5" required placeholder="Write your message here."></textarea>
+          </div>
 
-          <label for="message">Message</label>
-          <textarea id="message" name="message" rows="5" required placeholder="Write your message here."></textarea>
-
-          <label class="check-row legal-check-row" for="contactPrivacyConsent">
+          <label class="ct-consent" for="contactPrivacyConsent">
             <input id="contactPrivacyConsent" name="privacyConsent" type="checkbox" required>
-            I have read and accept the <a href="privacy-policy.html" target="_blank" rel="noopener">Privacy Policy</a> and <a href="terms-and-conditions.html" target="_blank" rel="noopener">Terms &amp; Conditions</a>.
+            <span>I have read the <a href="privacy-policy.html" target="_blank" rel="noopener">Privacy Policy</a> and <a href="terms-and-conditions.html" target="_blank" rel="noopener">Terms &amp; Conditions</a>.</span>
           </label>
 
-          <button class="btn btn-solid" type="submit">Send Request</button>
+          <button class="ct-submit" type="submit">Send Request</button>
         </form>
-
-        <div class="legal-links legal-links-inline">
-          <a href="privacy-policy.html">Privacy Policy</a>
-          <a href="cookie-policy.html">Cookie Policy</a>
-          <a href="terms-and-conditions.html">Terms &amp; Conditions</a>
-        </div>
       </div>
     </section>
   </main>
+
+  <footer class="site-foot">
+    <div class="container">
+      <div class="site-foot-row">
+        <a class="site-foot-logo" href="products.html" aria-label="Bunches Direct home"><img src="assets/email-logo.png" alt="Bunches Direct" width="96" height="54"></a>
+        <nav class="site-foot-links" aria-label="Contact">
+          <a href="mailto:es@bunches-direct.com">es@bunches-direct.com</a>
+          <a href="https://wa.me/393450054849" target="_blank" rel="noopener">+39 345 005 4849</a>
+          <a class="site-foot-cta" href="contact.html">Send a request</a>
+        </nav>
+      </div>
+      <div class="site-foot-row site-foot-meta">
+        <p>&copy; <span data-year>2026</span> Bunches Direct<span data-company-ids></span></p>
+        <nav class="site-foot-links" aria-label="Legal">
+          <a href="privacy-policy.html">Privacy Policy</a>
+          <a href="cookie-policy.html">Cookie Policy</a>
+          <a href="terms-and-conditions.html">Terms &amp; Conditions</a>
+        </nav>
+      </div>
+    </div>
+  </footer>
 
   <script src="script.js"></script>
 </body>

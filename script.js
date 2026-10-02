@@ -1,15 +1,29 @@
 // Product data lives in products-data.js and is loaded only on pages that need it.
 const FALLBACK_PRODUCT_IMAGE = "assets/flower-card.svg";
 const PRODUCTS_PER_PAGE = 20;
+// Stem lengths offered for every rose (the options on product-detail.html)
+const ROSE_STEM_LENGTHS = "40–70 cm";
 const CART_STORAGE_KEY = "bunchesDirectCart";
 const ORDER_DETAILS_STORAGE_KEY = "bunchesDirectOrderDetails";
 const CHECKOUT_SESSION_ENDPOINT = "/api/create-checkout-session";
 const COOKIE_CONSENT_STORAGE_KEY = "bunchesDirectCookieConsent";
+
+// The company's legal details. Fill these in and they appear on the legal pages and the contact page
+// (Dutch/EU law requires the legal name, address, KvK number and VAT number on a business website).
+// Empty fields are simply left out.
+const COMPANY_DETAILS = {
+    legalName: "",  // e.g. "Bunches Direct B.V."
+    address: "",    // e.g. "Prunus 12, 1424 LD De Kwakel, the Netherlands"
+    kvk: "",        // Chamber of Commerce (KvK) number
+    vat: ""         // VAT number, e.g. "NL123456789B01"
+};
 const AVAILABILITY_ENDPOINT = "/api/availability";
 const AVAILABILITY_UPLOAD_ENDPOINT = "/api/availability/upload";
 const MAX_AVAILABILITY_UPLOAD_SIZE_BYTES = 8 * 1024 * 1024;
 
-const products = Array.isArray(window.BUNCHES_PRODUCTS) ? window.BUNCHES_PRODUCTS : [];
+// Alphabetical everywhere: the products grid and Previous/Next on the rose page use the same order
+const products = (Array.isArray(window.BUNCHES_PRODUCTS) ? window.BUNCHES_PRODUCTS : [])
+    .sort((a, b) => a.name.localeCompare(b.name));
 
 const dom = {
     menuToggle: document.getElementById("menuToggle"),
@@ -34,7 +48,9 @@ const dom = {
     cartItems: document.getElementById("cartItems"),
     cartTotal: document.getElementById("cartTotal"),
     cartEmptyState: document.getElementById("cartEmptyState"),
-    clearCartBtn: document.getElementById("clearCartBtn"),
+    cartFilled: document.getElementById("cartFilled"),
+    cartLead: document.getElementById("cartLead"),
+    cartVarieties: document.getElementById("cartVarieties"),
     checkoutItems: document.getElementById("checkoutItems"),
     deliveryForm: document.getElementById("deliveryForm"),
     deliveryDateSelect: document.getElementById("deliveryDateSelect"),
@@ -61,6 +77,7 @@ const dom = {
 
 let filteredProducts = [...products];
 let visibleProductCount = PRODUCTS_PER_PAGE;
+let selectedProductColor = "all";
 let activeDetailProduct = null;
 
 function setupSmoothPageNavigation() {
@@ -80,6 +97,28 @@ function setupSmoothPageNavigation() {
     });
 
     scheduleIdlePagePrefetches();
+    addMainPagePrerenderRules();
+}
+
+// In browsers that support it (Chrome/Edge), start rendering the main pages in the background when
+// a link is hovered, so the page transition plays straight away instead of waiting for the load.
+function addMainPagePrerenderRules() {
+    if (!HTMLScriptElement.supports || !HTMLScriptElement.supports("speculationrules")) {
+        return;
+    }
+
+    const rules = document.createElement("script");
+    rules.type = "speculationrules";
+    rules.textContent = JSON.stringify({
+        prerender: [{
+            source: "document",
+            where: {
+                or: ["/products.html", "/about.html", "/contact.html", "/product-detail.html?*"].map((path) => ({ href_matches: path }))
+            },
+            eagerness: "moderate"
+        }]
+    });
+    document.head.appendChild(rules);
 }
 
 function scheduleIdlePagePrefetches() {
@@ -93,7 +132,9 @@ function scheduleIdlePagePrefetches() {
     if (page === "home") {
         pagesToWarm.push("products.html", "about.html", "contact.html", "cart.html");
     } else if (page === "products") {
-        pagesToWarm.push("index.html", "cart.html");
+        pagesToWarm.push("about.html", "contact.html", "cart.html");
+    } else if (page === "about") {
+        pagesToWarm.push("products.html", "contact.html");
     }
 
     if (pagesToWarm.length === 0) {
@@ -165,13 +206,18 @@ function prefetchPage(href, asType = "document") {
 function init() {
     setupSmoothPageNavigation();
     initCookieConsentBanner();
+    renderCompanyDetails();
     setYear();
     wireMobileMenu();
     wireHomeHamburger();
     markActiveNav();
     initHomeCartBadge();
     initProductsStickyHeader();
+    initProductsRoseMorph();
     initProductsPage();
+    initRoseCardMorph();
+    initRosePageEntrance();
+    initCertificationCarousel();
     initProductDetailPage();
     initCartPage();
     initOrderDetailsPage();
@@ -200,6 +246,26 @@ function initProductsStickyHeader() {
     window.addEventListener("scroll", updateHeaderBackground, { passive: true });
     window.addEventListener("resize", updateHeaderBackground);
     updateHeaderBackground();
+}
+
+// The products-page rose slides from the right side (wide windows) to the bottom (narrow windows).
+// CSS can't turn a width into a 0-1 ratio, so this sets --products-rose-p while the window is resized
+// and the stylesheet blends the two positions with it. Keep the widths in sync with styles.css.
+function initProductsRoseMorph() {
+    if (document.body.dataset.page !== "products") {
+        return;
+    }
+
+    const wideWidth = 1024;
+    const narrowWidth = 820;
+
+    const updateRoseProgress = () => {
+        const progress = (wideWidth - window.innerWidth) / (wideWidth - narrowWidth);
+        document.body.style.setProperty("--products-rose-p", Math.min(1, Math.max(0, progress)).toFixed(4));
+    };
+
+    window.addEventListener("resize", updateRoseProgress);
+    updateRoseProgress();
 }
 
 function initPdfViewerModal() {
@@ -267,6 +333,18 @@ function renderHomeCartBadge() {
 
     const totalBoxes = getCartItems().reduce((sum, item) => sum + (Number(item.quantity) || 0), 0);
     dom.homeCartCount.textContent = String(totalBoxes);
+    renderDetailCartLink(totalBoxes);
+}
+
+// "View cart" shortcut on the rose page, shown once the cart has something in it
+function renderDetailCartLink(totalBoxes) {
+    const link = document.getElementById("detailCartLink");
+    if (!link) {
+        return;
+    }
+
+    link.hidden = totalBoxes === 0;
+    document.getElementById("detailCartCount").textContent = `${totalBoxes} ${totalBoxes === 1 ? "box" : "boxes"}`;
 }
 
 function setYear() {
@@ -372,58 +450,367 @@ function initProductsPage() {
 
     filteredProducts = [...products];
     visibleProductCount = PRODUCTS_PER_PAGE;
-    renderProductsPage();
+    const savedView = takeSavedProductsView();
+    if (savedView) {
+        applySavedProductsView(savedView);
+    } else {
+        renderProductsPage();
+    }
 
     if (dom.productSearch) {
         dom.productSearch.addEventListener("input", filterAndRenderProducts);
     }
 
+    // Remember this view when leaving, so "All roses" / Back returns to the same spot
+    window.addEventListener("pagehide", saveProductsView);
+    window.addEventListener("pageswap", saveProductsView);
+
     if (dom.productColorFilter) {
-        dom.productColorFilter.addEventListener("change", filterAndRenderProducts);
+        dom.productColorFilter.addEventListener("click", (event) => {
+            const chip = event.target.closest(".rose-chip[data-color]");
+            if (!chip) {
+                return;
+            }
+
+            selectedProductColor = chip.dataset.color || "all";
+            dom.productColorFilter.querySelectorAll(".rose-chip[data-color]").forEach((button) => {
+                const isActive = button === chip;
+                button.classList.toggle("is-active", isActive);
+                button.setAttribute("aria-pressed", String(isActive));
+            });
+            filterAndRenderProducts();
+            layoutColourChips();
+        });
+    }
+
+    initColourChipsOverflow();
+}
+
+// ----- Returning to the same spot in the products grid -----
+// When someone opens a rose and comes back ("All roses", Back, or the products link on a rose page),
+// the grid is restored as they left it: search, colour, how many roses were loaded and the scroll position.
+const PRODUCTS_VIEW_STORAGE_KEY = "bunchesDirectProductsView";
+
+function saveProductsView() {
+    try {
+        window.sessionStorage.setItem(PRODUCTS_VIEW_STORAGE_KEY, JSON.stringify({
+            search: dom.productSearch ? dom.productSearch.value : "",
+            color: selectedProductColor,
+            visibleCount: visibleProductCount,
+            scrollY: window.scrollY
+        }));
+    } catch {
+        // storage unavailable: the grid simply starts at the top
+    }
+}
+
+function takeSavedProductsView() {
+    // only restore when coming back from a rose page; arriving from anywhere else starts fresh
+    const from = (window.navigation && navigation.activation && navigation.activation.from && navigation.activation.from.url) || document.referrer;
+    if (!from || !from.includes("product-detail.html")) {
+        return null;
+    }
+
+    try {
+        const saved = JSON.parse(window.sessionStorage.getItem(PRODUCTS_VIEW_STORAGE_KEY) || "null");
+        return saved && typeof saved === "object" ? saved : null;
+    } catch {
+        return null;
+    }
+}
+
+function applySavedProductsView(view) {
+    if (dom.productSearch && typeof view.search === "string") {
+        dom.productSearch.value = view.search;
+    }
+
+    const chip = dom.productColorFilter && dom.productColorFilter.querySelector(`.rose-chip[data-color="${view.color}"]`);
+    if (chip) {
+        selectedProductColor = view.color;
+        dom.productColorFilter.querySelectorAll(".rose-chip[data-color]").forEach((button) => {
+            button.classList.toggle("is-active", button === chip);
+            button.setAttribute("aria-pressed", String(button === chip));
+        });
+    }
+
+    filterAndRenderProducts();
+    if (Number(view.visibleCount) > visibleProductCount) {
+        visibleProductCount = Number(view.visibleCount);
+        renderProductsPage();
+    }
+
+    // card heights are fixed, so the layout is final now and the scroll lands on the right row
+    if ("scrollRestoration" in history) {
+        history.scrollRestoration = "manual";
+    }
+    window.scrollTo(0, Number(view.scrollY) || 0);
+}
+
+// Keep the colour chips on one row at every screen size: chips that don't fit go behind a "More"
+// chip that expands the full list.
+let layoutColourChips = () => {};
+
+function initColourChipsOverflow() {
+    const wrap = dom.productColorFilter;
+    if (!wrap) {
+        return;
+    }
+
+    const chips = [...wrap.querySelectorAll(".rose-chip[data-color]")];
+    const moreButton = document.createElement("button");
+    moreButton.type = "button";
+    moreButton.className = "rose-chip rose-chip-more";
+    wrap.appendChild(moreButton);
+
+    let expanded = false;
+
+    const setMoreLabel = (hiddenCount) => {
+        moreButton.innerHTML = expanded
+            ? 'Less <span class="rose-chip-chevron is-up" aria-hidden="true"></span>'
+            : `More (${hiddenCount}) <span class="rose-chip-chevron" aria-hidden="true"></span>`;
+        moreButton.setAttribute("aria-expanded", String(expanded));
+    };
+
+    layoutColourChips = () => {
+        chips.forEach((chip) => {
+            chip.hidden = false;
+        });
+        moreButton.hidden = false;
+
+        if (expanded) {
+            setMoreLabel(0);
+            return;
+        }
+
+        // Hide chips from the end (never the selected one) until everything, "More" included, sits on the first row
+        const activeChip = chips.find((chip) => chip.classList.contains("is-active"));
+        const visible = [...chips];
+        const firstRowTop = chips[0].offsetTop;
+        const fitsOneRow = () => moreButton.offsetTop === firstRowTop && visible.every((chip) => chip.offsetTop === firstRowTop);
+
+        setMoreLabel(0);
+        while (!fitsOneRow() && visible.length > 1) {
+            let index = visible.length - 1;
+            if (visible[index] === activeChip) {
+                index -= 1;
+            }
+            visible[index].hidden = true;
+            visible.splice(index, 1);
+            setMoreLabel(chips.length - visible.length);
+        }
+
+        moreButton.hidden = visible.length === chips.length;
+    };
+
+    moreButton.addEventListener("click", () => {
+        expanded = !expanded;
+        layoutColourChips();
+    });
+    window.addEventListener("resize", layoutColourChips);
+    if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(layoutColourChips);
+    }
+    layoutColourChips();
+}
+
+// Products grid <-> rose page: the clicked white card magnifies into the rose page's photo panel,
+// with the photo growing inside it
+// (and back again with the browser's Back button). Both pages give the photo the same
+// view-transition name; on the grid only the clicked card gets it, because each name must be unique.
+function initRoseCardMorph() {
+    if (!dom.productGrid) {
+        return;
+    }
+
+    const clearNames = () => {
+        dom.productGrid.querySelectorAll(".rose-card, .rose-card-media img").forEach((element) => {
+            element.style.viewTransitionName = "";
+        });
+    };
+
+    const nameCard = (card) => {
+        clearNames();
+        if (!card) {
+            return;
+        }
+        card.style.viewTransitionName = "rose-panel";
+        card.querySelector(".rose-card-media img").style.viewTransitionName = "rose-photo";
+    };
+
+    const cardForRoseUrl = (url) => {
+        const rose = new URL(url, window.location.href).searchParams.get("rose");
+        return rose
+            ? [...dom.productGrid.querySelectorAll(".rose-card")].find(
+                (card) => card.querySelector(".rose-card-name").textContent === rose
+            )
+            : null;
+    };
+
+    // leaving for a rose page
+    window.addEventListener("pageswap", (event) => {
+        const target = event.activation && event.activation.entry && event.activation.entry.url;
+        if (event.viewTransition && target && target.includes("product-detail.html")) {
+            nameCard(cardForRoseUrl(target));
+        } else {
+            clearNames();
+        }
+    });
+
+    // coming back from a rose page
+    window.addEventListener("pagereveal", (event) => {
+        const from = navigation && navigation.activation && navigation.activation.from;
+        if (!event.viewTransition || !from || !from.url || !from.url.includes("product-detail.html")) {
+            clearNames();
+            return;
+        }
+        const card = cardForRoseUrl(from.url);
+        // after Previous/Next the rose may be elsewhere in the grid: bring its card into view first
+        if (card) {
+            const rect = card.getBoundingClientRect();
+            const headerBottom = document.querySelector(".home-header")?.getBoundingClientRect().bottom || 0;
+            if (rect.bottom < headerBottom + 60 || rect.top > window.innerHeight - 60) {
+                card.scrollIntoView({ block: "center", behavior: "instant" });
+            }
+        }
+        nameCard(card);
+        addTransitionType(event.viewTransition, "rose-close");
+        event.viewTransition.finished.finally(clearNames);
+    });
+}
+
+// Rose page: arriving from the products grid (the photo grows out of its card)
+function initRosePageEntrance() {
+    if (!document.body.classList.contains("rose-detail-page")) {
+        return;
+    }
+
+    // Previous / Next replace the current history entry instead of adding one, so the page
+    // before this rose (normally the products grid) is always one step back.
+    [dom.prevFlowerBtn, dom.nextFlowerBtn].forEach((link) => {
+        if (!link) {
+            return;
+        }
+        link.addEventListener("click", (event) => {
+            if (event.metaKey || event.ctrlKey || event.shiftKey || event.button !== 0) {
+                return;
+            }
+            event.preventDefault();
+            window.location.replace(link.href);
+        });
+    });
+
+    // "All roses": if the grid is the previous page, go back to it instead of loading it again.
+    // The browser then shows the grid it kept in memory (same scroll, every photo already loaded),
+    // so the card can shrink back into place immediately.
+    const backLink = document.querySelector(".rose-detail-back");
+    if (backLink) {
+        backLink.addEventListener("click", (event) => {
+            if (event.metaKey || event.ctrlKey || event.shiftKey || event.button !== 0) {
+                return;
+            }
+            const entries = window.navigation && navigation.entries ? navigation.entries() : [];
+            const current = window.navigation && navigation.currentEntry;
+            const previous = current ? entries[current.index - 1] : null;
+            if (previous && previous.url && new URL(previous.url).pathname.endsWith("/products.html")) {
+                event.preventDefault();
+                history.back();
+            }
+        });
+    }
+
+    window.addEventListener("pagereveal", (event) => {
+        const from = navigation && navigation.activation && navigation.activation.from;
+        if (event.viewTransition && from && from.url && from.url.includes("products.html")) {
+            addTransitionType(event.viewTransition, "rose-open");
+        }
+    });
+}
+
+// About Us: the partner-farm certifications rotate one at a time. The dots jump to a logo;
+// hovering or focusing pauses the rotation, and it doesn't rotate at all for reduced motion.
+function initCertificationCarousel() {
+    const stage = document.getElementById("certCarousel");
+    if (!stage) {
+        return;
+    }
+
+    const slides = [...stage.querySelectorAll("[data-cert-slide]")];
+    const dots = [...document.querySelectorAll("[data-cert-dot]")];
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let current = 0;
+    let timer = null;
+
+    const show = (index) => {
+        current = (index + slides.length) % slides.length;
+        slides.forEach((slide, i) => {
+            slide.classList.toggle("is-active", i === current);
+            slide.setAttribute("aria-hidden", String(i !== current));
+        });
+        dots.forEach((dot, i) => {
+            dot.classList.toggle("is-active", i === current);
+            if (i === current) {
+                dot.setAttribute("aria-current", "true");
+            } else {
+                dot.removeAttribute("aria-current");
+            }
+        });
+    };
+
+    const start = () => {
+        if (reduceMotion || timer) {
+            return;
+        }
+        timer = window.setInterval(() => show(current + 1), 3200);
+    };
+
+    const stop = () => {
+        window.clearInterval(timer);
+        timer = null;
+    };
+
+    dots.forEach((dot) => {
+        dot.addEventListener("click", () => {
+            show(Number(dot.dataset.certDot));
+            stop();
+            start();
+        });
+    });
+
+    const box = stage.closest(".ab-certs");
+    box.addEventListener("mouseenter", stop);
+    box.addEventListener("mouseleave", start);
+    box.addEventListener("focusin", stop);
+    box.addEventListener("focusout", start);
+    document.addEventListener("visibilitychange", () => (document.hidden ? stop() : start()));
+    start();
+}
+
+// Transition types let the CSS tell opening a rose apart from closing one (newer Chrome; ignored elsewhere)
+function addTransitionType(viewTransition, type) {
+    try {
+        viewTransition.types.add(type);
+    } catch {
+        // older browsers: the default crossfade is used instead
     }
 }
 
 function filterAndRenderProducts() {
     const searchTerm = dom.productSearch ? dom.productSearch.value.trim().toLowerCase() : "";
-    const selectedColor = dom.productColorFilter ? dom.productColorFilter.value : "all";
+    const selectedColor = selectedProductColor;
 
     filteredProducts = products.filter((product) => {
-        const searchable = `${product.name} ${product.description}`.toLowerCase();
+        // Descriptions are placeholder text, so search only the name and the rose's colour.
+        const searchable = `${product.name} ${product.color || ""}`.toLowerCase();
         const textMatch = searchable.includes(searchTerm);
         if (selectedColor === "all") {
             return textMatch;
         }
 
-        return textMatch && inferProductColor(product) === selectedColor;
+        return textMatch && product.color === selectedColor;
     });
 
     visibleProductCount = PRODUCTS_PER_PAGE;
     renderProductsPage();
-}
-
-function inferProductColor(product) {
-    const text = `${product.name} ${product.description}`.toLowerCase();
-
-    if (text.includes("red") || text.includes("burgundy") || text.includes("crimson")) {
-        return "red";
-    }
-    if (text.includes("pink") || text.includes("blush") || text.includes("fuchsia")) {
-        return "pink";
-    }
-    if (text.includes("white") || text.includes("ivory") || text.includes("cream")) {
-        return "white";
-    }
-    if (text.includes("yellow") || text.includes("gold")) {
-        return "yellow";
-    }
-    if (text.includes("orange") || text.includes("coral")) {
-        return "orange";
-    }
-    if (text.includes("peach") || text.includes("apricot")) {
-        return "peach";
-    }
-
-    return "pink";
 }
 
 function renderProductsPage() {
@@ -439,27 +826,55 @@ function renderProductCards(list) {
     }
 
     if (list.length === 0) {
-        dom.productGrid.innerHTML = "<p>No bouquets match your current filter.</p>";
+        dom.productGrid.innerHTML = "<p class=\"rose-empty\">No roses match your search.</p>";
         return;
     }
 
-    dom.productGrid.innerHTML = list
-        .map(
-            (product, index) => {
-                const isAboveFold = index < 8;
-                const priority = index < 4 ? "high" : "low";
+    dom.productGrid.innerHTML = list.map((product, index) => productCardHtml(product, index)).join("");
+}
 
-                return `
-            <a class="product-card product-card-link" href="${getProductDetailUrl(product)}" aria-label="View details for ${product.name}">
-                <img class="product-image" src="${product.image || FALLBACK_PRODUCT_IMAGE}" alt="${product.name} arrangement image" loading="${isAboveFold ? "eager" : "lazy"}" decoding="async" fetchpriority="${priority}" onerror="this.onerror=null;this.src='${FALLBACK_PRODUCT_IMAGE}';">
-                <h3>${product.name}</h3>
-                <p class="product-tag">Premium Rose</p>
-                <span class="product-arrow" aria-hidden="true">&rarr;</span>
+function productCardHtml(product, index, extraClass = "", style = "") {
+    const isAboveFold = index < 8 || extraClass.includes("rose-card-enter");
+    const priority = index < 4 ? "high" : "low";
+
+    return `
+            <a class="rose-card${extraClass}" href="${getProductDetailUrl(product)}" aria-label="View details for ${product.name}"${style}>
+                <div class="rose-card-media">
+                    <img src="${product.image || FALLBACK_PRODUCT_IMAGE}" alt="${product.name} rose" loading="${isAboveFold ? "eager" : "lazy"}" decoding="async" fetchpriority="${priority}" onerror="this.onerror=null;this.src='${FALLBACK_PRODUCT_IMAGE}';">
+                </div>
+                <h3 class="rose-card-name">${product.name}</h3>
+                <p class="rose-card-colour"><span class="rose-dot rose-dot--${product.color || "mixed"}" aria-hidden="true"></span>${product.description || ""}</p>
+                <div class="rose-card-footer">
+                    <div>
+                        <span class="rose-card-label">Stem length</span>
+                        <span class="rose-card-stem">${ROSE_STEM_LENGTHS}</span>
+                    </div>
+                    <span class="rose-card-arrow" aria-hidden="true">&rarr;</span>
+                </div>
             </a>
         `;
-            }
-        )
+}
+
+// "Load More Roses": keep the cards already on screen and add only the next batch,
+// which fades and rises in one card after another.
+function loadMoreProducts() {
+    const start = visibleProductCount;
+    visibleProductCount += PRODUCTS_PER_PAGE;
+    const batch = filteredProducts.slice(start, visibleProductCount);
+
+    const html = batch
+        .map((product, i) => productCardHtml(product, start + i, " rose-card-enter", ` style="--enter-i: ${i}"`))
         .join("");
+    dom.productGrid.insertAdjacentHTML("beforeend", html);
+
+    renderProductPagination();
+}
+
+// Start downloading the next batch's photos as soon as someone heads for the button
+function preloadNextProductImages() {
+    filteredProducts
+        .slice(visibleProductCount, visibleProductCount + PRODUCTS_PER_PAGE)
+        .forEach((product) => preloadImage(product.image));
 }
 
 function getProductDetailUrl(product) {
@@ -511,32 +926,25 @@ function renderProductDetail(product, index) {
     dom.detailImage.decoding = "async";
     dom.detailImage.setAttribute("fetchpriority", "high");
     dom.detailImage.src = product.image || FALLBACK_PRODUCT_IMAGE;
-    dom.detailImage.alt = `${product.name} rose image`;
+    dom.detailImage.alt = `${product.name} rose`;
     dom.detailName.textContent = product.name;
+    document.title = `${product.name} | Bunches Direct`;
 
     // Warm the cache for adjacent roses so Next/Previous feels instant.
     preloadImage(previousProduct && previousProduct.image);
     preloadImage(nextProduct && nextProduct.image);
 
-    if (dom.prevFlowerBtn) {
-        if (previousProduct) {
-            dom.prevFlowerBtn.href = getProductDetailUrl(previousProduct);
-            dom.prevFlowerBtn.innerHTML = `&larr; Previous flower: ${previousProduct.name}`;
-            dom.prevFlowerBtn.style.display = "inline-flex";
-        } else {
-            dom.prevFlowerBtn.style.display = "none";
+    [[dom.prevFlowerBtn, previousProduct], [dom.nextFlowerBtn, nextProduct]].forEach(([link, target]) => {
+        if (!link) {
+            return;
         }
-    }
-
-    if (dom.nextFlowerBtn) {
-        if (nextProduct) {
-            dom.nextFlowerBtn.href = getProductDetailUrl(nextProduct);
-            dom.nextFlowerBtn.innerHTML = `Next flower: ${nextProduct.name} &rarr;`;
-            dom.nextFlowerBtn.style.display = "inline-flex";
-        } else {
-            dom.nextFlowerBtn.style.display = "none";
+        // visibility (not display) so "Next" stays on the right when there is no previous rose
+        link.style.visibility = target ? "visible" : "hidden";
+        if (target) {
+            link.href = getProductDetailUrl(target);
+            link.querySelector("[data-pager-name]").textContent = target.name;
         }
-    }
+    });
 
     updateSelectionSummary();
 }
@@ -572,6 +980,7 @@ function wireDetailQuantityControls() {
     });
 
     if (dom.boxTypeSelect) {
+        // radio buttons inside the fieldset; "change" bubbles up to it
         dom.boxTypeSelect.addEventListener("change", updateSelectionSummary);
     }
 
@@ -582,6 +991,14 @@ function wireDetailQuantityControls() {
     dom.addBoxBtn.addEventListener("click", () => {
         addCurrentSelectionToCart();
         dom.addBoxBtn.textContent = "Added!";
+
+        // briefly highlight the "View cart" link so it's clear where the roses went
+        const cartLink = document.getElementById("detailCartLink");
+        if (cartLink) {
+            cartLink.classList.remove("is-highlighted");
+            void cartLink.offsetWidth;
+            cartLink.classList.add("is-highlighted");
+        }
         updateSelectionSummary();
 
         if (dom.addBoxBtnResetTimer) {
@@ -603,7 +1020,7 @@ function addCurrentSelectionToCart() {
     const item = {
         roseName: activeDetailProduct.name,
         image: activeDetailProduct.image || FALLBACK_PRODUCT_IMAGE,
-        boxType: dom.boxTypeSelect.value,
+        boxType: getSelectedBoxType(),
         stemLength: Number(dom.stemLengthSelect.value),
         quantity
     };
@@ -644,91 +1061,106 @@ function saveCartItems(items) {
     renderHomeCartBadge();
 }
 
+const BOX_STEMS = { "Q-Box": "100–150 stems", "H-Box": "200–250 stems" };
+
 function initCartPage() {
-    if (!dom.cartItems || !dom.cartTotal || !dom.clearCartBtn || !dom.cartEmptyState) {
+    if (!dom.cartItems || !dom.cartTotal || !dom.cartEmptyState || !dom.cartFilled) {
         return;
     }
 
-    renderCartPage();
+    // One listener for every row: quantity steppers and remove buttons
+    dom.cartItems.addEventListener("click", (event) => {
+        const button = event.target.closest("button[data-action]");
+        if (!button) {
+            return;
+        }
 
-    dom.clearCartBtn.addEventListener("click", () => {
-        saveCartItems([]);
+        const index = Number(button.dataset.index);
+        const cart = getCartItems();
+        const item = cart[index];
+        if (!item) {
+            return;
+        }
+
+        if (button.dataset.action === "remove") {
+            cart.splice(index, 1);
+        } else {
+            const change = button.dataset.action === "increase" ? 1 : -1;
+            item.quantity = Math.max(1, (Number(item.quantity) || 1) + change);
+        }
+
+        saveCartItems(cart);
         renderCartPage();
     });
+
+    renderCartPage();
 }
 
 function renderCartPage() {
-    if (!dom.cartItems || !dom.cartTotal || !dom.clearCartBtn || !dom.cartEmptyState) {
-        return;
-    }
-
     const cart = getCartItems();
+    const isEmpty = cart.length === 0;
 
-    if (cart.length === 0) {
-        dom.cartItems.innerHTML = "";
-        dom.cartTotal.textContent = "Total boxes: 0";
-        dom.cartEmptyState.style.display = "block";
-        dom.clearCartBtn.style.display = "none";
-        return;
+    dom.cartEmptyState.hidden = !isEmpty;
+    dom.cartFilled.hidden = isEmpty;
+    if (dom.cartLead) {
+        dom.cartLead.hidden = isEmpty;
     }
 
-    dom.cartEmptyState.style.display = "none";
-    dom.clearCartBtn.style.display = "inline-flex";
+    if (isEmpty) {
+        dom.cartItems.innerHTML = "";
+        return;
+    }
 
     dom.cartItems.innerHTML = cart
-        .map(
-            (item, index) => `
-            <article class="cart-item-card">
-                <img class="cart-item-image" src="${item.image || FALLBACK_PRODUCT_IMAGE}" alt="${item.roseName} rose image" loading="lazy" decoding="async" fetchpriority="low" onerror="this.onerror=null;this.src='${FALLBACK_PRODUCT_IMAGE}';">
-                <div class="cart-item-copy">
+        .map((item, index) => {
+            const quantity = Number(item.quantity) || 1;
+            const meta = [item.boxType, BOX_STEMS[item.boxType], item.stemLength && `${item.stemLength} cm`]
+                .filter(Boolean)
+                .join(" · ");
+
+            return `
+            <article class="cp-item">
+                <img class="cp-item-image" src="${item.image || FALLBACK_PRODUCT_IMAGE}" alt="" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='${FALLBACK_PRODUCT_IMAGE}';">
+                <div class="cp-item-copy">
                     <h3>${item.roseName}</h3>
-                    <p>Packaging: ${item.boxType}</p>
-                    <p>Stem length: ${item.stemLength} cm</p>
-                    <p>Boxes: ${item.quantity}</p>
+                    <p>${meta}</p>
                 </div>
-                <button class="btn btn-outline cart-remove-btn" type="button" data-index="${index}">Remove</button>
-            </article>
-        `
-        )
+                <div class="cp-qty" role="group" aria-label="Boxes of ${item.roseName}">
+                    <button type="button" data-action="decrease" data-index="${index}" aria-label="One box less" ${quantity <= 1 ? "disabled" : ""}>&minus;</button>
+                    <span>${quantity}</span>
+                    <button type="button" data-action="increase" data-index="${index}" aria-label="One box more">+</button>
+                </div>
+                <button class="cp-remove" type="button" data-action="remove" data-index="${index}" aria-label="Remove ${item.roseName}">
+                    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 7h16M9 7V5h6v2M6.5 7l.8 12h9.4l.8-12M10 11v5M14 11v5" /></svg>
+                </button>
+            </article>`;
+        })
         .join("");
 
     const totalBoxes = cart.reduce((sum, item) => sum + (Number(item.quantity) || 0), 0);
-    dom.cartTotal.textContent = `Total boxes: ${totalBoxes}`;
-
-    const removeButtons = dom.cartItems.querySelectorAll(".cart-remove-btn");
-    removeButtons.forEach((button) => {
-        button.addEventListener("click", () => {
-            const index = Number(button.dataset.index);
-            const latestCart = getCartItems();
-
-            if (!Number.isNaN(index)) {
-                latestCart.splice(index, 1);
-                saveCartItems(latestCart);
-                renderCartPage();
-            }
-        });
-    });
+    const varieties = new Set(cart.map((item) => item.roseName)).size;
+    dom.cartTotal.textContent = String(totalBoxes);
+    if (dom.cartVarieties) {
+        dom.cartVarieties.textContent = String(varieties);
+    }
 }
 
 function buildCartItemsHtml(cart) {
     if (!Array.isArray(cart) || cart.length === 0) {
-        return "<p>No products selected yet.</p>";
+        return '<p class="dp-items-empty">Your cart is empty. <a href="products.html">Browse roses</a></p>';
     }
 
     return cart
-        .map(
-            (item) => `
-            <article class="cart-item-card">
-                <img class="cart-item-image" src="${item.image || FALLBACK_PRODUCT_IMAGE}" alt="${item.roseName} rose image" loading="lazy" decoding="async" fetchpriority="low" onerror="this.onerror=null;this.src='${FALLBACK_PRODUCT_IMAGE}';">
-                <div class="cart-item-copy">
-                    <h3>${item.roseName}</h3>
-                    <p>Packaging: ${item.boxType}</p>
-                    <p>Stem length: ${item.stemLength} cm</p>
-                    <p>Boxes: ${item.quantity}</p>
-                </div>
-            </article>
-        `
-        )
+        .map((item) => {
+            const quantity = Number(item.quantity) || 1;
+            const meta = [item.boxType, item.stemLength && `${item.stemLength} cm`].filter(Boolean).join(" · ");
+            return `
+            <div class="dp-item">
+                <img src="${item.image || FALLBACK_PRODUCT_IMAGE}" alt="" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='${FALLBACK_PRODUCT_IMAGE}';">
+                <div class="dp-item-copy"><strong>${item.roseName}</strong><span>${meta}</span></div>
+                <span class="dp-item-qty">${quantity} ${quantity === 1 ? "box" : "boxes"}</span>
+            </div>`;
+        })
         .join("");
 }
 
@@ -739,6 +1171,10 @@ function initOrderDetailsPage() {
 
     const cart = getCartItems();
     dom.checkoutItems.innerHTML = buildCartItemsHtml(cart);
+    const checkoutTotal = document.getElementById("checkoutTotal");
+    if (checkoutTotal) {
+        checkoutTotal.textContent = String(cart.reduce((sum, item) => sum + (Number(item.quantity) || 0), 0));
+    }
 
     if (cart.length === 0) {
         dom.toPaymentBtn.disabled = true;
@@ -748,6 +1184,9 @@ function initOrderDetailsPage() {
     hydrateDeliveryForm();
 
     dom.toPaymentBtn.addEventListener("click", async () => {
+        if (dom.deliveryMessage) {
+            dom.deliveryMessage.textContent = "";
+        }
         if (!dom.deliveryForm.reportValidity()) {
             return;
         }
@@ -769,7 +1208,7 @@ function initOrderDetailsPage() {
         // Disable button and show loading state
         dom.toPaymentBtn.disabled = true;
         const originalLabel = dom.toPaymentBtn.textContent;
-        dom.toPaymentBtn.textContent = "Placing order…";
+        dom.toPaymentBtn.textContent = "Sending pre-order…";
 
         try {
             const cart = getCartItems();
@@ -792,17 +1231,20 @@ function initOrderDetailsPage() {
             if (checkoutSection) checkoutSection.hidden = true;
             if (confirmSection) {
                 confirmSection.hidden = false;
-                confirmSection.scrollIntoView({ behavior: "smooth", block: "start" });
+                window.scrollTo({ top: 0, behavior: "smooth" });
             }
 
             // Clear cart after confirmed order
             localStorage.removeItem(CART_STORAGE_KEY);
             localStorage.removeItem(ORDER_DETAILS_STORAGE_KEY);
+            renderHomeCartBadge();
         } catch (err) {
             dom.toPaymentBtn.disabled = false;
             dom.toPaymentBtn.textContent = originalLabel;
             const msg = err instanceof Error ? err.message : "Something went wrong.";
-            alert(`Could not place order: ${msg}`);
+            if (dom.deliveryMessage) {
+                dom.deliveryMessage.textContent = `Could not send your pre-order: ${msg}`;
+            }
         }
     });
 }
@@ -836,9 +1278,11 @@ function hydrateDeliveryForm() {
         return;
     }
 
-    let optionsHtml = '<option value="">-- Select a delivery date --</option>';
+    let optionsHtml = '<option value="">Select a delivery date</option>';
     availableDates.forEach((option) => {
-        const dateStr = option.date.toISOString().split("T")[0]; // YYYY-MM-DD format
+        // Build YYYY-MM-DD from the local date; toISOString() converts to UTC and shifts it a day back in Europe
+        const d = option.date;
+        const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
         const isSelected = details.deliveryDate === dateStr ? "selected" : "";
         optionsHtml += `<option value="${dateStr}" ${isSelected}>${option.label}</option>`;
     });
@@ -1034,10 +1478,15 @@ function updateSelectionSummary() {
     }
 
     const qty = dom.qtyValue.textContent;
-    const boxType = dom.boxTypeSelect.value;
+    const boxType = getSelectedBoxType();
     const stemLength = dom.stemLengthSelect.value;
 
-    dom.selectionSummary.textContent = `Selected: ${qty} box(es), ${boxType}, ${stemLength} cm stems.`;
+    dom.selectionSummary.textContent = `Selected: ${qty} ${boxType}, ${stemLength} cm stems`;
+}
+
+function getSelectedBoxType() {
+    const checked = dom.boxTypeSelect && dom.boxTypeSelect.querySelector("input[name='boxType']:checked");
+    return checked ? checked.value : "Q-Box";
 }
 
 function renderProductPagination() {
@@ -1054,15 +1503,15 @@ function renderProductPagination() {
 
     dom.productPagination.innerHTML = `
         <p class="page-indicator">Showing ${shownCount} of ${filteredProducts.length} roses</p>
-        <button class="btn btn-solid" id="productsLoadMoreBtn" type="button">Load More Roses</button>
+        <button class="rose-load-more" id="productsLoadMoreBtn" type="button">Load More Roses</button>
     `;
 
     const loadMoreButton = document.getElementById("productsLoadMoreBtn");
 
     if (loadMoreButton) {
-        loadMoreButton.addEventListener("click", () => {
-            visibleProductCount += PRODUCTS_PER_PAGE;
-            renderProductsPage();
+        loadMoreButton.addEventListener("click", loadMoreProducts);
+        ["pointerenter", "focus", "touchstart"].forEach((type) => {
+            loadMoreButton.addEventListener(type, preloadNextProductImages, { once: true, passive: true });
         });
     }
 }
@@ -1074,6 +1523,33 @@ function updateCartBadge() {
     const total = items.reduce((sum, item) => sum + (item.quantity || 1), 0);
     badge.textContent = total;
     badge.style.display = total > 0 ? "flex" : "none";
+}
+
+function renderCompanyDetails() {
+    const parts = [
+        COMPANY_DETAILS.legalName,
+        COMPANY_DETAILS.address,
+        COMPANY_DETAILS.kvk && `KvK ${COMPANY_DETAILS.kvk}`,
+        COMPANY_DETAILS.vat && `VAT ${COMPANY_DETAILS.vat}`
+    ].filter(Boolean);
+
+    // footer: current year, plus KvK / VAT numbers once they are filled in
+    document.querySelectorAll("[data-year]").forEach((element) => {
+        element.textContent = String(new Date().getFullYear());
+    });
+    const ids = [COMPANY_DETAILS.kvk && `KvK ${COMPANY_DETAILS.kvk}`, COMPANY_DETAILS.vat && `VAT ${COMPANY_DETAILS.vat}`].filter(Boolean);
+    document.querySelectorAll("[data-company-ids]").forEach((element) => {
+        element.textContent = ids.length ? ` · ${ids.join(" · ")}` : "";
+    });
+
+    if (parts.length === 0) {
+        return;
+    }
+
+    document.querySelectorAll("[data-company-details]").forEach((element) => {
+        element.textContent = parts.join(" · ");
+        element.hidden = false;
+    });
 }
 
 function initCookieConsentBanner() {
@@ -1093,15 +1569,15 @@ function initCookieConsentBanner() {
     const banner = document.createElement("section");
     banner.className = "cookie-banner";
     banner.id = "cookieConsentBanner";
-    banner.setAttribute("role", "dialog");
+    banner.setAttribute("role", "region");
+    banner.setAttribute("aria-label", "Cookie notice");
     banner.setAttribute("aria-live", "polite");
     banner.innerHTML = `
         <div class="cookie-banner-inner">
-            <p class="cookie-banner-title">Cookie Notice</p>
-            <p class="cookie-banner-copy">We use essential cookies and local storage to keep cart and checkout features working correctly. Read our <a href="cookie-policy.html">Cookie Policy</a> and <a href="privacy-policy.html">Privacy Policy</a>.</p>
+            <p class="cookie-banner-title">Cookies</p>
+            <p class="cookie-banner-copy">We only store your cart and order details in your browser so checkout works. No tracking or advertising cookies. More in our <a href="cookie-policy.html">Cookie Policy</a>.</p>
             <div class="cookie-banner-actions">
-                <button type="button" class="btn btn-outline" data-consent="essential">Essential Only</button>
-                <button type="button" class="btn btn-solid" data-consent="all">Accept</button>
+                <button type="button" class="btn btn-solid" data-consent="essential">OK</button>
             </div>
         </div>
     `;

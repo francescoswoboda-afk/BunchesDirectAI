@@ -14,12 +14,10 @@
   <meta name="twitter:description" content="Premium roses imported at origin and delivered across Europe with freshness, consistency and care.">
   <meta name="twitter:image" content="https://bunches-direct.com/assets/social-preview.png">
   <title>About Us | Bunches Direct</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Birthstone&family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/fonts.css">
   <link rel="stylesheet" href="styles.css">
 </head>
-<body data-page="about">
+<body data-page="about" class="about-page">
   <header class="home-header">
     <a class="home-brand" href="index.html" aria-label="Bunches Direct home">
       <img class="home-brand-logo" src="assets/my-logo.png" alt="Bunches Direct">
@@ -56,50 +54,78 @@
   </div>
 
   <main>
-    <section class="section-pad page-hero about-hero">
+    <section class="ab">
       <div class="container">
-        <h1 class="about-display">Direct from the farm.<span>Delivered with precision.</span></h1>
-        <p class="lead">Bunches Direct was created to connect the finest rose farms in Ecuador directly with customers across Europe.</p>
-      </div>
-    </section>
-
-    <section class="section-pad about-beliefs">
-      <div class="container split about-story-grid">
-        <article class="about-story-copy">
-          <h2 class="section-title">What We Do</h2>
-          <p>We specialize in importing premium quality roses, carefully selected at origin and transported under strict conditions to guarantee freshness, consistency, and long vase life.</p>
-          <p>Our goal is simple. To deliver roses that arrive exactly as expected, fresh, reliable, and ready for market.</p>
-          <p>By working closely with trusted growers and managing the logistics chain from farm to destination, we reduce unnecessary intermediaries and ensure better quality control at every stage.</p>
-        </article>
-        <div class="about-image-card">
-          <img class="about-image" src="assets/about-image.jpg" alt="Bunches Direct bouquet packaging" onerror="this.style.background='var(--card)';">
+        <div class="ab-hero">
+          <p class="ab-kicker">About us</p>
+          <h1 class="ab-title">Direct from the farm. <span>Delivered with precision.</span></h1>
+          <p class="ab-lead">Bunches Direct was created to connect the finest rose farms in Ecuador directly with customers across Europe.</p>
         </div>
-      </div>
-    </section>
 
-    <section class="section-pad alt-bg">
-      <div class="container">
-        <h2 class="section-title">Our Partner Farms Certificates</h2>
-        <div class="cert-logos">
-          <div class="cert-logo">
-            <img src="assets/cert-1.png" alt="Certificate 1">
+        <div class="ab-story">
+          <h2 class="ab-heading">What We Do</h2>
+          <div class="ab-copy">
+            <p>We specialize in importing premium quality roses, carefully selected at origin and transported under strict conditions to guarantee freshness, consistency, and long vase life.</p>
+            <p>Our goal is simple. To deliver roses that arrive exactly as expected, fresh, reliable, and ready for market.</p>
+            <p>By working closely with trusted growers and managing the logistics chain from farm to destination, we reduce unnecessary intermediaries and ensure better quality control at every stage.</p>
           </div>
-          <div class="cert-logo">
-            <img src="assets/cert-2.png" alt="Certificate 2">
-          </div>
-          <div class="cert-logo">
-            <img src="assets/cert-3.png" alt="Certificate 3">
-          </div>
-          <div class="cert-logo">
-            <img src="assets/cert-4.png" alt="Certificate 4">
-          </div>
-          <div class="cert-logo">
-            <img src="assets/cert-5.png" alt="Certificate 5">
-          </div>
+          <aside class="ab-certs" aria-label="Our partner farms' certifications">
+            <p class="ab-certs-label">Our partner farms&rsquo; certifications</p>
+            <div class="ab-cert-stage" id="certCarousel">
+              <figure class="ab-cert is-active" data-cert-slide>
+                <img src="assets/certs/cert-5.png" alt="FlorEcuador certification logo" width="150" height="150" loading="eager">
+                <figcaption>FlorEcuador</figcaption>
+              </figure>
+              <figure class="ab-cert" data-cert-slide aria-hidden="true">
+                <img src="assets/certs/cert-1.png" alt="Florverde Sustainable Flowers certification logo" width="150" height="150" loading="lazy">
+                <figcaption>Florverde Sustainable Flowers</figcaption>
+              </figure>
+              <figure class="ab-cert" data-cert-slide aria-hidden="true">
+                <img src="assets/certs/cert-2.png" alt="Fairtrade certification logo" width="150" height="150" loading="lazy">
+                <figcaption>Fairtrade</figcaption>
+              </figure>
+              <figure class="ab-cert" data-cert-slide aria-hidden="true">
+                <img src="assets/certs/cert-3.png" alt="Fair Trade Certified certification logo" width="150" height="150" loading="lazy">
+                <figcaption>Fair Trade Certified</figcaption>
+              </figure>
+              <figure class="ab-cert" data-cert-slide aria-hidden="true">
+                <img src="assets/certs/cert-4.png" alt="BASC certification logo" width="150" height="150" loading="lazy">
+                <figcaption>BASC</figcaption>
+              </figure>
+            </div>
+            <div class="ab-dots" role="group" aria-label="Choose a certification">
+              <button type="button" class="ab-dot is-active" data-cert-dot="0" aria-label="Show FlorEcuador" aria-current="true"></button>
+              <button type="button" class="ab-dot" data-cert-dot="1" aria-label="Show Florverde Sustainable Flowers"></button>
+              <button type="button" class="ab-dot" data-cert-dot="2" aria-label="Show Fairtrade"></button>
+              <button type="button" class="ab-dot" data-cert-dot="3" aria-label="Show Fair Trade Certified"></button>
+              <button type="button" class="ab-dot" data-cert-dot="4" aria-label="Show BASC"></button>
+            </div>
+          </aside>
         </div>
       </div>
     </section>
   </main>
+
+  <footer class="site-foot">
+    <div class="container">
+      <div class="site-foot-row">
+        <a class="site-foot-logo" href="products.html" aria-label="Bunches Direct home"><img src="assets/email-logo.png" alt="Bunches Direct" width="96" height="54"></a>
+        <nav class="site-foot-links" aria-label="Contact">
+          <a href="mailto:es@bunches-direct.com">es@bunches-direct.com</a>
+          <a href="https://wa.me/393450054849" target="_blank" rel="noopener">+39 345 005 4849</a>
+          <a class="site-foot-cta" href="contact.html">Send a request</a>
+        </nav>
+      </div>
+      <div class="site-foot-row site-foot-meta">
+        <p>&copy; <span data-year>2026</span> Bunches Direct<span data-company-ids></span></p>
+        <nav class="site-foot-links" aria-label="Legal">
+          <a href="privacy-policy.html">Privacy Policy</a>
+          <a href="cookie-policy.html">Cookie Policy</a>
+          <a href="terms-and-conditions.html">Terms &amp; Conditions</a>
+        </nav>
+      </div>
+    </div>
+  </footer>
 
   <script src="script.js"></script>
 </body>

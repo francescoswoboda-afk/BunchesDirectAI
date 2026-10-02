@@ -5,13 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Explore individual rose details, packaging options, and box selections.">
   <title>Rose Details | Bunches Direct</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Birthstone&family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/fonts.css">
   <link rel="stylesheet" href="styles.css">
   <script src="products-data.js"></script>
 </head>
-<body data-page="products" class="product-detail-page">
+<body data-page="products" class="rose-detail-page">
   <header class="home-header">
     <a class="home-brand" href="index.html" aria-label="Bunches Direct home">
       <img class="home-brand-logo" src="assets/my-logo.png" alt="Bunches Direct">
@@ -48,80 +46,128 @@
   </div>
 
   <main>
-    <section class="section-pad product-detail-section">
-      <div class="container product-detail-layout">
-        <a class="back-to-roses-link" href="products.html">&larr; Back to all roses</a>
+    <section class="rose-detail">
+      <div class="container">
+        <a class="rose-detail-back" href="products.html"><span aria-hidden="true">&larr;</span> All roses</a>
 
-        <div class="product-detail-media">
-          <img id="detailImage" alt="Rose image" loading="eager" decoding="async" fetchpriority="high" onerror="this.onerror=null;this.src='assets/flower-card.svg';">
-        </div>
-        <script>
-          // Set the correct rose photo before first paint so the old
-          // placeholder bouquet icon never flashes in during navigation.
-          (function () {
-            var img = document.getElementById("detailImage");
-            var products = Array.isArray(window.BUNCHES_PRODUCTS) ? window.BUNCHES_PRODUCTS : [];
-            var roseName = (new URLSearchParams(window.location.search).get("rose") || "").trim().toLowerCase();
-            var product = products.find(function (item) {
-              return item.name.toLowerCase() === roseName;
-            }) || products[0];
-            img.src = (product && product.image) || "assets/flower-card.svg";
-            img.alt = product ? `${product.name} rose image` : "Rose image";
-          })();
-        </script>
-
-        <div class="product-detail-info">
-          <p class="detail-kicker">Rose details</p>
-          <h1 id="detailName">Rose Name</h1>
-
-          <div class="packaging-copy">
-            <p>Packaging:</p>
-            <ul id="detailPackaging" class="packaging-list">
-              <li>Q-Box = 100-150 stems</li>
-              <li>H-Box = 200-250 stems</li>
-            </ul>
+        <div class="rose-detail-layout">
+          <div class="rose-detail-media">
+            <img id="detailImage" alt="Rose image" loading="eager" decoding="async" fetchpriority="high" onerror="this.onerror=null;this.src='assets/flower-card.svg';">
           </div>
+          <script>
+            // Set the correct rose photo, name and colour before first paint so nothing flashes in.
+            (function () {
+              var products = Array.isArray(window.BUNCHES_PRODUCTS) ? window.BUNCHES_PRODUCTS : [];
+              var roseName = (new URLSearchParams(window.location.search).get("rose") || "").trim().toLowerCase();
+              var product = products.find(function (item) {
+                return item.name.toLowerCase() === roseName;
+              }) || products[0];
+              var img = document.getElementById("detailImage");
+              img.src = (product && product.image) || "assets/flower-card.svg";
+              img.alt = product ? product.name + " rose" : "Rose image";
+              window.__initialRose = product;
+            })();
+          </script>
 
-          <div class="detail-controls">
-            <label for="boxTypeSelect">Box type</label>
-            <select id="boxTypeSelect">
-              <option value="Q-Box">Q-Box</option>
-              <option value="H-Box">H-Box</option>
-            </select>
+          <div class="rose-detail-info">
+            <h1 id="detailName" class="rose-detail-name"></h1>
+            <p class="rose-detail-colour"><span id="detailColourDot" class="rose-dot" aria-hidden="true"></span><span id="detailColour"></span></p>
+            <script>
+              (function () {
+                var product = window.__initialRose;
+                if (!product) return;
+                document.getElementById("detailName").textContent = product.name;
+                document.getElementById("detailColour").textContent = product.description || "";
+                document.getElementById("detailColourDot").className = "rose-dot rose-dot--" + (product.color || "mixed");
+              })();
+            </script>
 
-            <label for="stemLengthSelect">Stem length (cm)</label>
-            <select id="stemLengthSelect">
-              <option value="40">40</option>
-              <option value="50">50</option>
-              <option value="60" selected>60</option>
-              <option value="70">70</option>
-            </select>
-          </div>
+            <fieldset class="rose-detail-group" id="boxTypeSelect">
+              <legend class="rose-detail-label">Box type</legend>
+              <div class="rose-box-options">
+                <label class="rose-box-option">
+                  <input type="radio" name="boxType" value="Q-Box" checked>
+                  <span class="rose-box-text"><strong>Q-Box</strong><span>100&ndash;150 stems</span></span>
+                  <span class="rose-box-check" aria-hidden="true"></span>
+                </label>
+                <label class="rose-box-option">
+                  <input type="radio" name="boxType" value="H-Box">
+                  <span class="rose-box-text"><strong>H-Box</strong><span>200&ndash;250 stems</span></span>
+                  <span class="rose-box-check" aria-hidden="true"></span>
+                </label>
+              </div>
+            </fieldset>
 
-          <div class="order-row">
-            <div class="qty-control" aria-label="Select number of boxes">
-              <button id="qtyMinus" type="button" aria-label="Decrease box quantity">-</button>
-              <span id="qtyValue" aria-live="polite">1</span>
-              <button id="qtyPlus" type="button" aria-label="Increase box quantity">+</button>
+            <div class="rose-detail-group">
+              <label class="rose-detail-label" for="stemLengthSelect">Stem length</label>
+              <div class="rose-select">
+                <select id="stemLengthSelect">
+                  <option value="40">40 cm</option>
+                  <option value="50">50 cm</option>
+                  <option value="60" selected>60 cm</option>
+                  <option value="70">70 cm</option>
+                </select>
+              </div>
             </div>
-            <button id="addBoxBtn" type="button" class="btn btn-solid">Add box to pre order</button>
-          </div>
 
-          <p id="selectionSummary" class="selection-summary">Selected: 1 box(es), Q-Box, 60 cm stems.</p>
+            <div class="rose-detail-group">
+              <span class="rose-detail-label" id="boxesLabel">Boxes</span>
+              <div class="rose-order-row">
+                <div class="rose-qty" role="group" aria-labelledby="boxesLabel">
+                  <button id="qtyMinus" type="button" aria-label="Decrease box quantity">&minus;</button>
+                  <span id="qtyValue" aria-live="polite">1</span>
+                  <button id="qtyPlus" type="button" aria-label="Increase box quantity">+</button>
+                </div>
+                <button id="addBoxBtn" type="button" class="rose-add-btn">Add to pre-order</button>
+              </div>
+              <div class="rose-detail-summary-row">
+                <p id="selectionSummary" class="rose-detail-summary">Selected: 1 Q-Box, 60 cm stems</p>
+                <a id="detailCartLink" class="rose-cart-link" href="cart.html" hidden>View cart &middot; <span id="detailCartCount">0</span> <span aria-hidden="true">&rarr;</span></a>
+              </div>
+            </div>
 
-          <div class="delivery-notes">
-            <p>Pre-order by Wednesday for Monday arrival in Aalsmeer.</p>
-            <p>Pre-order by Friday for Thursday arrival in Aalsmeer.</p>
+            <div class="rose-arrival">
+              <span class="rose-detail-label">Arrival in Aalsmeer</span>
+              <div class="rose-arrival-row"><span>Pre-order by Wednesday</span><strong>Arrives Monday</strong></div>
+              <div class="rose-arrival-row"><span>Pre-order by Friday</span><strong>Arrives Thursday</strong></div>
+            </div>
           </div>
         </div>
 
-        <div class="detail-nav-row">
-          <a id="prevFlowerBtn" class="next-flower-link" href="products.html">&larr; Previous flower</a>
-          <a id="nextFlowerBtn" class="next-flower-link" href="products.html">Next flower: View collection &rarr;</a>
-        </div>
+        <nav class="rose-detail-pager" aria-label="Browse roses">
+          <a id="prevFlowerBtn" class="rose-pager-link" href="products.html">
+            <span class="rose-pager-arrow" aria-hidden="true">&larr;</span>
+            <span><span class="rose-pager-label">Previous</span><span class="rose-pager-name" data-pager-name></span></span>
+          </a>
+          <a id="nextFlowerBtn" class="rose-pager-link is-next" href="products.html">
+            <span><span class="rose-pager-label">Next</span><span class="rose-pager-name" data-pager-name></span></span>
+            <span class="rose-pager-arrow" aria-hidden="true">&rarr;</span>
+          </a>
+        </nav>
       </div>
     </section>
   </main>
+
+  <footer class="site-foot">
+    <div class="container">
+      <div class="site-foot-row">
+        <a class="site-foot-logo" href="products.html" aria-label="Bunches Direct home"><img src="assets/email-logo.png" alt="Bunches Direct" width="96" height="54"></a>
+        <nav class="site-foot-links" aria-label="Contact">
+          <a href="mailto:es@bunches-direct.com">es@bunches-direct.com</a>
+          <a href="https://wa.me/393450054849" target="_blank" rel="noopener">+39 345 005 4849</a>
+          <a class="site-foot-cta" href="contact.html">Send a request</a>
+        </nav>
+      </div>
+      <div class="site-foot-row site-foot-meta">
+        <p>&copy; <span data-year>2026</span> Bunches Direct<span data-company-ids></span></p>
+        <nav class="site-foot-links" aria-label="Legal">
+          <a href="privacy-policy.html">Privacy Policy</a>
+          <a href="cookie-policy.html">Cookie Policy</a>
+          <a href="terms-and-conditions.html">Terms &amp; Conditions</a>
+        </nav>
+      </div>
+    </div>
+  </footer>
 
   <script src="script.js"></script>
 </body>

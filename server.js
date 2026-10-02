@@ -607,7 +607,12 @@ async function sendClientConfirmationEmail({
     replyTo: orderEmail,
     subject,
     text,
-    html
+    html,
+    attachments: [{
+      filename: "bunches-direct-logo.png",
+      path: path.join(__dirname, "assets", "email-logo.png"),
+      cid: EMAIL_LOGO_CID
+    }]
   });
 }
 
@@ -637,7 +642,7 @@ function buildClientConfirmationText({ company, cartItems, deliveryDetails, orde
     `Phone: ${String(deliveryDetails.phone || "-")}`,
     `Contact Person: ${String(deliveryDetails.contactPerson || "-")}`,
     `Truck Company in Aalsmeer: ${String(deliveryDetails.truckCompany || "-")}`,
-    `Delivery Date: ${String(deliveryDetails.deliveryDate || "-")}`,
+    `Delivery Date: ${formatDeliveryDate(deliveryDetails.deliveryDate)}`,
     "",
     `If anything needs to be changed, reply to ${orderEmail}.`,
     "",
@@ -650,79 +655,151 @@ function isValidEmail(value) {
   return /^\S+@\S+\.\S+$/.test(String(value || "").trim());
 }
 
+const EMAIL_LOGO_CID = "bunches-direct-logo";
+
+// "2026-10-15" -> "Thursday 15 October 2026". Parsed as UTC so the server's timezone can't shift the day.
+function formatDeliveryDate(value) {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(value || "").trim());
+  if (!match) {
+    return String(value || "-");
+  }
+  const date = new Date(Date.UTC(Number(match[1]), Number(match[2]) - 1, Number(match[3])));
+  return date.toLocaleDateString("en-GB", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "UTC"
+  });
+}
+
+// Table-based layout with inline styles so it renders the same in Gmail, Outlook and Apple Mail.
+// The color-scheme meta tags ask mail apps not to auto-darken it (that is what turned the old
+// version dark grey with a pink header).
 function buildClientConfirmationHtml({ company, cartItems, deliveryDetails, orderEmail }) {
-  const greetingCompany = escapeHtml(String(deliveryDetails.companyName || company || "Customer"));
+  const red = "#b5070d";
+  const ink = "#1f1414";
+  const muted = "#7a6a6c";
+  const line = "#f1e1e4";
+  const blush = "#fff6f8";
+  const serif = "Georgia,'Times New Roman',serif";
+  const sans = "'Helvetica Neue',Helvetica,Arial,sans-serif";
+
+  const greetingName = escapeHtml(String(deliveryDetails.contactPerson || deliveryDetails.companyName || company || "there"));
+  const deliveryDate = escapeHtml(formatDeliveryDate(deliveryDetails.deliveryDate));
+  const safeOrderEmail = escapeHtml(orderEmail);
+  const totalBoxes = cartItems.reduce((sum, item) => sum + (Number(item.quantity) || 1), 0);
+
   const rows = cartItems.map((item) => {
     const roseName = escapeHtml(String(item.roseName || "Rose"));
     const boxType = escapeHtml(String(item.boxType || "Box"));
-    const stemLength = item.stemLength ? `${escapeHtml(String(item.stemLength))} cm` : "-";
+    const stemLength = item.stemLength ? `${escapeHtml(String(item.stemLength))} cm` : "";
     const quantity = escapeHtml(String(Number(item.quantity) || 1));
+    const meta = [boxType, stemLength].filter(Boolean).join(" &middot; ");
 
     return `
-      <tr>
-        <td style="padding:10px 12px;border:1px solid #d7ded6;">${roseName}</td>
-        <td style="padding:10px 12px;border:1px solid #d7ded6;">${boxType}</td>
-        <td style="padding:10px 12px;border:1px solid #d7ded6;">${stemLength}</td>
-        <td style="padding:10px 12px;border:1px solid #d7ded6;">${quantity}</td>
-      </tr>`;
+            <tr>
+              <td style="padding:14px 0;border-bottom:1px solid ${line};">
+                <div style="font-family:${serif};font-size:18px;color:${ink};">${roseName}</div>
+                <div style="font-family:${sans};font-size:13px;color:${muted};padding-top:2px;">${meta}</div>
+              </td>
+              <td align="right" style="padding:14px 0;border-bottom:1px solid ${line};font-family:${sans};font-size:15px;font-weight:700;color:${ink};white-space:nowrap;">&times; ${quantity}</td>
+            </tr>`;
   }).join("");
 
   const detailRows = [
-    ["Company Name", deliveryDetails.companyName],
-    ["Company Email", deliveryDetails.companyEmail],
-    ["Tax / VAT #", deliveryDetails.taxVat],
-    ["Delivery Address", deliveryDetails.deliveryAddress],
+    ["Company", deliveryDetails.companyName],
+    ["Contact person", deliveryDetails.contactPerson],
+    ["Email", deliveryDetails.companyEmail],
     ["Phone", deliveryDetails.phone],
-    ["Contact Person", deliveryDetails.contactPerson],
-    ["Truck Company in Aalsmeer", deliveryDetails.truckCompany],
-    ["Delivery Date", deliveryDetails.deliveryDate]
+    ["Tax / VAT #", deliveryDetails.taxVat],
+    ["Delivery address", deliveryDetails.deliveryAddress],
+    ["Truck company in Aalsmeer", deliveryDetails.truckCompany]
   ].map(([label, value]) => `
-      <tr>
-        <td style="padding:10px 14px;border-bottom:1px solid #eadfcb;color:#8d0308;font-weight:700;">${escapeHtml(String(label))}</td>
-        <td style="padding:10px 14px;border-bottom:1px solid #eadfcb;color:#240303;">${escapeHtml(String(value || "-"))}</td>
-      </tr>`).join("");
+            <tr>
+              <td valign="top" style="padding:9px 16px 9px 0;font-family:${sans};font-size:13px;color:${muted};width:42%;">${escapeHtml(label)}</td>
+              <td valign="top" style="padding:9px 0;font-family:${sans};font-size:14px;color:${ink};">${escapeHtml(String(value || "-"))}</td>
+            </tr>`).join("");
 
-  return `
-    <div style="margin:0;padding:28px;background:#f6eee1;font-family:Arial, sans-serif;color:#240303;">
-      <div style="max-width:720px;margin:0 auto;background:#fffdf9;border:1px solid rgba(53,2,1,0.16);box-shadow:0 10px 24px rgba(0,0,0,0.08);">
-        <div style="padding:0;background:linear-gradient(135deg,#8d0308 0%,#350201 100%);">
-          <div style="padding:22px 32px 18px;border-bottom:1px solid rgba(255,255,255,0.16);">
-            <p style="margin:0 0 6px;font-size:12px;letter-spacing:0.18em;text-transform:uppercase;color:#f6eee1;">Bunches Direct</p>
-            <h1 style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:34px;line-height:1.05;font-weight:700;color:#ffffff;">Order confirmation</h1>
-          </div>
-          <div style="padding:14px 32px 18px;">
-            <p style="margin:0;font-size:14px;line-height:1.6;color:#f3ddd5;">Premium roses imported at origin and delivered across Europe with freshness, consistency and care.</p>
-          </div>
-        </div>
-        <div style="padding:28px 32px;">
-          <p style="margin:0 0 10px;font-size:13px;letter-spacing:0.12em;text-transform:uppercase;color:#c01f21;font-weight:700;">Thank you for your order</p>
-          <p style="margin:0 0 14px;font-family:Georgia,'Times New Roman',serif;font-size:27px;line-height:1.15;color:#350201;">Greetings ${greetingCompany},</p>
-          <p style="margin:0 0 18px;font-size:16px;line-height:1.7;color:#240303;">We have received your request and will review it shortly. Below is a summary of the roses and delivery details you submitted.</p>
-
-          <h2 style="margin:30px 0 12px;font-family:Georgia,'Times New Roman',serif;font-size:24px;color:#8d0308;">Order summary</h2>
-          <table style="width:100%;border-collapse:collapse;font-size:15px;background:#fff8f6;">
-            <thead>
-              <tr style="background:#8d0308;">
-                <th style="padding:11px 12px;border:1px solid #d6b7ab;text-align:left;color:#ffffff;">Rose Name</th>
-                <th style="padding:11px 12px;border:1px solid #d6b7ab;text-align:left;color:#ffffff;">Box Type</th>
-                <th style="padding:11px 12px;border:1px solid #d6b7ab;text-align:left;color:#ffffff;">Stem Length</th>
-                <th style="padding:11px 12px;border:1px solid #d6b7ab;text-align:left;color:#ffffff;">Quantity</th>
-              </tr>
-            </thead>
-            <tbody>${rows}</tbody>
-          </table>
-
-          <h2 style="margin:30px 0 12px;font-family:Georgia,'Times New Roman',serif;font-size:24px;color:#8d0308;">Submitted details</h2>
-          <table style="width:100%;border-collapse:collapse;font-size:15px;background:#fffdf9;border:1px solid #eadfcb;">${detailRows}</table>
-
-          <div style="margin:28px 0 0;padding:18px 20px;background:#f9f2ea;border-left:4px solid #c01f21;">
-            <p style="margin:0;font-size:15px;line-height:1.7;color:#240303;">If anything needs to be changed, simply reply to <a href="mailto:${escapeHtml(orderEmail)}" style="color:#8d0308;text-decoration:underline;">${escapeHtml(orderEmail)}</a>.</p>
-          </div>
-
-          <p style="margin:26px 0 0;font-size:15px;line-height:1.7;color:#240303;">Kind regards,<br><span style="font-family:Georgia,'Times New Roman',serif;font-size:20px;color:#350201;">Bunches Direct</span></p>
-        </div>
-      </div>
-    </div>`;
+  return `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light only">
+  <meta name="supported-color-schemes" content="light only">
+  <title>Order confirmation</title>
+  <style>:root { color-scheme: light only; supported-color-schemes: light only; }</style>
+</head>
+<body style="margin:0;padding:0;background:${blush};">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:${blush};">
+    <tr>
+      <td align="center" style="padding:32px 14px;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;background:#ffffff;border:1px solid ${line};border-radius:16px;">
+          <tr>
+            <td align="center" style="padding:30px 32px 22px;border-bottom:3px solid ${red};border-radius:16px 16px 0 0;">
+              <img src="cid:${EMAIL_LOGO_CID}" width="180" alt="Bunches Direct" style="display:block;width:180px;max-width:60%;height:auto;border:0;">
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:32px 32px 8px;">
+              <p style="margin:0 0 8px;font-family:${sans};font-size:12px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:${red};">Order received</p>
+              <h1 style="margin:0 0 14px;font-family:${serif};font-size:30px;line-height:1.2;font-weight:normal;color:${ink};">Thank you, ${greetingName}</h1>
+              <p style="margin:0;font-family:${sans};font-size:15px;line-height:1.65;color:${ink};">We have received your order and will review it shortly. We'll confirm availability and get back to you with our best offer.</p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:24px 32px 0;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:${blush};border-radius:12px;">
+                <tr>
+                  <td style="padding:16px 20px;">
+                    <p style="margin:0 0 4px;font-family:${sans};font-size:12px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:${muted};">Requested delivery</p>
+                    <p style="margin:0;font-family:${serif};font-size:21px;color:${red};">${deliveryDate}</p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:30px 32px 0;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td style="padding-bottom:6px;border-bottom:1px solid ${ink};font-family:${serif};font-size:20px;color:${ink};">Your roses</td>
+                  <td align="right" style="padding-bottom:6px;border-bottom:1px solid ${ink};font-family:${sans};font-size:13px;color:${muted};">${totalBoxes} ${totalBoxes === 1 ? "box" : "boxes"}</td>
+                </tr>${rows}
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:30px 32px 0;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td colspan="2" style="padding-bottom:6px;border-bottom:1px solid ${ink};font-family:${serif};font-size:20px;color:${ink};">Delivery details</td>
+                </tr>
+                <tr><td colspan="2" style="height:6px;line-height:6px;font-size:0;">&nbsp;</td></tr>${detailRows}
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:30px 32px 32px;">
+              <p style="margin:0 0 18px;font-family:${sans};font-size:14px;line-height:1.65;color:${ink};">Need to change something? Just reply to this email or write to <a href="mailto:${safeOrderEmail}" style="color:${red};text-decoration:underline;">${safeOrderEmail}</a>.</p>
+              <p style="margin:0;font-family:${sans};font-size:14px;line-height:1.5;color:${ink};">Kind regards,<br><span style="font-family:${serif};font-size:19px;color:${red};">Bunches Direct</span></p>
+            </td>
+          </tr>
+        </table>
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;">
+          <tr>
+            <td align="center" style="padding:18px 20px 0;font-family:${sans};font-size:12px;line-height:1.6;color:${muted};">
+              Premium roses from Ecuador, delivered across Europe.<br>
+              <a href="https://bunches-direct.com" style="color:${muted};text-decoration:underline;">bunches-direct.com</a>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
 }
 
 function escapeHtml(value) {
@@ -826,9 +903,7 @@ function buildAvailabilityAdminHtml(adminPath) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Availability Admin | Bunches Direct</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Birthstone&family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/fonts.css">
   <link rel="stylesheet" href="/styles.css">
 </head>
 <body data-page="availability-admin">

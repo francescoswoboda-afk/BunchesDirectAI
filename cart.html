@@ -5,12 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Review selected rose boxes before checkout.">
   <title>Your Cart | Bunches Direct</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Birthstone&family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/fonts.css">
   <link rel="stylesheet" href="styles.css">
 </head>
-<body data-page="cart">
+<body data-page="cart" class="cart-page">
   <header class="home-header">
     <a class="home-brand" href="index.html" aria-label="Bunches Direct home">
       <img class="home-brand-logo" src="assets/my-logo.png" alt="Bunches Direct">
@@ -47,35 +45,58 @@
   </div>
 
   <main>
-    <section class="section-pad page-hero">
-      <div class="container narrow">
-        <p class="eyebrow">Your selection</p>
-        <h1>Cart</h1>
-        <p class="lead">Review your selected rose boxes before sending your request.</p>
-      </div>
-    </section>
-
-    <section class="section-pad cart-content">
+    <section class="cp">
       <div class="container">
-        <div id="cartEmptyState" class="info-panel">
-          <h3>Your cart is empty</h3>
+        <h1 class="cp-title">Cart</h1>
+        <p id="cartLead" class="cp-lead" hidden>Review your selected rose boxes before sending your request.</p>
+
+        <div id="cartEmptyState" class="cp-empty" hidden>
+          <span class="cp-empty-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false"><path d="M3 4h2l2.1 10.2a1 1 0 0 0 1 .8h9.6a1 1 0 0 0 1-.76L21 7H7.1" /><circle cx="10" cy="19" r="1.5" /><circle cx="17" cy="19" r="1.5" /></svg>
+          </span>
+          <h2>Your cart is empty</h2>
           <p>Add rose boxes from the individual product page to see them here.</p>
-          <a class="btn btn-solid" href="products.html">Browse roses</a>
+          <a class="cp-btn" href="products.html">Browse roses</a>
         </div>
 
-        <div id="cartItems" class="cart-items" aria-live="polite"></div>
-
-        <div class="cart-summary-row">
-          <a class="btn btn-outline" href="products.html">Our Products</a>
-          <p id="cartTotal" class="price">Total boxes: 0</p>
-          <div class="cart-actions">
-            <button id="clearCartBtn" class="btn btn-outline" type="button">Clear cart</button>
-            <a id="toDetailsBtn" class="btn btn-solid" href="order-details.html">Continue</a>
+        <div id="cartFilled" class="cp-layout" hidden>
+          <div>
+            <div id="cartItems" class="cp-list" aria-live="polite"></div>
+            <a class="cp-add-more" href="products.html"><span aria-hidden="true">+</span> Add more roses</a>
           </div>
+
+          <aside class="cp-summary" aria-label="Order summary">
+            <h2>Summary</h2>
+            <div class="cp-summary-row"><span>Varieties</span><span id="cartVarieties">0</span></div>
+            <div class="cp-summary-row cp-summary-total"><span>Total boxes</span><span id="cartTotal">0</span></div>
+            <a id="toDetailsBtn" class="cp-btn cp-btn-block" href="order-details.html">Continue <span aria-hidden="true">&rarr;</span></a>
+            <p class="cp-summary-note">We&rsquo;ll confirm availability and send our best offer.</p>
+          </aside>
         </div>
       </div>
     </section>
   </main>
+
+  <footer class="site-foot">
+    <div class="container">
+      <div class="site-foot-row">
+        <a class="site-foot-logo" href="products.html" aria-label="Bunches Direct home"><img src="assets/email-logo.png" alt="Bunches Direct" width="96" height="54"></a>
+        <nav class="site-foot-links" aria-label="Contact">
+          <a href="mailto:es@bunches-direct.com">es@bunches-direct.com</a>
+          <a href="https://wa.me/393450054849" target="_blank" rel="noopener">+39 345 005 4849</a>
+          <a class="site-foot-cta" href="contact.html">Send a request</a>
+        </nav>
+      </div>
+      <div class="site-foot-row site-foot-meta">
+        <p>&copy; <span data-year>2026</span> Bunches Direct<span data-company-ids></span></p>
+        <nav class="site-foot-links" aria-label="Legal">
+          <a href="privacy-policy.html">Privacy Policy</a>
+          <a href="cookie-policy.html">Cookie Policy</a>
+          <a href="terms-and-conditions.html">Terms &amp; Conditions</a>
+        </nav>
+      </div>
+    </div>
+  </footer>
 
   <script src="script.js"></script>
 </body>
