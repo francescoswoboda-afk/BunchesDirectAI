@@ -113,7 +113,7 @@ function addMainPagePrerenderRules() {
         prerender: [{
             source: "document",
             where: {
-                or: ["/products.html", "/about.html", "/contact.html", "/product-detail.html?*"].map((path) => ({ href_matches: path }))
+                or: ["/", "/about.html", "/contact.html", "/product-detail.html?*"].map((path) => ({ href_matches: path }))
             },
             eagerness: "moderate"
         }]
@@ -130,11 +130,11 @@ function scheduleIdlePagePrefetches() {
     const page = document.body.dataset.page;
 
     if (page === "home") {
-        pagesToWarm.push("products.html", "about.html", "contact.html", "cart.html");
+        pagesToWarm.push("/", "about.html", "contact.html", "cart.html");
     } else if (page === "products") {
         pagesToWarm.push("about.html", "contact.html", "cart.html");
     } else if (page === "about") {
-        pagesToWarm.push("products.html", "contact.html");
+        pagesToWarm.push("/", "contact.html");
     }
 
     if (pagesToWarm.length === 0) {
@@ -711,7 +711,7 @@ function initRosePageEntrance() {
             const entries = window.navigation && navigation.entries ? navigation.entries() : [];
             const current = window.navigation && navigation.currentEntry;
             const previous = current ? entries[current.index - 1] : null;
-            if (previous && previous.url && new URL(previous.url).pathname.endsWith("/products.html")) {
+            if (previous && isProductsGridUrl(previous.url)) {
                 event.preventDefault();
                 history.back();
             }
@@ -720,7 +720,7 @@ function initRosePageEntrance() {
 
     window.addEventListener("pagereveal", (event) => {
         const from = navigation && navigation.activation && navigation.activation.from;
-        if (event.viewTransition && from && from.url && from.url.includes("products.html")) {
+        if (event.viewTransition && from && isProductsGridUrl(from.url)) {
             addTransitionType(event.viewTransition, "rose-open");
         }
     });
@@ -783,6 +783,16 @@ function initCertificationCarousel() {
     box.addEventListener("focusout", start);
     document.addEventListener("visibilitychange", () => (document.hidden ? stop() : start()));
     start();
+}
+
+// The products grid lives at "/" (old links to /products.html redirect there)
+function isProductsGridUrl(url) {
+    try {
+        const { pathname } = new URL(url, window.location.href);
+        return pathname === "/" || pathname.endsWith("/products.html");
+    } catch {
+        return false;
+    }
 }
 
 // Transition types let the CSS tell opening a rose apart from closing one (newer Chrome; ignored elsewhere)
@@ -1147,7 +1157,7 @@ function renderCartPage() {
 
 function buildCartItemsHtml(cart) {
     if (!Array.isArray(cart) || cart.length === 0) {
-        return '<p class="dp-items-empty">Your cart is empty. <a href="products.html">Browse roses</a></p>';
+        return '<p class="dp-items-empty">Your cart is empty. <a href="/">Browse roses</a></p>';
     }
 
     return cart

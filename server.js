@@ -42,8 +42,14 @@ app.use(cors());
 app.use(express.json({ limit: "20mb" }));
 // The homepage (index.html) is retained on disk, but the public site now
 // permanently starts at the products page.
-app.get(["/", "/index.html"], (_req, res) => {
-  return res.redirect(301, "/products.html");
+// The products page is the home page, served at the clean address "/".
+// Old addresses redirect there permanently so search engines update their links.
+app.get("/", (_req, res) => {
+  return res.sendFile(path.join(__dirname, "products.html"));
+});
+app.get(["/index.html", "/products.html"], (req, res) => {
+  const query = req.originalUrl.includes("?") ? req.originalUrl.slice(req.originalUrl.indexOf("?")) : "";
+  return res.redirect(301, `/${query}`);
 });
 app.get(availabilityAdminPath, (_req, res) => {
   return res.sendFile(path.join(__dirname, "availability-upload-8k2m.html"));
