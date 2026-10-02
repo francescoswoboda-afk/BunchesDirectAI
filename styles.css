@@ -6332,3 +6332,207 @@ body[data-page="cart"] .home-nav a.is-active {
     gap: 0.4rem 1.1rem;
   }
 }
+
+/* Keep the footer at the bottom of the window on short pages (e.g. a cart with one rose):
+   the page is at least one screen tall and <main> takes up any spare space. */
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+body > main {
+  flex: 1 0 auto;
+}
+
+body > .site-foot {
+  flex-shrink: 0;
+}
+
+/* ===== Shared intro text =====
+   The short paragraph under each page title has one size, colour and spacing on every page
+   (products, About Us, contact, cart, delivery details, legal pages). */
+:root {
+  --text-intro: 1rem;
+  --text-intro-line: 1.6;
+  --text-intro-color: #1d1416;
+}
+
+body[data-page="products"] .products-hero-redesign .products-hero-copy .lead,
+body .ab-lead,
+body .ct-lead,
+body .cp-lead,
+body .dp-lead,
+body .legal-hero .lead {
+  font-size: var(--text-intro);
+  line-height: var(--text-intro-line);
+  color: var(--text-intro-color);
+}
+
+body[data-page="products"] .products-hero-redesign .products-hero-copy .lead,
+body .ab-lead,
+body .ct-lead,
+body .cp-lead,
+body .dp-lead {
+  text-align: left;
+}
+
+body .legal-hero .lead {
+  text-align: center;
+}
+
+/* =====================================================================
+   Site-wide type scale: one size per role, on every page.
+   Change a value here and every text of that role follows.
+   ===================================================================== */
+:root {
+  --fs-page-title: var(--title-page);      /* The Roses, About Us, Contact, Cart, ...       ~58px */
+  --fs-section: 1.65rem;                   /* What We Do, Summary, Company, legal headings  ~26px */
+  --fs-item: 1.375rem;                     /* rose names on cards, in the cart, Previous/Next 22px */
+  --fs-body: 1rem;                         /* intro and running text                         16px */
+  --fs-ui: 0.9rem;                         /* buttons, fields, chips, links, summary rows   14.4px */
+  --fs-small: 0.8rem;                      /* descriptions, details, hints, notes, footer   12.8px */
+  --fs-label: 0.7rem;                      /* small capital labels                          11.2px */
+}
+
+/* Page titles (About Us joins the others) */
+body .ab-title,
+body .rose-detail-name {
+  font-size: var(--fs-page-title);
+  line-height: 1.02;
+}
+
+@media (min-width: 761px) and (min-height: 700px) {
+  /* the rose page must still fit one screen on short windows */
+  body .rose-detail-name {
+    font-size: min(var(--fs-page-title), 6.4vh);
+  }
+}
+
+/* Section titles */
+body .ab-heading,
+body .legal-card h2,
+body .cp-summary h2,
+body .cp-empty h2,
+body .dp-section-title,
+body .dp-summary h2 {
+  font-size: var(--fs-section);
+}
+
+/* Item names */
+body .rose-card-name,
+body .cp-item-copy h3,
+body .rose-pager-name {
+  font-size: var(--fs-item);
+}
+
+/* Body text */
+body .ab-copy p,
+body .legal-card p,
+body .legal-card li {
+  font-size: var(--fs-body);
+  line-height: 1.65;
+}
+
+/* Buttons, fields, chips, links, summary rows */
+body[data-page="products"] .products-hero-actions .home-btn-primary,
+body .rose-search input,
+body .rose-chip,
+body .rose-load-more,
+body .page-indicator,
+body .rose-select select,
+body .rose-add-btn,
+body .rose-box-text strong,
+body .rose-arrival-row,
+body .rose-cart-link,
+body .rose-detail-back,
+body .ct-field input,
+body .ct-field textarea,
+body .ct-submit,
+body .cp-btn,
+body .cp-add-more,
+body .cp-summary-row,
+body .dp-back,
+body .dp-field input,
+body .dp-select select,
+body .dp-submit,
+body .dp-summary-total,
+body .ab-cert figcaption {
+  font-size: var(--fs-ui);
+}
+
+/* Small text */
+body .rose-card-colour,
+body .rose-card-stem,
+body .rose-detail-colour,
+body .rose-box-text,
+body .rose-detail-summary,
+body .cp-item-copy p,
+body .cp-summary-note,
+body .ct-field label,
+body .ct-consent,
+body .dp-field label,
+body .dp-hint,
+body .dp-check,
+body .dp-edit,
+body .dp-item-copy strong,
+body .dp-item-copy span,
+body .dp-item-qty,
+body .legal-updated,
+body .site-foot,
+body .site-foot-meta {
+  font-size: var(--fs-small);
+}
+
+/* the colour line under the big rose name reads as an intro, so it uses body size */
+body .rose-detail-colour {
+  font-size: var(--fs-body);
+}
+
+/* Small capital labels: same size, weight and spacing everywhere */
+body[data-page="products"] .products-kicker,
+body .home-kicker.legal-kicker,
+body .ab-kicker,
+body .ct-kicker,
+body .rose-field-label,
+body .rose-detail-label,
+body .rose-card-label,
+body .rose-pager-label,
+body .ab-certs-label {
+  font-size: var(--fs-label);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+/* Totals: one emphasis size */
+body .cp-summary-total span:last-child,
+body .dp-summary-total span:last-child {
+  font-size: 1.25rem;
+}
+
+/* older, more specific rules that still set their own size */
+body[data-page="cart"] #cartTotal {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+body[data-page="products"] .product-pagination .page-indicator {
+  font-size: var(--fs-ui);
+}
+
+/* "Stem length" on the cards stays non-bold (as requested), at the shared label size */
+body .rose-card-label {
+  font-weight: 500;
+}
+
+/* Toolbar edge to edge: search starts at the grid's left edge, and the single row of colour chips
+   shares out the leftover space so the last chip ends at the grid's right edge */
+.rose-chips.is-single-row {
+  flex-wrap: wrap;
+}
+
+.rose-chips.is-single-row > .rose-chip:not([hidden]) {
+  flex: 1 1 auto;
+  justify-content: center;
+}

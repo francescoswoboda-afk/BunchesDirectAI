@@ -572,6 +572,8 @@ function initColourChipsOverflow() {
     };
 
     layoutColourChips = () => {
+        // while collapsed into one row, the chips stretch to end exactly at the grid's right edge
+        wrap.classList.toggle("is-single-row", !expanded);
         chips.forEach((chip) => {
             chip.hidden = false;
         });
