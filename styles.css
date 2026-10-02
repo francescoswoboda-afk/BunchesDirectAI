@@ -1752,7 +1752,6 @@ body[data-page="home"] {
 
 .home-brand-logo {
   width: 200px;
-  max-width: 42vw;
   height: auto;
 }
 
@@ -2139,7 +2138,7 @@ body[data-page="products"] .products-hero-copy h1::after {
 
 body[data-page="products"] .products-hero-copy .lead {
   margin: 0.15rem 0 0;
-  max-width: 42ch;
+  max-width: 62ch;
   text-align: left;
   color: #2f2f2f;
   font-size: 0.88rem;
@@ -2958,7 +2957,7 @@ body[data-page="contact"] .contact-form .btn-solid {
   }
 
   body[data-page="products"] .home-brand-logo {
-    width: 128px;
+    width: 200px;
   }
 
   body[data-page="products"] .products-hero-redesign {
@@ -2984,6 +2983,10 @@ body[data-page="contact"] .contact-form .btn-solid {
     margin-right: auto;
   }
 
+  body[data-page="products"] .products-hero-copy .lead .lead-break {
+    display: none;
+  }
+
   body[data-page="products"] .products-hero-actions {
     display: flex;
     justify-content: center;
@@ -2996,11 +2999,13 @@ body[data-page="contact"] .contact-form .btn-solid {
   body[data-page="products"] .products-corner-image .home-image-col {
     position: fixed;
     bottom: 0;
-    right: 0;
-    width: min(300px, 42vw);
+    left: 50%;
+    right: auto;
+    width: min(1100px, 230vw);
     height: auto;
     margin-top: 0;
-    justify-content: flex-end;
+    transform: translateX(-50%);
+    justify-content: center;
     align-items: flex-end;
   }
 
@@ -3252,7 +3257,7 @@ body[data-page="contact"] .contact-form .btn-solid {
   }
 
   .home-brand-logo {
-    width: 116px;
+    width: 200px;
   }
 
   .home-header-actions {
@@ -3428,7 +3433,7 @@ body.nav-drawer-open {
   }
 
   .home-brand-logo {
-    width: 112px;
+    width: 200px;
   }
 
   .home-header-actions {
@@ -3519,7 +3524,7 @@ body.nav-drawer-open {
   }
 
   body[data-page="products"] .home-brand-logo {
-    width: 118px;
+    width: 200px;
   }
 
   body[data-page="products"] .products-hero-redesign {
@@ -3571,7 +3576,7 @@ body.nav-drawer-open {
 
   body[data-page="products"] .products-hero-copy .lead {
     margin: 0.65rem auto 0;
-    max-width: 31ch;
+    max-width: none;
     text-align: center;
     font-size: 0.91rem;
     line-height: 1.5;
