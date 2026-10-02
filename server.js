@@ -42,10 +42,37 @@ app.use(cors());
 app.use(express.json({ limit: "20mb" }));
 // The homepage (index.html) is retained on disk, but the public site now
 // permanently starts at the products page.
+// HTML pages are sent with a version number on the site's code files (e.g. script.js?v=1696...),
+// taken from each file's last change. Every deploy then gives browsers new addresses, so no phone
+// can keep using an old cached copy of the scripts, styles or rose list.
+const VERSIONED_ASSETS = ["script.js", "styles.css", "products-data.js", "assets/fonts.css"];
+function sendVersionedHtml(res, fileName) {
+  const filePath = path.join(__dirname, fileName);
+  let html;
+  try {
+    html = fs.readFileSync(filePath, "utf8");
+  } catch {
+    return res.status(404).end();
+  }
+  for (const asset of VERSIONED_ASSETS) {
+    let version = "";
+    try {
+      version = String(Math.round(fs.statSync(path.join(__dirname, asset)).mtimeMs));
+    } catch {
+      continue;
+    }
+    const escaped = asset.replace(/[.]/g, "\\.");
+    html = html.replace(new RegExp(`((?:src|href)=")(/?${escaped})(")`, "g"), `$1$2?v=${version}$3`);
+  }
+  res.setHeader("Cache-Control", "no-cache");
+  res.type("html");
+  return res.send(html);
+}
+
 // The products page is the home page, served at the clean address "/".
 // Old addresses redirect there permanently so search engines update their links.
 app.get("/", (_req, res) => {
-  return res.sendFile(path.join(__dirname, "products.html"));
+  return sendVersionedHtml(res, "products.html");
 });
 app.get(["/index.html", "/products.html"], (req, res) => {
   const query = req.originalUrl.includes("?") ? req.originalUrl.slice(req.originalUrl.indexOf("?")) : "";
@@ -66,6 +93,13 @@ app.get(availabilityPublicUrl, (_req, res) => {
 
   res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
   return res.sendFile(availabilityFilePath);
+});
+app.get(/^\/[\w-]+\.html$/, (req, res, next) => {
+  const fileName = req.path.slice(1);
+  if (!fs.existsSync(path.join(__dirname, fileName))) {
+    return next();
+  }
+  return sendVersionedHtml(res, fileName);
 });
 app.use(express.static(staticDir, {
   maxAge: 0,

@@ -203,6 +203,24 @@ function prefetchPage(href, asType = "document") {
     document.head.appendChild(prefetch);
 }
 
+// On phones the browser reports a "resize" every time the address bar slides in or out while
+// scrolling. Layout code here only depends on the width, so it ignores height-only resizes
+// (otherwise it would redo heavy work mid-scroll and make scrolling stutter).
+function onWidthResize(callback) {
+    let lastWidth = window.innerWidth;
+    let frame = 0;
+    window.addEventListener("resize", () => {
+        if (window.innerWidth === lastWidth || frame) {
+            return;
+        }
+        frame = window.requestAnimationFrame(() => {
+            frame = 0;
+            lastWidth = window.innerWidth;
+            callback();
+        });
+    });
+}
+
 function init() {
     setupSmoothPageNavigation();
     initCookieConsentBanner();
@@ -238,13 +256,20 @@ function initProductsStickyHeader() {
         return;
     }
 
+    let frame = 0;
     const updateHeaderBackground = () => {
+        frame = 0;
         const contentTop = productsContent.getBoundingClientRect().top;
         topbar.classList.toggle("is-scrolled", contentTop <= topbar.offsetHeight);
     };
 
-    window.addEventListener("scroll", updateHeaderBackground, { passive: true });
-    window.addEventListener("resize", updateHeaderBackground);
+    // at most one check per frame while scrolling
+    window.addEventListener("scroll", () => {
+        if (!frame) {
+            frame = window.requestAnimationFrame(updateHeaderBackground);
+        }
+    }, { passive: true });
+    onWidthResize(updateHeaderBackground);
     updateHeaderBackground();
 }
 
@@ -259,12 +284,18 @@ function initProductsRoseMorph() {
     const wideWidth = 1024;
     const narrowWidth = 820;
 
+    let current = "";
     const updateRoseProgress = () => {
         const progress = (wideWidth - window.innerWidth) / (wideWidth - narrowWidth);
-        document.body.style.setProperty("--products-rose-p", Math.min(1, Math.max(0, progress)).toFixed(4));
+        const value = Math.min(1, Math.max(0, progress)).toFixed(4);
+        // changing this value restyles the whole page, so only touch it when it really changes
+        if (value !== current) {
+            current = value;
+            document.body.style.setProperty("--products-rose-p", value);
+        }
     };
 
-    window.addEventListener("resize", updateRoseProgress);
+    onWidthResize(updateRoseProgress);
     updateRoseProgress();
 }
 
@@ -368,7 +399,7 @@ function wireMobileMenu() {
         dom.menuToggle.setAttribute("aria-expanded", String(open));
     });
 
-    window.addEventListener("resize", updateResponsiveNavMode);
+    onWidthResize(updateResponsiveNavMode);
     window.addEventListener("load", updateResponsiveNavMode);
 
     if (document.fonts && document.fonts.ready) {
@@ -608,7 +639,7 @@ function initColourChipsOverflow() {
         expanded = !expanded;
         layoutColourChips();
     });
-    window.addEventListener("resize", layoutColourChips);
+    onWidthResize(() => layoutColourChips());
     if (document.fonts && document.fonts.ready) {
         document.fonts.ready.then(layoutColourChips);
     }
