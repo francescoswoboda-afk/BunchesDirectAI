@@ -1,6 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
+const vm = require("vm");
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
@@ -213,23 +214,6 @@ app.post("/api/place-order", async (req, res) => {
       });
     }
 
-    deliveryDetails.taxVat = String(deliveryDetails.taxVat || "").trim();
-
-    const workbook = await buildOrderWorkbook({
-      templatePath: orderTemplatePath,
-      cartItems,
-      deliveryDetails
-    });
-
-    // Write workbook to buffer
-    const buffer = await workbook.xlsx.writeBuffer();
-
-    const dateStr = new Date().toLocaleDateString("en-GB");
-    const company = String(deliveryDetails.companyName || "Unknown company");
-    const subject = `New Order - ${company} - ${dateStr}`;
-    const text = `A new order has been placed by ${company}.\n\nDelivery date: ${deliveryDetails.deliveryDate || "-"}\n\nSee the attached Excel file for full details.`;
-    const safeCompanyForFilename = company.replace(/\s+/g, "-") || "company";
-    const attachmentFilename = `order-${safeCompanyForFilename}-${Date.now()}.xlsx`;
     const mailer = getMailer();
     if (!mailer) {
       return res.status(500).json({
@@ -237,25 +221,25 @@ app.post("/api/place-order", async (req, res) => {
       });
     }
 
-    await mailer.send({
-      to: orderEmail,
-      replyTo: isValidEmail(deliveryDetails.companyEmail) ? deliveryDetails.companyEmail : undefined,
-      subject,
-      text,
-      attachments: [{
-        filename: attachmentFilename,
-        content: buffer,
-        contentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-      }]
+    // The order is saved so the links in the emails can open it later (accept / change / client answer)
+    const order = createOrderRecord({
+      cartItems: sanitizeOrderItems(cartItems, { strict: false }),
+      deliveryDetails: sanitizeDeliveryDetails(deliveryDetails)
     });
+    if (order.cartItems.length === 0) {
+      return res.status(400).json({ error: "No products in order." });
+    }
+    writeOrder(order);
 
+    // The office gets the client's copy plus the "Accept order" / "Change or cancel" buttons and the Excel file
+    await sendAdminNewOrderEmail(mailer, order);
     await sendClientConfirmationEmail({
       mailer,
-      clientEmail: deliveryDetails.companyEmail,
+      clientEmail: order.deliveryDetails.companyEmail,
       orderEmail,
-      company,
-      cartItems,
-      deliveryDetails
+      company: order.deliveryDetails.companyName || "Unknown company",
+      cartItems: order.cartItems,
+      deliveryDetails: order.deliveryDetails
     });
 
     return res.json({ ok: true });
@@ -263,6 +247,89 @@ app.post("/api/place-order", async (req, res) => {
     console.error("Order email failed:", err);
     return res.status(500).json({ error: describeEmailError(err, "Failed to place order.") });
   }
+});
+
+// ----- Order review -----
+// Each saved order has two secret links: one for the office (in the "new order" email) and one for the
+// client (in the "changes to your order" email). The pages order-review.html and order-response.html
+// read the order through GET /api/orders/:id and act on it with the POST routes below.
+//   pending          -> office accepts                       -> accepted
+//   pending          -> office changes it, sends to client   -> awaiting_client
+//   awaiting_client  -> client accepts the changes           -> accepted
+//   awaiting_client  -> client declines                      -> cancelled
+// The office can also cancel a pending order (or one waiting for the client) outright.
+app.get("/api/orders/:id", (req, res) => {
+  const order = readOrder(req.params.id);
+  const role = order ? getOrderRole(order, req.query.token) : "";
+  if (!role) {
+    return res.status(404).json({ error: "This order link is not valid." });
+  }
+  return res.json(buildOrderView(order, role));
+});
+
+app.post("/api/orders/:id/accept", (req, res) => {
+  return handleOrderAction(req, res, "admin", ["pending"], async (order, mailer) => {
+    await sendClientAcceptedEmail(mailer, order);
+    order.status = "accepted";
+    addOrderHistory(order, "Accepted by Bunches Direct");
+  });
+});
+
+app.post("/api/orders/:id/propose", (req, res) => {
+  return handleOrderAction(req, res, "admin", ["pending", "awaiting_client"], async (order, mailer) => {
+    const items = sanitizeOrderItems(req.body?.cartItems, { strict: true });
+    const deliveryDate = String(req.body?.deliveryDate || "").trim();
+    const note = String(req.body?.note || "").trim().slice(0, 2000);
+
+    if (!items) {
+      throw orderInputError("Choose a box type and stem length for every rose.");
+    }
+    if (items.length === 0) {
+      throw orderInputError("Add at least one rose to the order.");
+    }
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(deliveryDate)) {
+      throw orderInputError("Choose a delivery date.");
+    }
+
+    const proposal = { cartItems: items, deliveryDate, note, sentAt: new Date().toISOString() };
+    if (describeOrderChanges(order, proposal).length === 0 && !note) {
+      throw orderInputError("Nothing was changed. Use \"Accept order\" to accept it as it is.");
+    }
+
+    order.proposal = proposal;
+    await sendClientProposalEmail(mailer, order);
+    order.status = "awaiting_client";
+    addOrderHistory(order, "Changes sent to the client");
+  });
+});
+
+app.post("/api/orders/:id/cancel", (req, res) => {
+  return handleOrderAction(req, res, "admin", ["pending", "awaiting_client"], async (order, mailer) => {
+    await sendClientCancelledEmail(mailer, order, "office");
+    order.status = "cancelled";
+    addOrderHistory(order, "Cancelled by Bunches Direct");
+  });
+});
+
+app.post("/api/orders/:id/respond", (req, res) => {
+  return handleOrderAction(req, res, "client", ["awaiting_client"], async (order, mailer) => {
+    const decision = String(req.body?.decision || "");
+    if (decision === "accept") {
+      order.cartItems = order.proposal.cartItems;
+      order.deliveryDetails.deliveryDate = order.proposal.deliveryDate;
+      await sendClientAcceptedEmail(mailer, order);
+      await sendAdminClientAnswerEmail(mailer, order, true);
+      order.status = "accepted";
+      addOrderHistory(order, "Client accepted the changes");
+    } else if (decision === "decline") {
+      await sendClientCancelledEmail(mailer, order, "client");
+      await sendAdminClientAnswerEmail(mailer, order, false);
+      order.status = "cancelled";
+      addOrderHistory(order, "Client declined the changes");
+    } else {
+      throw orderInputError("Unknown answer.");
+    }
+  });
 });
 
 // Email health check, called once a week by a GitHub workflow (.github/workflows/email-keepalive.yml).
@@ -364,6 +431,235 @@ app.post("/api/contact", async (req, res) => {
 app.listen(port, () => {
   console.log(`Bunches Direct server running on http://localhost:${port}`);
 });
+
+// ----- Saved orders -----
+// One JSON file per order. On Fly this folder is on the persistent volume (ORDERS_DATA_DIR in fly.toml).
+// The local default starts with a dot so express.static never serves it.
+const ordersDirectory = process.env.ORDERS_DATA_DIR
+  ? path.resolve(process.env.ORDERS_DATA_DIR)
+  : path.join(__dirname, ".orders");
+const BOX_TYPES = ["Q-Box", "H-Box"];
+const STEM_LENGTHS = [40, 50, 60, 70];
+const productCatalog = loadProductCatalog(path.join(__dirname, "products-data.js"));
+const busyOrderIds = new Set();
+
+function loadProductCatalog(filePath) {
+  const catalog = new Map();
+  try {
+    const sandbox = { window: {} };
+    vm.runInNewContext(fs.readFileSync(filePath, "utf8"), sandbox, { timeout: 1000 });
+    for (const product of sandbox.window.BUNCHES_PRODUCTS || []) {
+      if (product && product.name) {
+        catalog.set(String(product.name).trim(), { image: String(product.image || "") });
+      }
+    }
+  } catch (error) {
+    console.error("Could not read products-data.js:", error);
+  }
+  return catalog;
+}
+
+// strict: every line must use a real box type and stem length (used for the office's edited order)
+function sanitizeOrderItems(rawItems, { strict }) {
+  if (!Array.isArray(rawItems)) {
+    return strict ? null : [];
+  }
+
+  const items = [];
+  for (const raw of rawItems.slice(0, 200)) {
+    const roseName = String(raw?.roseName || "").trim().slice(0, 120);
+    const boxType = String(raw?.boxType || "").trim().slice(0, 40);
+    const stemLength = Number(raw?.stemLength) || 0;
+    if (!roseName || (strict && (!BOX_TYPES.includes(boxType) || !STEM_LENGTHS.includes(stemLength)))) {
+      if (strict) {
+        return null;
+      }
+      continue;
+    }
+    items.push({
+      roseName,
+      boxType,
+      stemLength,
+      quantity: Math.max(1, Math.min(500, Math.floor(Number(raw?.quantity) || 1))),
+      image: productCatalog.get(roseName)?.image || ""
+    });
+  }
+  return items;
+}
+
+function sanitizeDeliveryDetails(raw) {
+  const fields = ["companyName", "companyEmail", "taxVat", "deliveryAddress", "phone", "contactPerson", "truckCompany", "deliveryDate"];
+  const details = {};
+  for (const field of fields) {
+    details[field] = String(raw?.[field] || "").trim().slice(0, 300);
+  }
+  return details;
+}
+
+function createOrderRecord({ cartItems, deliveryDetails }) {
+  const now = new Date().toISOString();
+  return {
+    id: `${now.slice(0, 10).replace(/-/g, "")}-${crypto.randomBytes(3).toString("hex").toUpperCase()}`,
+    adminToken: crypto.randomBytes(24).toString("hex"),
+    clientToken: crypto.randomBytes(24).toString("hex"),
+    status: "pending",
+    createdAt: now,
+    updatedAt: now,
+    cartItems,
+    deliveryDetails,
+    proposal: null,
+    history: [{ at: now, event: "Order placed" }]
+  };
+}
+
+function orderFilePath(id) {
+  return /^[A-Z0-9-]{6,40}$/i.test(String(id || "")) ? path.join(ordersDirectory, `${id}.json`) : "";
+}
+
+function readOrder(id) {
+  const filePath = orderFilePath(id);
+  if (!filePath || !fs.existsSync(filePath)) {
+    return null;
+  }
+  try {
+    return JSON.parse(fs.readFileSync(filePath, "utf8"));
+  } catch {
+    return null;
+  }
+}
+
+// Written to a temporary file first so a crash can never leave half an order on disk
+function writeOrder(order) {
+  fs.mkdirSync(ordersDirectory, { recursive: true });
+  const filePath = orderFilePath(order.id);
+  const tempPath = `${filePath}.tmp`;
+  fs.writeFileSync(tempPath, JSON.stringify(order, null, 2));
+  fs.renameSync(tempPath, filePath);
+}
+
+function addOrderHistory(order, event) {
+  order.updatedAt = new Date().toISOString();
+  order.history.push({ at: order.updatedAt, event });
+}
+
+function getOrderRole(order, token) {
+  const received = Buffer.from(String(token || ""), "utf8");
+  const matches = (expected) => {
+    const expectedBuffer = Buffer.from(String(expected || ""), "utf8");
+    return expectedBuffer.length > 0 && expectedBuffer.length === received.length && crypto.timingSafeEqual(expectedBuffer, received);
+  };
+  if (matches(order.adminToken)) {
+    return "admin";
+  }
+  if (matches(order.clientToken)) {
+    return "client";
+  }
+  return "";
+}
+
+// What the review pages get to see (never the tokens)
+function buildOrderView(order, role) {
+  return {
+    id: order.id,
+    role,
+    status: order.status,
+    createdAt: order.createdAt,
+    updatedAt: order.updatedAt,
+    cartItems: order.cartItems,
+    deliveryDetails: order.deliveryDetails,
+    proposal: order.proposal
+      ? { ...order.proposal, changes: describeOrderChanges(order, order.proposal) }
+      : null
+  };
+}
+
+function orderInputError(message) {
+  const error = new Error(message);
+  error.isOrderInputError = true;
+  return error;
+}
+
+const ORDER_STATUS_MESSAGES = {
+  pending: "This order is still waiting for a decision.",
+  accepted: "This order has already been accepted.",
+  awaiting_client: "The changes were sent to the client. This order is waiting for their answer.",
+  cancelled: "This order has been cancelled."
+};
+
+// Shared steps for every order action: check the link, check the order can still do this,
+// run the action (which sends its emails), then save. One action per order at a time, so a
+// double click can't send the same email twice. If an email fails, nothing is saved and the
+// button can simply be pressed again.
+async function handleOrderAction(req, res, role, allowedStatuses, action) {
+  const order = readOrder(req.params.id);
+  if (!order || getOrderRole(order, req.body?.token) !== role) {
+    return res.status(404).json({ error: "This order link is not valid." });
+  }
+  if (!allowedStatuses.includes(order.status)) {
+    return res.status(409).json({ error: ORDER_STATUS_MESSAGES[order.status] || "This order can't be changed any more.", order: buildOrderView(order, role) });
+  }
+  if (busyOrderIds.has(order.id)) {
+    return res.status(409).json({ error: "This order is being updated right now. Please wait a moment." });
+  }
+
+  const mailer = getMailer();
+  if (!mailer) {
+    return res.status(500).json({ error: "Email is not configured on the server." });
+  }
+
+  busyOrderIds.add(order.id);
+  try {
+    await action(order, mailer);
+    writeOrder(order);
+    return res.json({ ok: true, order: buildOrderView(order, role) });
+  } catch (error) {
+    if (error && error.isOrderInputError) {
+      return res.status(400).json({ error: error.message });
+    }
+    console.error(`Order ${order.id} action failed:`, error);
+    return res.status(500).json({ error: describeEmailError(error, "Could not update the order.") });
+  } finally {
+    busyOrderIds.delete(order.id);
+  }
+}
+
+// Plain-language list of what the office changed, shown to the client in the email and on the page
+function describeOrderChanges(order, proposal) {
+  const keyOf = (item) => `${item.roseName}|${item.boxType}|${item.stemLength}`;
+  const labelOf = (item) => [item.roseName, item.boxType, item.stemLength ? `${item.stemLength} cm` : ""].filter(Boolean).join(", ");
+  const boxes = (quantity) => `${quantity} ${quantity === 1 ? "box" : "boxes"}`;
+  const totals = (items) => {
+    const map = new Map();
+    for (const item of items) {
+      const entry = map.get(keyOf(item)) || { item, quantity: 0 };
+      entry.quantity += Number(item.quantity) || 0;
+      map.set(keyOf(item), entry);
+    }
+    return map;
+  };
+
+  const before = totals(order.cartItems);
+  const after = totals(proposal.cartItems);
+  const changes = [];
+
+  for (const [key, { item, quantity }] of before) {
+    const updated = after.get(key);
+    if (!updated) {
+      changes.push(`Removed: ${labelOf(item)} (${boxes(quantity)})`);
+    } else if (updated.quantity !== quantity) {
+      changes.push(`${labelOf(item)}: ${boxes(quantity)} → ${boxes(updated.quantity)}`);
+    }
+  }
+  for (const [key, { item, quantity }] of after) {
+    if (!before.has(key)) {
+      changes.push(`Added: ${labelOf(item)} (${boxes(quantity)})`);
+    }
+  }
+  if (proposal.deliveryDate !== order.deliveryDetails.deliveryDate) {
+    changes.push(`Delivery date: ${formatDeliveryDate(order.deliveryDetails.deliveryDate)} → ${formatDeliveryDate(proposal.deliveryDate)}`);
+  }
+  return changes;
+}
 
 function buildRosePriceMap(scriptPath) {
   const source = fs.readFileSync(scriptPath, "utf8");
@@ -789,7 +1085,6 @@ async function sendClientConfirmationEmail({
 }) {
   await mailer.send({
     to: clientEmail,
-    bcc: orderEmail,
     replyTo: orderEmail,
     subject: `Bunches Direct order confirmation for ${company}`,
     text: buildClientConfirmationText({ company, cartItems, deliveryDetails, orderEmail }),
@@ -859,19 +1154,55 @@ function formatDeliveryDate(value) {
   });
 }
 
-// Table-based layout with inline styles so it renders the same in Gmail, Outlook and Apple Mail.
-// The color-scheme meta tags ask mail apps not to auto-darken it (that is what turned the old
-// version dark grey with a pink header).
 function buildClientConfirmationHtml({ company, cartItems, deliveryDetails, orderEmail }) {
-  const red = "#b5070d";
-  const ink = "#1f1414";
-  const muted = "#7a6a6c";
-  const line = "#f1e1e4";
-  const blush = "#fff6f8";
-  const serif = "Georgia,'Times New Roman',serif";
-  const sans = "'Helvetica Neue',Helvetica,Arial,sans-serif";
+  const greetingName = String(deliveryDetails.contactPerson || deliveryDetails.companyName || company || "there");
+  return renderOrderEmail({
+    title: "Order confirmation",
+    eyebrow: "Order received",
+    heading: `Thank you, ${greetingName}`,
+    intro: "We have received your order and will review it shortly. We'll confirm availability and get back to you with our best offer.",
+    dateLabel: "Requested delivery",
+    cartItems,
+    deliveryDetails,
+    orderEmail
+  });
+}
 
-  const greetingName = escapeHtml(String(deliveryDetails.contactPerson || deliveryDetails.companyName || company || "there"));
+const EMAIL_RED = "#b5070d";
+const EMAIL_INK = "#1f1414";
+const EMAIL_MUTED = "#7a6a6c";
+const EMAIL_LINE = "#f1e1e4";
+const EMAIL_BLUSH = "#fff6f8";
+const EMAIL_SERIF = "Georgia,'Times New Roman',serif";
+const EMAIL_SANS = "'Helvetica Neue',Helvetica,Arial,sans-serif";
+
+// Every order email shares this layout. Table-based with inline styles so it renders the same in Gmail,
+// Outlook and Apple Mail. The color-scheme meta tags ask mail apps not to auto-darken it (that is what
+// turned an old version dark grey with a pink header). Optional parts: buttons, note, changes.
+function renderOrderEmail({
+  title,
+  eyebrow,
+  heading,
+  intro,
+  dateLabel,
+  cartItems,
+  deliveryDetails,
+  orderEmail,
+  itemsTitle = "Your roses",
+  buttons = [],
+  note = "",
+  noteTitle = "Message from Bunches Direct",
+  changes = [],
+  closing
+}) {
+  const red = EMAIL_RED;
+  const ink = EMAIL_INK;
+  const muted = EMAIL_MUTED;
+  const line = EMAIL_LINE;
+  const blush = EMAIL_BLUSH;
+  const serif = EMAIL_SERIF;
+  const sans = EMAIL_SANS;
+
   const deliveryDate = escapeHtml(formatDeliveryDate(deliveryDetails.deliveryDate));
   const safeOrderEmail = escapeHtml(orderEmail);
   const totalBoxes = cartItems.reduce((sum, item) => sum + (Number(item.quantity) || 1), 0);
@@ -907,6 +1238,55 @@ function buildClientConfirmationHtml({ company, cartItems, deliveryDetails, orde
               <td valign="top" style="padding:9px 0;font-family:${sans};font-size:14px;color:${ink};">${escapeHtml(String(value || "-"))}</td>
             </tr>`).join("");
 
+  // Buttons: the first is solid red, the others outlined. Each sits in its own cell so they wrap on phones.
+  const buttonsHtml = buttons.length === 0 ? "" : `
+          <tr>
+            <td style="padding:26px 32px 0;">
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                <tr>${buttons.map((button, index) => {
+                  const solid = index === 0;
+                  return `
+                  <td style="padding:0 10px 10px 0;">
+                    <a href="${escapeHtml(button.url)}" style="display:inline-block;padding:14px 26px;border:2px solid ${red};border-radius:999px;background:${solid ? red : "#ffffff"};font-family:${sans};font-size:15px;font-weight:700;color:${solid ? "#ffffff" : red};text-decoration:none;">${escapeHtml(button.label)}</a>
+                  </td>`;
+                }).join("")}
+                </tr>
+              </table>
+            </td>
+          </tr>`;
+
+  const noteHtml = !note ? "" : `
+          <tr>
+            <td style="padding:24px 32px 0;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-left:3px solid ${red};background:${blush};">
+                <tr>
+                  <td style="padding:14px 18px;">
+                    <p style="margin:0 0 6px;font-family:${sans};font-size:12px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:${muted};">${escapeHtml(noteTitle)}</p>
+                    <p style="margin:0;font-family:${sans};font-size:15px;line-height:1.6;color:${ink};">${escapeHtml(note).replace(/\n/g, "<br>")}</p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>`;
+
+  const changesHtml = changes.length === 0 ? "" : `
+          <tr>
+            <td style="padding:30px 32px 0;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td style="padding-bottom:6px;border-bottom:1px solid ${ink};font-family:${serif};font-size:20px;color:${ink};">What changed</td>
+                </tr>${changes.map((change) => `
+                <tr>
+                  <td style="padding:10px 0;border-bottom:1px solid ${line};font-family:${sans};font-size:14px;color:${ink};">${escapeHtml(change)}</td>
+                </tr>`).join("")}
+              </table>
+            </td>
+          </tr>`;
+
+  const closingHtml = closing === undefined
+    ? `Need to change something? Just reply to this email or write to <a href="mailto:${safeOrderEmail}" style="color:${red};text-decoration:underline;">${safeOrderEmail}</a>.`
+    : escapeHtml(closing);
+
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -914,7 +1294,7 @@ function buildClientConfirmationHtml({ company, cartItems, deliveryDetails, orde
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light only">
   <meta name="supported-color-schemes" content="light only">
-  <title>Order confirmation</title>
+  <title>${escapeHtml(title)}</title>
   <style>:root { color-scheme: light only; supported-color-schemes: light only; }</style>
 </head>
 <body style="margin:0;padding:0;background:${blush};">
@@ -929,28 +1309,28 @@ function buildClientConfirmationHtml({ company, cartItems, deliveryDetails, orde
           </tr>
           <tr>
             <td style="padding:32px 32px 8px;">
-              <p style="margin:0 0 8px;font-family:${sans};font-size:12px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:${red};">Order received</p>
-              <h1 style="margin:0 0 14px;font-family:${serif};font-size:30px;line-height:1.2;font-weight:normal;color:${ink};">Thank you, ${greetingName}</h1>
-              <p style="margin:0;font-family:${sans};font-size:15px;line-height:1.65;color:${ink};">We have received your order and will review it shortly. We'll confirm availability and get back to you with our best offer.</p>
+              <p style="margin:0 0 8px;font-family:${sans};font-size:12px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:${red};">${escapeHtml(eyebrow)}</p>
+              <h1 style="margin:0 0 14px;font-family:${serif};font-size:30px;line-height:1.2;font-weight:normal;color:${ink};">${escapeHtml(heading)}</h1>
+              <p style="margin:0;font-family:${sans};font-size:15px;line-height:1.65;color:${ink};">${escapeHtml(intro)}</p>
             </td>
-          </tr>
+          </tr>${buttonsHtml}${noteHtml}
           <tr>
             <td style="padding:24px 32px 0;">
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:${blush};border-radius:12px;">
                 <tr>
                   <td style="padding:16px 20px;">
-                    <p style="margin:0 0 4px;font-family:${sans};font-size:12px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:${muted};">Requested delivery</p>
+                    <p style="margin:0 0 4px;font-family:${sans};font-size:12px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:${muted};">${escapeHtml(dateLabel)}</p>
                     <p style="margin:0;font-family:${serif};font-size:21px;color:${red};">${deliveryDate}</p>
                   </td>
                 </tr>
               </table>
             </td>
-          </tr>
+          </tr>${changesHtml}
           <tr>
             <td style="padding:30px 32px 0;">
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
                 <tr>
-                  <td style="padding-bottom:6px;border-bottom:1px solid ${ink};font-family:${serif};font-size:20px;color:${ink};">Your roses</td>
+                  <td style="padding-bottom:6px;border-bottom:1px solid ${ink};font-family:${serif};font-size:20px;color:${ink};">${escapeHtml(itemsTitle)}</td>
                   <td align="right" style="padding-bottom:6px;border-bottom:1px solid ${ink};font-family:${sans};font-size:13px;color:${muted};">${totalBoxes} ${totalBoxes === 1 ? "box" : "boxes"}</td>
                 </tr>${rows}
               </table>
@@ -968,7 +1348,7 @@ function buildClientConfirmationHtml({ company, cartItems, deliveryDetails, orde
           </tr>
           <tr>
             <td style="padding:30px 32px 32px;">
-              <p style="margin:0 0 18px;font-family:${sans};font-size:14px;line-height:1.65;color:${ink};">Need to change something? Just reply to this email or write to <a href="mailto:${safeOrderEmail}" style="color:${red};text-decoration:underline;">${safeOrderEmail}</a>.</p>
+              <p style="margin:0 0 18px;font-family:${sans};font-size:14px;line-height:1.65;color:${ink};">${closingHtml}</p>
               <p style="margin:0;font-family:${sans};font-size:14px;line-height:1.5;color:${ink};">Kind regards,<br><span style="font-family:${serif};font-size:19px;color:${red};">Bunches Direct</span></p>
             </td>
           </tr>
@@ -986,6 +1366,220 @@ function buildClientConfirmationHtml({ company, cartItems, deliveryDetails, orde
   </table>
 </body>
 </html>`;
+}
+
+// Plain-text twin of renderOrderEmail, for mail apps that don't show HTML
+function renderOrderEmailText({ greeting, intro, dateLabel, cartItems, deliveryDetails, links = [], note = "", changes = [], closing }) {
+  const lines = [greeting, "", intro, ""];
+  for (const link of links) {
+    lines.push(`${link.label}: ${link.url}`);
+  }
+  if (links.length) {
+    lines.push("");
+  }
+  if (note) {
+    lines.push("Message from Bunches Direct:", note, "");
+  }
+  if (changes.length) {
+    lines.push("What changed:", ...changes.map((change) => `- ${change}`), "");
+  }
+  lines.push(`${dateLabel}: ${formatDeliveryDate(deliveryDetails.deliveryDate)}`, "", "Roses:");
+  for (const item of cartItems) {
+    const stemLength = item.stemLength ? `, ${item.stemLength} cm` : "";
+    lines.push(`- ${item.roseName} | ${item.boxType || "Box"}${stemLength} | Quantity: ${Number(item.quantity) || 1}`);
+  }
+  lines.push(
+    "",
+    `Company: ${deliveryDetails.companyName || "-"}`,
+    `Contact person: ${deliveryDetails.contactPerson || "-"}`,
+    `Email: ${deliveryDetails.companyEmail || "-"}`,
+    `Phone: ${deliveryDetails.phone || "-"}`,
+    `Tax / VAT #: ${deliveryDetails.taxVat || "-"}`,
+    `Delivery address: ${deliveryDetails.deliveryAddress || "-"}`,
+    `Truck company in Aalsmeer: ${deliveryDetails.truckCompany || "-"}`,
+    ""
+  );
+  if (closing) {
+    lines.push(closing, "");
+  }
+  lines.push("Kind regards,", "Bunches Direct");
+  return lines.join("\n");
+}
+
+function emailLogoAttachment() {
+  return {
+    filename: "bunches-direct-logo.png",
+    path: path.join(__dirname, "assets", "email-logo.png"),
+    cid: EMAIL_LOGO_CID
+  };
+}
+
+async function buildOrderExcelAttachment(order) {
+  const workbook = await buildOrderWorkbook({
+    templatePath: orderTemplatePath,
+    cartItems: order.cartItems,
+    deliveryDetails: order.deliveryDetails
+  });
+  const company = (order.deliveryDetails.companyName || "company").replace(/[^\w-]+/g, "-");
+  return {
+    filename: `order-${company}-${order.id}.xlsx`,
+    content: await workbook.xlsx.writeBuffer(),
+    contentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+  };
+}
+
+function orderPageUrl(page, order, token, params = {}) {
+  const query = new URLSearchParams({ id: order.id, token, ...params });
+  return `${PUBLIC_SITE_URL}/${page}?${query.toString()}`;
+}
+
+function clientGreetingName(order) {
+  return order.deliveryDetails.contactPerson || order.deliveryDetails.companyName || "there";
+}
+
+// To the office: the client's order with "Accept order" and "Change or cancel" buttons, plus the Excel file
+async function sendAdminNewOrderEmail(mailer, order) {
+  const company = order.deliveryDetails.companyName || "Unknown company";
+  const intro = "A new pre-order has come in. Accept it as it is, or change it and send the new version back to the client.";
+  const buttons = [
+    { label: "Accept order", url: orderPageUrl("order-review.html", order, order.adminToken, { mode: "accept" }) },
+    { label: "Change or cancel", url: orderPageUrl("order-review.html", order, order.adminToken, { mode: "edit" }) }
+  ];
+  const content = { cartItems: order.cartItems, deliveryDetails: order.deliveryDetails, dateLabel: "Requested delivery" };
+
+  await mailer.send({
+    to: orderEmail,
+    replyTo: isValidEmail(order.deliveryDetails.companyEmail) ? order.deliveryDetails.companyEmail : undefined,
+    subject: `New order - ${company} - ${new Date().toLocaleDateString("en-GB")}`,
+    text: renderOrderEmailText({ ...content, greeting: `New order from ${company}`, intro, links: buttons }),
+    html: renderOrderEmail({
+      ...content,
+      title: "New order",
+      eyebrow: `New order · ${order.id}`,
+      heading: company,
+      intro,
+      itemsTitle: "Roses ordered",
+      buttons,
+      orderEmail,
+      closing: "Replying to this email writes straight to the client. The Excel file with the order is attached."
+    }),
+    attachments: [emailLogoAttachment(), await buildOrderExcelAttachment(order)]
+  });
+}
+
+// To the client: the order (original, or the changed one they agreed to) is accepted
+async function sendClientAcceptedEmail(mailer, order) {
+  const intro = "Good news: we have accepted your order and it is now being processed. We'll be in touch about delivery.";
+  const content = { cartItems: order.cartItems, deliveryDetails: order.deliveryDetails, dateLabel: "Delivery" };
+  await mailer.send({
+    to: order.deliveryDetails.companyEmail,
+    replyTo: orderEmail,
+    subject: `Your Bunches Direct order has been accepted`,
+    text: renderOrderEmailText({ ...content, greeting: `Hello ${clientGreetingName(order)},`, intro, closing: `Questions? Reply to ${orderEmail}.` }),
+    html: renderOrderEmail({
+      ...content,
+      title: "Order accepted",
+      eyebrow: "Order accepted",
+      heading: "Your order is confirmed",
+      intro,
+      orderEmail,
+      closing: undefined
+    }),
+    attachments: [emailLogoAttachment()]
+  });
+}
+
+// To the client: the office changed the order; they can accept the new version or decline it
+async function sendClientProposalEmail(mailer, order) {
+  const proposal = order.proposal;
+  const intro = "We've reviewed your order and suggest a few changes, shown below. Please accept the new version so we can process it, or decline it to cancel the order.";
+  const buttons = [
+    { label: "Accept changes", url: orderPageUrl("order-response.html", order, order.clientToken, { choice: "accept" }) },
+    { label: "Decline", url: orderPageUrl("order-response.html", order, order.clientToken, { choice: "decline" }) }
+  ];
+  const changes = describeOrderChanges(order, proposal);
+  const content = {
+    cartItems: proposal.cartItems,
+    deliveryDetails: { ...order.deliveryDetails, deliveryDate: proposal.deliveryDate },
+    dateLabel: "Proposed delivery",
+    note: proposal.note,
+    changes
+  };
+
+  await mailer.send({
+    to: order.deliveryDetails.companyEmail,
+    replyTo: orderEmail,
+    subject: `Changes to your Bunches Direct order - please confirm`,
+    text: renderOrderEmailText({ ...content, greeting: `Hello ${clientGreetingName(order)},`, intro, links: buttons }),
+    html: renderOrderEmail({
+      ...content,
+      title: "Changes to your order",
+      eyebrow: "Please confirm",
+      heading: "We've updated your order",
+      intro,
+      itemsTitle: "Your updated order",
+      buttons,
+      orderEmail
+    }),
+    attachments: [emailLogoAttachment()]
+  });
+}
+
+// To the client: the order is cancelled, either by the office or because they declined the changes
+async function sendClientCancelledEmail(mailer, order, cancelledBy) {
+  const intro = cancelledBy === "client"
+    ? "You declined the suggested changes, so your order has been cancelled. You're welcome to place a new order at any time."
+    : "Unfortunately we can't fulfil this order, so it has been cancelled. Please get in touch if you'd like to find an alternative.";
+  const content = { cartItems: order.cartItems, deliveryDetails: order.deliveryDetails, dateLabel: "Requested delivery" };
+  await mailer.send({
+    to: order.deliveryDetails.companyEmail,
+    replyTo: orderEmail,
+    subject: `Your Bunches Direct order has been cancelled`,
+    text: renderOrderEmailText({ ...content, greeting: `Hello ${clientGreetingName(order)},`, intro, closing: `Questions? Reply to ${orderEmail}.` }),
+    html: renderOrderEmail({
+      ...content,
+      title: "Order cancelled",
+      eyebrow: "Order cancelled",
+      heading: "Your order has been cancelled",
+      intro,
+      itemsTitle: "Cancelled order",
+      orderEmail,
+      closing: undefined
+    }),
+    attachments: [emailLogoAttachment()]
+  });
+}
+
+// To the office: the client answered the changes. Best effort: the client has already been told,
+// so a failure here is logged instead of making the client press the button again.
+async function sendAdminClientAnswerEmail(mailer, order, accepted) {
+  const company = order.deliveryDetails.companyName || "The client";
+  const intro = accepted
+    ? `${company} accepted your changes. The order is accepted and can be processed. The final order is attached as an Excel file.`
+    : `${company} declined your changes, so the order has been cancelled.`;
+  const content = { cartItems: accepted ? order.proposal.cartItems : order.cartItems, deliveryDetails: order.deliveryDetails, dateLabel: "Delivery" };
+
+  try {
+    await mailer.send({
+      to: orderEmail,
+      replyTo: isValidEmail(order.deliveryDetails.companyEmail) ? order.deliveryDetails.companyEmail : undefined,
+      subject: `${accepted ? "Changes accepted" : "Changes declined"} - ${company} - order ${order.id}`,
+      text: renderOrderEmailText({ ...content, greeting: accepted ? "Order accepted" : "Order cancelled", intro }),
+      html: renderOrderEmail({
+        ...content,
+        title: accepted ? "Changes accepted" : "Changes declined",
+        eyebrow: `Order ${order.id}`,
+        heading: accepted ? "The client accepted your changes" : "The client declined your changes",
+        intro,
+        itemsTitle: accepted ? "Final order" : "Original order",
+        orderEmail,
+        closing: "Replying to this email writes straight to the client."
+      }),
+      attachments: accepted ? [emailLogoAttachment(), await buildOrderExcelAttachment(order)] : [emailLogoAttachment()]
+    });
+  } catch (error) {
+    console.error(`Office notification for order ${order.id} failed:`, error);
+  }
 }
 
 function escapeHtml(value) {

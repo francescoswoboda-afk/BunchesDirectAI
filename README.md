@@ -65,6 +65,15 @@ npm start
 	3. `SMTP_USER`
 - If `ORDER_EXCEL_TEMPLATE` points to an existing workbook, it is used as a base template. The server refreshes the `Products` and `Delivery Details` sheets with the latest order data.
 
+## Accepting, changing or cancelling orders
+
+Every order is saved on the server (`ORDERS_DATA_DIR`, on Fly `/data/orders`). The office email for a new order has two buttons:
+
+- **Accept order** opens `order-review.html` with the order and a final **Accept order** button. The client is emailed that the order is accepted and being processed.
+- **Change or cancel** opens the same page in edit mode: change quantities, box types, stem lengths, add or remove roses, change the delivery date and add a message. **Send changes to client** emails the client the new version with **Accept changes** / **Decline** buttons (`order-response.html`). Accepting confirms the order; declining cancels it. The office is emailed either way. **Cancel the whole order** cancels it straight away and tells the client.
+
+The links in the emails contain a secret token and point to `PUBLIC_SITE_URL` (set it to `http://localhost:4242` to test locally).
+
 ## Daily availability PDF (no GitHub needed)
 
 The availability flow now uses a separate secret admin URL:

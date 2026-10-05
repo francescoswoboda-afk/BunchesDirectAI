@@ -6585,3 +6585,265 @@ body[data-page="products"] .products-corner-image {
 .ct-message[data-kind="error"] {
   color: #b5070d;
 }
+
+/* Order review (order-review.html, for the office) and order response (order-response.html, for the client).
+   Both reuse the delivery page's .dp-* layout; these are the extra pieces. */
+.or-eyebrow {
+  margin: 0 0 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--dp-red);
+}
+
+.or-eyebrow:empty {
+  display: none;
+}
+
+.or-banner {
+  margin: 0 0 1.2rem;
+  padding: 0.9rem 1.1rem;
+  border-left: 3px solid var(--dp-red);
+  border-radius: 0 10px 10px 0;
+  background: #ffffff;
+  font-size: 0.88rem;
+  color: var(--dp-ink);
+  text-align: left;
+}
+
+.or-details {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  gap: 0.55rem 1rem;
+  margin: 0;
+  font-size: 0.88rem;
+}
+
+.or-details dt {
+  color: var(--dp-muted);
+}
+
+.or-details dd {
+  margin: 0;
+  color: var(--dp-ink);
+  overflow-wrap: anywhere;
+}
+
+.or-summary-line {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--dp-muted);
+  text-align: left;
+}
+
+.or-summary-line strong {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 1.3rem;
+  color: var(--dp-red);
+}
+
+.or-hint {
+  margin: 0.9rem 0 0;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: var(--dp-muted);
+  text-align: left;
+}
+
+.or-alt {
+  margin: 0.8rem 0 0;
+  font-size: 0.82rem;
+  color: var(--dp-ink);
+  text-align: left;
+}
+
+.or-link {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-weight: 700;
+  color: var(--dp-red);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+.or-link:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.or-danger {
+  color: var(--dp-muted);
+}
+
+.or-danger:hover:not(:disabled) {
+  color: var(--dp-red);
+}
+
+.or-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 46px;
+  padding: 0 1.3rem;
+  border: 1.5px solid var(--dp-red);
+  border-radius: 999px;
+  background: #ffffff;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--dp-red);
+  cursor: pointer;
+  transition: background-color 150ms ease;
+}
+
+.or-secondary:hover:not(:disabled) {
+  background: #fbe8ec;
+}
+
+.or-secondary:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.or-wide {
+  width: 100%;
+  height: 50px;
+  margin-top: 0.7rem;
+}
+
+.or-edit-row {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  align-items: center;
+  gap: 0.4rem 0.75rem;
+  padding: 0.8rem 0;
+  border-bottom: 1px solid var(--dp-line);
+}
+
+.or-edit-row img {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+}
+
+.or-edit-name {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--dp-ink);
+}
+
+.or-edit-controls {
+  grid-column: 2;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.or-mini-select select {
+  height: 38px;
+  width: auto;
+  min-width: 6.5rem;
+  font-size: 0.85rem;
+}
+
+.or-add-row {
+  display: flex;
+  gap: 0.6rem;
+  margin-top: 1rem;
+}
+
+.or-add-row .dp-select {
+  flex: 1;
+  min-width: 0;
+}
+
+.dp-field textarea {
+  width: 100%;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid var(--dp-field);
+  border-radius: 10px;
+  background: #ffffff;
+  font: inherit;
+  font-size: 0.92rem;
+  color: var(--dp-ink);
+  box-sizing: border-box;
+  resize: vertical;
+}
+
+.dp-field textarea:focus {
+  outline: none;
+  border-color: var(--dp-ink);
+  box-shadow: 0 0 0 3px rgba(29, 20, 22, 0.06);
+}
+
+.or-optional {
+  font-style: normal;
+  font-weight: 400;
+  color: var(--dp-muted);
+}
+
+.or-note {
+  margin: 0 0 1.4rem;
+  padding: 0.9rem 1.1rem;
+  border-left: 3px solid var(--dp-red);
+  border-radius: 0 10px 10px 0;
+  background: #fff6f8;
+  font-size: 0.92rem;
+  line-height: 1.6;
+  color: var(--dp-ink);
+  text-align: left;
+}
+
+.or-note p {
+  margin: 0;
+  text-align: left;
+}
+
+.or-note .or-note-title {
+  margin-bottom: 0.3rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--dp-muted);
+}
+
+.or-changes {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.or-changes li {
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--dp-line);
+  font-size: 0.9rem;
+  color: var(--dp-ink);
+}
+
+@media (max-width: 520px) {
+  .or-details {
+    grid-template-columns: 1fr;
+    gap: 0.1rem;
+  }
+
+  .or-details dd {
+    margin-bottom: 0.5rem;
+  }
+}
+
+@media (max-width: 860px) {
+  /* on the order review pages the order comes first, then the decision buttons */
+  body[data-page="order-review"] .dp-summary,
+  body[data-page="order-response"] .dp-summary {
+    order: 0;
+  }
+}

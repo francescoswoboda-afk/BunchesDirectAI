@@ -243,6 +243,8 @@ function init() {
     initPaymentPage();
     initAvailabilityPage();
     initPdfViewerModal();
+    initOrderReviewPage();
+    initOrderResponsePage();
 }
 
 function initProductsStickyHeader() {
@@ -1917,6 +1919,535 @@ function setAvailabilityUploadMessage(message, isError) {
 
     dom.availabilityUploadMessage.textContent = message;
     dom.availabilityUploadMessage.classList.toggle("is-error", isError);
+}
+
+// ----- Order review (office) and order response (client) -----
+// Both pages are opened from links in the order emails:
+//   order-review.html?id=…&token=…&mode=accept|edit      the office accepts, changes or cancels a new order
+//   order-response.html?id=…&token=…&choice=accept|decline the client answers the office's changes
+// The token in the link is what gives access; the server checks it on every request.
+const ORDER_BOX_TYPES = ["Q-Box", "H-Box"];
+const ORDER_STEM_LENGTHS = [40, 50, 60, 70];
+
+function escapeHtml(value) {
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+}
+
+function getOrderLinkParams() {
+    const params = new URLSearchParams(window.location.search);
+    return {
+        id: params.get("id") || "",
+        token: params.get("token") || "",
+        mode: params.get("mode") || "",
+        choice: params.get("choice") || ""
+    };
+}
+
+// Without an action: loads the order. With one: POSTs it (accept, propose, cancel, respond).
+async function orderRequest(link, action, body = {}) {
+    const base = `/api/orders/${encodeURIComponent(link.id)}`;
+    const response = action
+        ? await fetch(`${base}/${action}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ token: link.token, ...body })
+        })
+        : await fetch(`${base}?token=${encodeURIComponent(link.token)}`, { cache: "no-store" });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
+        const error = new Error(data.error || "Something went wrong. Please try again.");
+        error.order = data.order;
+        throw error;
+    }
+    return data;
+}
+
+function setOrderHeading(reference, titleHtml, lead) {
+    const ref = document.getElementById("orderRef");
+    const title = document.getElementById("orderTitle");
+    const leadElement = document.getElementById("orderLead");
+    if (ref) ref.textContent = reference;
+    if (title) title.innerHTML = titleHtml;
+    if (leadElement) {
+        leadElement.textContent = lead;
+        leadElement.hidden = !lead;
+    }
+}
+
+// "2026-10-15" -> "Thursday 15 October 2026"
+function formatOrderDate(value) {
+    const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(value || ""));
+    if (!match) {
+        return String(value || "-");
+    }
+    const date = new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+    return date.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+}
+
+function orderItemImage(item) {
+    const product = products.find((entry) => entry.name === item.roseName);
+    return item.image || (product && product.image) || FALLBACK_PRODUCT_IMAGE;
+}
+
+function orderTotalBoxes(items) {
+    return items.reduce((sum, item) => sum + (Number(item.quantity) || 0), 0);
+}
+
+function orderItemsHtml(items) {
+    return items
+        .map((item) => {
+            const quantity = Number(item.quantity) || 1;
+            const meta = [item.boxType, item.stemLength && `${item.stemLength} cm`].filter(Boolean).join(" · ");
+            return `
+            <div class="dp-item">
+                <img src="${escapeHtml(orderItemImage(item))}" alt="" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='${FALLBACK_PRODUCT_IMAGE}';">
+                <div class="dp-item-copy"><strong>${escapeHtml(item.roseName)}</strong><span>${escapeHtml(meta)}</span></div>
+                <span class="dp-item-qty">${quantity} ${quantity === 1 ? "box" : "boxes"}</span>
+            </div>`;
+        })
+        .join("");
+}
+
+function orderDetailsHtml(details) {
+    const rows = [
+        ["Company", details.companyName],
+        ["Contact person", details.contactPerson],
+        ["Email", details.companyEmail],
+        ["Phone", details.phone],
+        ["Tax / VAT #", details.taxVat],
+        ["Delivery address", details.deliveryAddress],
+        ["Truck company in Aalsmeer", details.truckCompany]
+    ];
+    return `<dl class="or-details">${rows
+        .map(([label, value]) => `<dt>${escapeHtml(label)}</dt><dd>${escapeHtml(value || "-")}</dd>`)
+        .join("")}</dl>`;
+}
+
+function orderSummaryLinesHtml(deliveryDate, items) {
+    return `
+        <p class="or-summary-line"><span>Delivery</span><strong>${escapeHtml(formatOrderDate(deliveryDate))}</strong></p>
+        <div class="dp-summary-total"><span>Total boxes</span><span>${orderTotalBoxes(items)}</span></div>`;
+}
+
+function orderDoneHtml(heading, text, icon = "&#10003;") {
+    return `
+        <div class="dp-done-card">
+            <span class="dp-done-icon" aria-hidden="true">${icon}</span>
+            <h1>${escapeHtml(heading)}</h1>
+            <p>${escapeHtml(text)}</p>
+        </div>`;
+}
+
+// Runs a button's action: disables it and shows progress, then hands the result (or error) on
+function runOrderButton(button, busyLabel, task) {
+    const message = document.getElementById("orderActionMessage");
+    const label = button.textContent;
+    button.disabled = true;
+    button.textContent = busyLabel;
+    if (message) message.textContent = "";
+
+    return task().catch((error) => {
+        button.disabled = false;
+        button.textContent = label;
+        if (message) message.textContent = error.message;
+        return Promise.reject(error);
+    });
+}
+
+// ----- Office: order-review.html -----
+function initOrderReviewPage() {
+    const root = document.getElementById("orderReviewRoot");
+    if (!root) {
+        return;
+    }
+
+    const link = getOrderLinkParams();
+    const state = {
+        order: null,
+        mode: link.mode === "edit" ? "edit" : "accept",
+        items: [],
+        deliveryDate: "",
+        note: ""
+    };
+
+    // The editable copy starts from the changes already sent (if any), otherwise from the client's order
+    function resetDraft() {
+        const source = state.order.proposal || {
+            cartItems: state.order.cartItems,
+            deliveryDate: state.order.deliveryDetails.deliveryDate,
+            note: ""
+        };
+        state.items = source.cartItems.map((item) => ({ ...item }));
+        state.deliveryDate = source.deliveryDate;
+        state.note = source.note || "";
+    }
+
+    function setMode(mode) {
+        state.mode = mode;
+        const url = new URL(window.location.href);
+        url.searchParams.set("mode", mode);
+        window.history.replaceState(null, "", url);
+        render();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function render() {
+        const order = state.order;
+        const company = order.deliveryDetails.companyName || "Client";
+
+        if (order.status === "accepted" || order.status === "cancelled") {
+            const accepted = order.status === "accepted";
+            setOrderHeading(`Order ${order.id}`, accepted ? "Order <span>accepted</span>" : "Order <span>cancelled</span>", "");
+            root.innerHTML = orderDoneHtml(
+                accepted ? "This order is accepted" : "This order is cancelled",
+                accepted ? `${company} has been told the order is being processed.` : `${company} has been told the order is cancelled.`,
+                accepted ? "&#10003;" : "&times;"
+            );
+            return;
+        }
+
+        // Once changes are sent, the original can no longer be accepted; only re-sent changes or a cancel
+        if (order.status === "awaiting_client") {
+            state.mode = "edit";
+        }
+
+        if (state.mode === "accept") {
+            setOrderHeading(`New order · ${order.id}`, `Accept <span>order</span>`, `${company} placed this order. Check it and accept it, or change it first.`);
+            root.innerHTML = `
+            <div class="dp-layout">
+                <div class="dp-card">
+                    <h2 class="dp-section-title">Roses ordered</h2>
+                    <div class="dp-items">${orderItemsHtml(order.cartItems)}</div>
+                    <hr class="dp-divider">
+                    <h2 class="dp-section-title">Delivery details</h2>
+                    ${orderDetailsHtml(order.deliveryDetails)}
+                </div>
+                <aside class="dp-summary">
+                    <h2>Your decision</h2>
+                    ${orderSummaryLinesHtml(order.deliveryDetails.deliveryDate, order.cartItems)}
+                    <button class="dp-submit" type="button" data-order-action="accept">Accept order</button>
+                    <p id="orderActionMessage" class="dp-message" role="alert"></p>
+                    <p class="or-hint">The client gets an email that the order is accepted and being processed.</p>
+                    <p class="or-alt">Something not right? <button class="or-link" type="button" data-order-mode="edit">Change or cancel the order</button></p>
+                </aside>
+            </div>`;
+            return;
+        }
+
+        const roseOptions = products
+            .map((product) => `<option value="${escapeHtml(product.name)}">${escapeHtml(product.name)}</option>`)
+            .join("");
+        const banner = order.status === "awaiting_client"
+            ? `<p class="or-banner">You already sent changes to ${escapeHtml(company)}. They haven't answered yet. Sending again replaces those changes.</p>`
+            : "";
+
+        setOrderHeading(`Order ${order.id}`, `Change <span>order</span>`, `Edit ${company}'s order and send it back. They can accept the new version or decline it.`);
+        root.innerHTML = `
+            ${banner}
+            <div class="dp-layout">
+                <div class="dp-card">
+                    <h2 class="dp-section-title">Roses</h2>
+                    <div class="or-edit-list">${state.items.length === 0 ? '<p class="dp-items-empty">No roses left. Add one below, or cancel the whole order.</p>' : state.items.map(editRowHtml).join("")}</div>
+                    <div class="or-add-row">
+                        <div class="dp-select">
+                            <select id="orderAddRose" aria-label="Rose to add">
+                                <option value="">Add a rose…</option>
+                                ${roseOptions}
+                            </select>
+                        </div>
+                        <button class="or-secondary" type="button" data-edit-action="add">Add</button>
+                    </div>
+
+                    <hr class="dp-divider">
+
+                    <div class="dp-grid">
+                        <div class="dp-field">
+                            <label for="orderDeliveryDate">Delivery date</label>
+                            <input id="orderDeliveryDate" type="date" value="${escapeHtml(state.deliveryDate)}" required>
+                        </div>
+                        <div class="dp-field dp-field-wide">
+                            <label for="orderNote">Message to the client <em class="or-optional">(optional)</em></label>
+                            <textarea id="orderNote" rows="4" maxlength="2000" placeholder="e.g. Aloha is sold out this week, so we replaced it with Vendela.">${escapeHtml(state.note)}</textarea>
+                        </div>
+                    </div>
+
+                    <hr class="dp-divider">
+                    <h2 class="dp-section-title">Delivery details</h2>
+                    ${orderDetailsHtml(order.deliveryDetails)}
+                </div>
+                <aside class="dp-summary">
+                    <h2>Send to client</h2>
+                    ${orderSummaryLinesHtml(state.deliveryDate, state.items)}
+                    <button class="dp-submit" type="button" data-order-action="propose" ${state.items.length === 0 ? "disabled" : ""}>Send changes to client</button>
+                    <p id="orderActionMessage" class="dp-message" role="alert"></p>
+                    <p class="or-hint">${escapeHtml(company)} gets an email with the new order and two buttons: accept or decline. If they decline, the order is cancelled.</p>
+                    ${order.status === "pending" ? '<p class="or-alt">Order fine after all? <button class="or-link" type="button" data-order-mode="accept">Accept it as it is</button></p>' : ""}
+                    <p class="or-alt"><button class="or-link or-danger" type="button" data-order-action="cancel">Cancel the whole order</button></p>
+                </aside>
+            </div>`;
+    }
+
+    function editRowHtml(item, index) {
+        const quantity = Number(item.quantity) || 1;
+        const boxOptions = ORDER_BOX_TYPES
+            .map((type) => `<option value="${type}" ${item.boxType === type ? "selected" : ""}>${type}</option>`)
+            .join("");
+        const stemOptions = ORDER_STEM_LENGTHS
+            .map((length) => `<option value="${length}" ${Number(item.stemLength) === length ? "selected" : ""}>${length} cm</option>`)
+            .join("");
+        return `
+            <div class="or-edit-row">
+                <img src="${escapeHtml(orderItemImage(item))}" alt="" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='${FALLBACK_PRODUCT_IMAGE}';">
+                <strong class="or-edit-name">${escapeHtml(item.roseName)}</strong>
+                <div class="or-edit-controls">
+                    <div class="dp-select or-mini-select">
+                        <select data-edit-field="boxType" data-index="${index}" aria-label="Box type for ${escapeHtml(item.roseName)}">
+                            ${ORDER_BOX_TYPES.includes(item.boxType) ? "" : '<option value="" selected>Box type…</option>'}${boxOptions}
+                        </select>
+                    </div>
+                    <div class="dp-select or-mini-select">
+                        <select data-edit-field="stemLength" data-index="${index}" aria-label="Stem length for ${escapeHtml(item.roseName)}">
+                            ${ORDER_STEM_LENGTHS.includes(Number(item.stemLength)) ? "" : '<option value="" selected>Stem…</option>'}${stemOptions}
+                        </select>
+                    </div>
+                    <div class="cp-qty" role="group" aria-label="Boxes of ${escapeHtml(item.roseName)}">
+                        <button type="button" data-edit-action="decrease" data-index="${index}" aria-label="One box less" ${quantity <= 1 ? "disabled" : ""}>&minus;</button>
+                        <span>${quantity}</span>
+                        <button type="button" data-edit-action="increase" data-index="${index}" aria-label="One box more">+</button>
+                    </div>
+                    <button class="cp-remove" type="button" data-edit-action="remove" data-index="${index}" aria-label="Remove ${escapeHtml(item.roseName)}">
+                        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 7h16M9 7V5h6v2M6.5 7l.8 12h9.4l.8-12M10 11v5M14 11v5" /></svg>
+                    </button>
+                </div>
+            </div>`;
+    }
+
+    function addRose() {
+        const select = document.getElementById("orderAddRose");
+        const roseName = select ? select.value : "";
+        if (!roseName) {
+            return;
+        }
+        const existing = state.items.find((item) => item.roseName === roseName && item.boxType === "Q-Box" && Number(item.stemLength) === 60);
+        if (existing) {
+            existing.quantity = (Number(existing.quantity) || 1) + 1;
+        } else {
+            state.items.push({ roseName, boxType: "Q-Box", stemLength: 60, quantity: 1 });
+        }
+        render();
+    }
+
+    function showResult(promise, heading, text) {
+        promise.then((data) => {
+            state.order = data.order;
+            setOrderHeading(`Order ${data.order.id}`, heading, "");
+            root.innerHTML = orderDoneHtml(...text);
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        }).catch((error) => {
+            // The order changed in the meantime (e.g. already accepted): show its current state
+            if (error.order) {
+                state.order = error.order;
+                render();
+            }
+        });
+    }
+
+    root.addEventListener("click", (event) => {
+        const modeButton = event.target.closest("[data-order-mode]");
+        if (modeButton) {
+            resetDraft();
+            setMode(modeButton.dataset.orderMode);
+            return;
+        }
+
+        const editButton = event.target.closest("[data-edit-action]");
+        if (editButton) {
+            const action = editButton.dataset.editAction;
+            const item = state.items[Number(editButton.dataset.index)];
+            if (action === "add") {
+                addRose();
+            } else if (item && action === "remove") {
+                state.items.splice(Number(editButton.dataset.index), 1);
+                render();
+            } else if (item) {
+                item.quantity = Math.max(1, (Number(item.quantity) || 1) + (action === "increase" ? 1 : -1));
+                render();
+            }
+            return;
+        }
+
+        const actionButton = event.target.closest("[data-order-action]");
+        if (!actionButton) {
+            return;
+        }
+        const company = state.order.deliveryDetails.companyName || "The client";
+        const action = actionButton.dataset.orderAction;
+
+        if (action === "accept") {
+            showResult(
+                runOrderButton(actionButton, "Accepting…", () => orderRequest(link, "accept")),
+                "Order <span>accepted</span>",
+                ["Order accepted", `${company} has been emailed that the order is accepted and being processed.`]
+            );
+        } else if (action === "propose") {
+            const missingOption = state.items.some((item) => !ORDER_BOX_TYPES.includes(item.boxType) || !ORDER_STEM_LENGTHS.includes(Number(item.stemLength)));
+            if (missingOption || !state.deliveryDate) {
+                const message = document.getElementById("orderActionMessage");
+                if (message) {
+                    message.textContent = missingOption ? "Choose a box type and stem length for every rose." : "Choose a delivery date.";
+                }
+                return;
+            }
+            showResult(
+                runOrderButton(actionButton, "Sending…", () => orderRequest(link, "propose", {
+                    cartItems: state.items.map(({ roseName, boxType, stemLength, quantity }) => ({ roseName, boxType, stemLength, quantity })),
+                    deliveryDate: state.deliveryDate,
+                    note: state.note
+                })),
+                "Changes <span>sent</span>",
+                ["Changes sent to the client", `${company} has been emailed the new order. You'll get an email as soon as they accept or decline it.`]
+            );
+        } else if (action === "cancel") {
+            if (!window.confirm(`Cancel this order? ${company} will get an email saying the order has been cancelled.`)) {
+                return;
+            }
+            showResult(
+                runOrderButton(actionButton, "Cancelling…", () => orderRequest(link, "cancel")),
+                "Order <span>cancelled</span>",
+                ["Order cancelled", `${company} has been emailed that the order is cancelled.`, "&times;"]
+            );
+        }
+    });
+
+    // Field edits update the draft without re-rendering, so typing never loses focus
+    root.addEventListener("change", (event) => {
+        const field = event.target.closest("[data-edit-field]");
+        if (field) {
+            const item = state.items[Number(field.dataset.index)];
+            if (item) {
+                item[field.dataset.editField] = field.dataset.editField === "stemLength" ? Number(field.value) : field.value;
+            }
+        }
+        if (event.target.id === "orderDeliveryDate") {
+            state.deliveryDate = event.target.value;
+            render();
+        }
+    });
+    root.addEventListener("input", (event) => {
+        if (event.target.id === "orderNote") {
+            state.note = event.target.value;
+        }
+    });
+
+    orderRequest(link)
+        .then((order) => {
+            state.order = order;
+            resetDraft();
+            render();
+        })
+        .catch((error) => {
+            setOrderHeading("", "Order <span>not found</span>", "");
+            root.innerHTML = orderDoneHtml("This link doesn't work", error.message, "!");
+        });
+}
+
+// ----- Client: order-response.html -----
+function initOrderResponsePage() {
+    const root = document.getElementById("orderResponseRoot");
+    if (!root) {
+        return;
+    }
+
+    const link = getOrderLinkParams();
+    let order = null;
+
+    function render() {
+        if (order.status === "accepted") {
+            setOrderHeading(`Order ${order.id}`, "Order <span>accepted</span>", "");
+            root.innerHTML = orderDoneHtml("Your order is accepted", "Thank you! Your order is being processed. We've sent you a confirmation email.");
+            return;
+        }
+        if (order.status === "cancelled") {
+            setOrderHeading(`Order ${order.id}`, "Order <span>cancelled</span>", "");
+            root.innerHTML = orderDoneHtml("This order is cancelled", "You're welcome to place a new order at any time.", "&times;");
+            return;
+        }
+        if (order.status !== "awaiting_client" || !order.proposal) {
+            setOrderHeading(`Order ${order.id}`, "Your <span>order</span>", "");
+            root.innerHTML = orderDoneHtml("We're reviewing your order", "We'll email you as soon as it has been checked.", "&#8230;");
+            return;
+        }
+
+        const proposal = order.proposal;
+        const declineFirst = link.choice === "decline";
+        const acceptButton = `<button class="${declineFirst ? "or-secondary or-wide" : "dp-submit"}" type="button" data-response="accept">Accept changes</button>`;
+        const declineButton = `<button class="${declineFirst ? "dp-submit" : "or-secondary or-wide"}" type="button" data-response="decline">Decline and cancel order</button>`;
+        const note = proposal.note
+            ? `<div class="or-note"><p class="or-note-title">Message from Bunches Direct</p><p>${escapeHtml(proposal.note).replace(/\n/g, "<br>")}</p></div>`
+            : "";
+        const changes = proposal.changes && proposal.changes.length
+            ? `<h2 class="dp-section-title">What changed</h2><ul class="or-changes">${proposal.changes.map((change) => `<li>${escapeHtml(change)}</li>`).join("")}</ul><hr class="dp-divider">`
+            : "";
+
+        setOrderHeading(`Order ${order.id}`, "Updated <span>order</span>", "We've made a few changes to your order. Please accept the new version so we can process it, or decline it to cancel the order.");
+        root.innerHTML = `
+            <div class="dp-layout">
+                <div class="dp-card">
+                    ${note}
+                    ${changes}
+                    <h2 class="dp-section-title">Your updated order</h2>
+                    <div class="dp-items">${orderItemsHtml(proposal.cartItems)}</div>
+                    <hr class="dp-divider">
+                    <h2 class="dp-section-title">Delivery details</h2>
+                    ${orderDetailsHtml(order.deliveryDetails)}
+                </div>
+                <aside class="dp-summary">
+                    <h2>Your answer</h2>
+                    ${orderSummaryLinesHtml(proposal.deliveryDate, proposal.cartItems)}
+                    ${declineFirst ? declineButton + acceptButton : acceptButton + declineButton}
+                    <p id="orderActionMessage" class="dp-message" role="alert"></p>
+                </aside>
+            </div>`;
+    }
+
+    root.addEventListener("click", (event) => {
+        const button = event.target.closest("[data-response]");
+        if (!button) {
+            return;
+        }
+        const decision = button.dataset.response;
+        if (decision === "decline" && !window.confirm("Decline the changes? Your order will be cancelled.")) {
+            return;
+        }
+
+        runOrderButton(button, decision === "accept" ? "Accepting…" : "Cancelling…", () => orderRequest(link, "respond", { decision }))
+            .then((data) => {
+                order = data.order;
+                render();
+                window.scrollTo({ top: 0, behavior: "smooth" });
+            })
+            .catch((error) => {
+                if (error.order) {
+                    order = error.order;
+                    render();
+                }
+            });
+    });
+
+    orderRequest(link)
+        .then((data) => {
+            order = data;
+            render();
+        })
+        .catch((error) => {
+            setOrderHeading("", "Order <span>not found</span>", "");
+            root.innerHTML = orderDoneHtml("This link doesn't work", error.message, "!");
+        });
 }
 
 init();
