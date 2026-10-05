@@ -439,7 +439,7 @@ const ordersDirectory = process.env.ORDERS_DATA_DIR
   ? path.resolve(process.env.ORDERS_DATA_DIR)
   : path.join(__dirname, ".orders");
 const BOX_TYPES = ["Q-Box", "H-Box"];
-const STEM_LENGTHS = [40, 50, 60, 70];
+const STEM_LENGTHS = [40, 50, 60, 70, 80, 90];
 const productCatalog = loadProductCatalog(path.join(__dirname, "products-data.js"));
 const busyOrderIds = new Set();
 

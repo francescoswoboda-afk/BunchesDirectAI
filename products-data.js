@@ -5,6 +5,7 @@ window.BUNCHES_PRODUCTS = [
         color: "purple",
         category: "romantic",
         price: 65,
+        stems: [50, 70],
         description: "Dusky mauve with plum edges",
         image: "assets/products/optimized/ALL-FOR-LOVE-.webp"
     },
@@ -14,6 +15,7 @@ window.BUNCHES_PRODUCTS = [
         color: "pink",
         category: "bright",
         price: 42,
+        stems: [40, 70],
         description: "Soft pink with cream outer petals",
         image: "assets/products/optimized/ABSOLUTPINK2.webp"
     },
@@ -23,6 +25,7 @@ window.BUNCHES_PRODUCTS = [
         color: "orange",
         category: "minimal",
         price: 48,
+        stems: [40, 60],
         description: "Bright golden orange",
         image: "assets/products/optimized/ALOHA.webp"
     },
@@ -50,6 +53,7 @@ window.BUNCHES_PRODUCTS = [
         color: "lavender",
         category: "minimal",
         price: 44,
+        stems: [40, 60],
         description: "Silvery lavender with green-tinged edges",
         image: "assets/products/optimized/ANDREA-.webp"
     },
@@ -59,6 +63,7 @@ window.BUNCHES_PRODUCTS = [
         color: "peach",
         category: "event",
         price: 120,
+        stems: [40, 60],
         description: "Apricot centre with ivory outer petals",
         image: "assets/products/optimized/ANTONIAGARDEN1.webp"
     },
@@ -77,6 +82,7 @@ window.BUNCHES_PRODUCTS = [
         color: "white",
         category: "romantic",
         price: 65,
+        stems: [40, 70],
         description: "Creamy white with soft green outer petals",
         image: "assets/products/optimized/ARTICA-.webp"
     },
@@ -86,6 +92,7 @@ window.BUNCHES_PRODUCTS = [
         color: "lavender",
         category: "bright",
         price: 42,
+        stems: [40, 60],
         description: "Smoky lavender with sage-green edges",
         image: "assets/products/optimized/ARYA.webp"
     },
@@ -104,6 +111,7 @@ window.BUNCHES_PRODUCTS = [
         color: "bicolor",
         category: "event",
         price: 95,
+        stems: [40, 70],
         description: "Golden orange edged in scarlet",
         image: "assets/products/optimized/Atomic1.webp"
     },
@@ -113,6 +121,7 @@ window.BUNCHES_PRODUCTS = [
         color: "white",
         category: "bright",
         price: 55,
+        stems: [40, 60],
         description: "White with green-tinged outer petals",
         image: "assets/products/optimized/AVALANCH-.webp"
     },
@@ -131,6 +140,7 @@ window.BUNCHES_PRODUCTS = [
         color: "peach",
         category: "event",
         price: 120,
+        stems: [50, 90],
         description: "Peach centre with pink edges",
         image: "assets/products/optimized/BE-SWEET-2.webp"
     },
@@ -149,6 +159,7 @@ window.BUNCHES_PRODUCTS = [
         color: "white",
         category: "romantic",
         price: 65,
+        stems: [40, 70],
         description: "Ivory with a soft blush centre",
         image: "assets/products/optimized/BLESSING.webp"
     },
@@ -167,6 +178,7 @@ window.BUNCHES_PRODUCTS = [
         color: "purple",
         category: "minimal",
         price: 48,
+        stems: [40, 60],
         description: "Rich magenta purple",
         image: "assets/products/optimized/BLUEBERRY-.webp"
     },
@@ -176,6 +188,7 @@ window.BUNCHES_PRODUCTS = [
         color: "bicolor",
         category: "event",
         price: 95,
+        stems: [50, 80],
         description: "Cherry red with a white base",
         image: "assets/products/optimized/BLUEZ-3-.webp"
     },
@@ -194,6 +207,7 @@ window.BUNCHES_PRODUCTS = [
         color: "lavender",
         category: "bright",
         price: 55,
+        stems: [40, 60],
         description: "Smoky grey lavender",
         image: "assets/products/optimized/BOUNTYWAY.webp"
     },
@@ -203,6 +217,7 @@ window.BUNCHES_PRODUCTS = [
         color: "yellow",
         category: "minimal",
         price: 44,
+        stems: [40, 80],
         description: "Sunny lemon yellow",
         image: "assets/products/optimized/Brighton20.webp"
     },
@@ -212,6 +227,7 @@ window.BUNCHES_PRODUCTS = [
         color: "yellow",
         category: "event",
         price: 120,
+        stems: [40, 70],
         description: "Mustard yellow with olive tones",
         image: "assets/products/optimized/BUMBLEBEE-.webp"
     },
@@ -221,6 +237,7 @@ window.BUNCHES_PRODUCTS = [
         color: "bicolor",
         category: "event",
         price: 120,
+        stems: [40, 60],
         description: "Apricot centre with raspberry edges",
         image: "assets/products/optimized/CABARET-.webp"
     },
@@ -230,6 +247,7 @@ window.BUNCHES_PRODUCTS = [
         color: "white",
         category: "romantic",
         price: 65,
+        stems: [40, 70],
         description: "Ivory with a buttery yellow heart",
         image: "assets/products/optimized/Candlelight-1.webp"
     },
@@ -239,6 +257,7 @@ window.BUNCHES_PRODUCTS = [
         color: "pink",
         category: "bright",
         price: 42,
+        stems: [40, 60],
         description: "Coral pink with ruffled petals",
         image: "assets/products/optimized/CANDY-X-PRESSION.webp"
     },
@@ -257,6 +276,7 @@ window.BUNCHES_PRODUCTS = [
         color: "peach",
         category: "event",
         price: 95,
+        stems: [40, 70],
         description: "Dusty peach with a rosy heart",
         image: "assets/products/optimized/CarpeDiem-1.webp"
     },
@@ -284,6 +304,7 @@ window.BUNCHES_PRODUCTS = [
         color: "bicolor",
         category: "minimal",
         price: 44,
+        stems: [40, 60],
         description: "Apricot orange with cherry-red edges",
         image: "assets/products/optimized/Cherry_Brandy-C.webp"
     },
@@ -320,6 +341,7 @@ window.BUNCHES_PRODUCTS = [
         color: "bicolor",
         category: "bright",
         price: 42,
+        stems: [40, 60],
         description: "Hot pink streaked with white",
         image: "assets/products/optimized/CLOWN.webp"
     },
@@ -329,6 +351,7 @@ window.BUNCHES_PRODUCTS = [
         color: "white",
         category: "minimal",
         price: 48,
+        stems: [50, 70],
         description: "Creamy white with full ruffled petals",
         image: "assets/products/optimized/COLDPLAY.webp"
     },
@@ -338,6 +361,7 @@ window.BUNCHES_PRODUCTS = [
         color: "pink",
         category: "event",
         price: 95,
+        stems: [40, 90],
         description: "Coral red fading to pink outer petals",
         image: "assets/products/optimized/CONSTANZA-2-.webp"
     },
@@ -347,6 +371,7 @@ window.BUNCHES_PRODUCTS = [
         color: "lavender",
         category: "romantic",
         price: 58,
+        stems: [40, 60],
         description: "Dusty lilac mauve",
         image: "assets/products/optimized/CoolDown.webp"
     },
@@ -383,6 +408,7 @@ window.BUNCHES_PRODUCTS = [
         color: "pink",
         category: "event",
         price: 120,
+        stems: [40, 80],
         description: "Orchid pink with ruffled petals",
         image: "assets/products/optimized/CountryBlues_Lavender_SingleSt_X_Apertura3.webp"
     },
@@ -392,6 +418,7 @@ window.BUNCHES_PRODUCTS = [
         color: "pink",
         category: "romantic",
         price: 65,
+        stems: [50, 60],
         description: "Coral pink with green-tinged edges",
         image: "assets/products/optimized/CountryCandy.webp"
     },
@@ -401,6 +428,7 @@ window.BUNCHES_PRODUCTS = [
         color: "white",
         category: "bright",
         price: 42,
+        stems: [50, 60],
         description: "Creamy vanilla with soft green edges",
         image: "assets/products/optimized/COUNTRY-SECRET-HojaVerde4.webp"
     },
@@ -410,6 +438,7 @@ window.BUNCHES_PRODUCTS = [
         color: "white",
         category: "minimal",
         price: 48,
+        stems: [40, 50],
         description: "Ivory ruffles with lime-green edges",
         image: "assets/products/optimized/COUNTRY-SOUL-3-630x630.webp"
     },
@@ -446,6 +475,7 @@ window.BUNCHES_PRODUCTS = [
         color: "white",
         category: "minimal",
         price: 44,
+        stems: [40, 60],
         description: "White with a golden-yellow heart",
         image: "assets/products/optimized/CremedelaCreme20.webp"
     },
@@ -473,6 +503,7 @@ window.BUNCHES_PRODUCTS = [
         color: "purple",
         category: "romantic",
         price: 65,
+        stems: [50, 70],
         description: "Lilac centre with magenta edges",
         image: "assets/products/optimized/DEEP-PURPLE.webp"
     },
@@ -482,6 +513,7 @@ window.BUNCHES_PRODUCTS = [
         color: "red",
         category: "bright",
         price: 42,
+        stems: [50, 80],
         description: "Brick red with a dusty rose heart",
         image: "assets/products/optimized/DISCOVERY-HojaVerde4.webp"
     },
@@ -491,6 +523,7 @@ window.BUNCHES_PRODUCTS = [
         color: "peach",
         category: "minimal",
         price: 48,
+        stems: [60, 70],
         description: "Salmon coral with ruffled petals",
         image: "assets/products/optimized/Dragonfly-1.webp"
     },
@@ -500,6 +533,7 @@ window.BUNCHES_PRODUCTS = [
         color: "green",
         category: "event",
         price: 95,
+        stems: [40, 60],
         description: "Ivory with soft green outer petals",
         image: "assets/products/optimized/DYNAMIC-.webp"
     },
@@ -527,6 +561,7 @@ window.BUNCHES_PRODUCTS = [
         color: "pink",
         category: "minimal",
         price: 44,
+        stems: [40, 70],
         description: "Dusty pink with cream-green edges",
         image: "assets/products/optimized/Esperance.webp"
     },
@@ -545,6 +580,7 @@ window.BUNCHES_PRODUCTS = [
         color: "red",
         category: "event",
         price: 120,
+        stems: [40, 90],
         description: "Rich velvet red",
         image: "assets/products/optimized/EXPLORER-.webp"
     },
@@ -563,6 +599,7 @@ window.BUNCHES_PRODUCTS = [
         color: "pink",
         category: "bright",
         price: 42,
+        stems: [60, 70],
         description: "Antique blush with dusty mauve tones",
         image: "assets/products/optimized/Fascination-Rose-4.webp"
     },
@@ -572,6 +609,7 @@ window.BUNCHES_PRODUCTS = [
         color: "yellow",
         category: "minimal",
         price: 48,
+        stems: [60, 70],
         description: "Rich golden yellow",
         image: "assets/products/optimized/FASHION_GOLD_cut_rose_NIRP.png.webp"
     },
@@ -599,6 +637,7 @@ window.BUNCHES_PRODUCTS = [
         color: "red",
         category: "bright",
         price: 55,
+        stems: [60, 80],
         description: "Deep classic red",
         image: "assets/products/optimized/FREEDOM.webp"
     },
@@ -608,6 +647,7 @@ window.BUNCHES_PRODUCTS = [
         color: "orange",
         category: "minimal",
         price: 44,
+        stems: [40, 60],
         description: "Burnt orange with coral edges",
         image: "assets/products/optimized/FREE-SPIRIT.webp"
     },
@@ -617,6 +657,7 @@ window.BUNCHES_PRODUCTS = [
         color: "pink",
         category: "event",
         price: 120,
+        stems: [50, 90],
         description: "Cream with a soft pink heart",
         image: "assets/products/optimized/Frutteto-C.webp"
     },
@@ -644,6 +685,7 @@ window.BUNCHES_PRODUCTS = [
         color: "green",
         category: "bright",
         price: 42,
+        stems: [50, 80],
         description: "Cream with lime-green outer petals",
         image: "assets/products/optimized/greenfashionII.webp"
     },
@@ -662,6 +704,7 @@ window.BUNCHES_PRODUCTS = [
         color: "bicolor",
         category: "event",
         price: 95,
+        stems: [40, 60],
         description: "Orange-yellow edged in red",
         image: "assets/products/optimized/HighMagic.webp"
     },
@@ -671,6 +714,7 @@ window.BUNCHES_PRODUCTS = [
         color: "bicolor",
         category: "romantic",
         price: 58,
+        stems: [40, 60],
         description: "Lemon yellow with pink-tipped edges",
         image: "assets/products/optimized/HOT MERENGUE.webp"
     },
@@ -698,6 +742,7 @@ window.BUNCHES_PRODUCTS = [
         color: "lavender",
         category: "event",
         price: 120,
+        stems: [50, 60],
         description: "Dusty mauve lilac",
         image: "assets/products/optimized/JESSICA-2.webp"
     },
@@ -716,6 +761,7 @@ window.BUNCHES_PRODUCTS = [
         color: "orange",
         category: "romantic",
         price: 65,
+        stems: [50, 60],
         description: "Vivid tangerine orange",
         image: "assets/products/optimized/JOY.webp"
     },
@@ -725,6 +771,7 @@ window.BUNCHES_PRODUCTS = [
         color: "peach",
         category: "bright",
         price: 42,
+        stems: [40, 60],
         description: "Antique peach with copper tones",
         image: "assets/products/optimized/KAHALA-2-.webp"
     },
@@ -734,6 +781,7 @@ window.BUNCHES_PRODUCTS = [
         color: "yellow",
         category: "minimal",
         price: 48,
+        stems: [40, 60],
         description: "Warm golden yellow",
         image: "assets/products/optimized/Lighthouse-C.webp"
     },
@@ -743,6 +791,7 @@ window.BUNCHES_PRODUCTS = [
         color: "red",
         category: "event",
         price: 95,
+        stems: [40, 60],
         description: "Raspberry red with a cerise glow",
         image: "assets/products/optimized/LOLA-02.webp"
     },
@@ -752,6 +801,7 @@ window.BUNCHES_PRODUCTS = [
         color: "red",
         category: "romantic",
         price: 58,
+        stems: [60, 80],
         description: "Deep blood red",
         image: "assets/products/optimized/MAMMA MIA.webp"
     },
@@ -761,6 +811,7 @@ window.BUNCHES_PRODUCTS = [
         color: "pink",
         category: "bright",
         price: 55,
+        stems: [40, 60],
         description: "Pink heart with cream-green edges",
         image: "assets/products/optimized/Mandala5_k2nsc7.webp"
     },
@@ -770,6 +821,7 @@ window.BUNCHES_PRODUCTS = [
         color: "peach",
         category: "minimal",
         price: 44,
+        stems: [40, 60],
         description: "Salmon coral with ruffled petals",
         image: "assets/products/optimized/Mandarin X-Pression07.webp"
     },
@@ -788,6 +840,7 @@ window.BUNCHES_PRODUCTS = [
         color: "peach",
         category: "event",
         price: 120,
+        stems: [50, 70],
         description: "Melon apricot with ivory outer petals",
         image: "assets/products/optimized/MELON-X-PRESSION.webp"
     },
@@ -797,6 +850,7 @@ window.BUNCHES_PRODUCTS = [
         color: "white",
         category: "romantic",
         price: 65,
+        stems: [50, 70],
         description: "Pure white with green-tinged edges",
         image: "assets/products/optimized/Mia1_ms7mpn.webp"
     },
@@ -806,6 +860,7 @@ window.BUNCHES_PRODUCTS = [
         color: "peach",
         category: "bright",
         price: 42,
+        stems: [40, 80],
         description: "Coral pink with a peach centre",
         image: "assets/products/optimized/MissPiggy.webp"
     },
@@ -824,6 +879,7 @@ window.BUNCHES_PRODUCTS = [
         color: "white",
         category: "event",
         price: 95,
+        stems: [40, 60],
         description: "Classic creamy white",
         image: "assets/products/optimized/Mondial-C.webp"
     },
@@ -833,6 +889,7 @@ window.BUNCHES_PRODUCTS = [
         color: "purple",
         category: "romantic",
         price: 58,
+        stems: [50, 80],
         description: "Lilac with vivid magenta edges",
         image: "assets/products/optimized/MoodyBlues.webp"
     },
@@ -842,6 +899,7 @@ window.BUNCHES_PRODUCTS = [
         color: "white",
         category: "bright",
         price: 55,
+        stems: [50, 80],
         description: "Pure snow white",
         image: "assets/products/optimized/MOONSTONE.webp"
     },
@@ -851,6 +909,7 @@ window.BUNCHES_PRODUCTS = [
         color: "bicolor",
         category: "minimal",
         price: 44,
+        stems: [40, 70],
         description: "Orange-yellow edged in hot red",
         image: "assets/products/optimized/NewFlash-1.webp"
     },
@@ -869,6 +928,7 @@ window.BUNCHES_PRODUCTS = [
         color: "orange",
         category: "event",
         price: 120,
+        stems: [50, 60],
         description: "Vivid pure orange",
         image: "assets/products/optimized/OrangeOnly.webp"
     },
@@ -878,6 +938,7 @@ window.BUNCHES_PRODUCTS = [
         color: "bicolor",
         category: "romantic",
         price: 65,
+        stems: [40, 60],
         description: "Cream centre with cerise edges",
         image: "assets/products/optimized/Paloma-C.webp"
     },
@@ -887,6 +948,7 @@ window.BUNCHES_PRODUCTS = [
         color: "peach",
         category: "bright",
         price: 42,
+        stems: [40, 70],
         description: "Creamy peach",
         image: "assets/products/optimized/PEACH-AVALANCH.webp"
     },
@@ -896,6 +958,7 @@ window.BUNCHES_PRODUCTS = [
         color: "pink",
         category: "minimal",
         price: 48,
+        stems: [40, 70],
         description: "Vivid hot pink",
         image: "assets/products/optimized/Pink_Floyd_3.webp"
     },
@@ -905,6 +968,7 @@ window.BUNCHES_PRODUCTS = [
         color: "pink",
         category: "event",
         price: 95,
+        stems: [40, 70],
         description: "Pale blush pink",
         image: "assets/products/optimized/Pink_Mondial-C.webp"
     },
@@ -914,6 +978,7 @@ window.BUNCHES_PRODUCTS = [
         color: "peach",
         category: "romantic",
         price: 58,
+        stems: [50, 70],
         description: "Dusty peach with a beige glow",
         image: "assets/products/optimized/PINK-AMARETTO.webp"
     },
@@ -932,6 +997,7 @@ window.BUNCHES_PRODUCTS = [
         color: "pink",
         category: "minimal",
         price: 44,
+        stems: [50, 70],
         description: "Bright rose pink with ruffled petals",
         image: "assets/products/optimized/PinkXpression.webp"
     },
@@ -941,6 +1007,7 @@ window.BUNCHES_PRODUCTS = [
         color: "white",
         category: "event",
         price: 120,
+        stems: [40, 70],
         description: "Crisp white with an ivory heart",
         image: "assets/products/optimized/Playa_Blanca.webp"
     },
@@ -959,6 +1026,7 @@ window.BUNCHES_PRODUCTS = [
         color: "peach",
         category: "romantic",
         price: 65,
+        stems: [40, 60],
         description: "Soft apricot with ruffled petals",
         image: "assets/products/optimized/princess-crown-2 copy.webp"
     },
@@ -986,6 +1054,7 @@ window.BUNCHES_PRODUCTS = [
         color: "red",
         category: "event",
         price: 95,
+        stems: [60, 80],
         description: "Dark velvet red",
         image: "assets/products/optimized/Redvolution_Red_SingleSt_X.webp"
     },
@@ -995,6 +1064,7 @@ window.BUNCHES_PRODUCTS = [
         color: "pink",
         category: "romantic",
         price: 58,
+        stems: [40, 80],
         description: "Peach heart with lilac-pink edges",
         image: "assets/products/optimized/RHOSLYN.webp"
     },
@@ -1004,6 +1074,7 @@ window.BUNCHES_PRODUCTS = [
         color: "green",
         category: "bright",
         price: 55,
+        stems: [50, 60],
         description: "Blush centre with olive-green edges",
         image: "assets/products/optimized/SALMA.webp"
     },
@@ -1013,6 +1084,7 @@ window.BUNCHES_PRODUCTS = [
         color: "lavender",
         category: "minimal",
         price: 44,
+        stems: [50, 60],
         description: "Pale lilac lavender",
         image: "assets/products/optimized/Secret Garden.webp"
     },
@@ -1022,6 +1094,7 @@ window.BUNCHES_PRODUCTS = [
         color: "peach",
         category: "event",
         price: 120,
+        stems: [50, 90],
         description: "Peach with coral-pink edges",
         image: "assets/products/optimized/Shimmer-1.webp"
     },
@@ -1031,6 +1104,7 @@ window.BUNCHES_PRODUCTS = [
         color: "bicolor",
         category: "event",
         price: 120,
+        stems: [40, 60],
         description: "Golden orange edged in red",
         image: "assets/products/optimized/Silantoi-C.webp"
     },
@@ -1058,6 +1132,7 @@ window.BUNCHES_PRODUCTS = [
         color: "pink",
         category: "minimal",
         price: 48,
+        stems: [40, 70],
         description: "Rose pink fading to cream-green edges",
         image: "assets/products/optimized/Swan.webp"
     },
@@ -1067,6 +1142,7 @@ window.BUNCHES_PRODUCTS = [
         color: "pink",
         category: "event",
         price: 95,
+        stems: [50, 70],
         description: "Soft pink with cream-green edges",
         image: "assets/products/optimized/SweetAvalance2.webp"
     },
@@ -1076,6 +1152,7 @@ window.BUNCHES_PRODUCTS = [
         color: "pink",
         category: "romantic",
         price: 58,
+        stems: [50, 80],
         description: "Pale blush with a peach heart",
         image: "assets/products/optimized/SweetBeat_SingleSt_X.webp"
     },
@@ -1094,6 +1171,7 @@ window.BUNCHES_PRODUCTS = [
         color: "pink",
         category: "minimal",
         price: 44,
+        stems: [40, 70],
         description: "Vivid bubblegum pink",
         image: "assets/products/optimized/SweetMemory.webp"
     },
@@ -1121,6 +1199,7 @@ window.BUNCHES_PRODUCTS = [
         color: "peach",
         category: "romantic",
         price: 65,
+        stems: [50, 70],
         description: "Apricot heart with blush-pink edges",
         image: "assets/products/optimized/TieDyeRose06.webp"
     },
@@ -1130,6 +1209,7 @@ window.BUNCHES_PRODUCTS = [
         color: "peach",
         category: "bright",
         price: 42,
+        stems: [40, 60],
         description: "Peach with rosy-pink edges",
         image: "assets/products/optimized/Twilight.webp"
     },
@@ -1148,6 +1228,7 @@ window.BUNCHES_PRODUCTS = [
         color: "white",
         category: "event",
         price: 95,
+        stems: [40, 60],
         description: "Ivory with a warm cream centre",
         image: "assets/products/optimized/vicky-gardens.webp"
     },
@@ -1157,6 +1238,7 @@ window.BUNCHES_PRODUCTS = [
         color: "pink",
         category: "romantic",
         price: 58,
+        stems: [50, 60],
         description: "Vivid fuchsia pink",
         image: "assets/products/optimized/VIPink.webp"
     },
@@ -1166,6 +1248,7 @@ window.BUNCHES_PRODUCTS = [
         color: "bicolor",
         category: "bright",
         price: 55,
+        stems: [40, 60],
         description: "Apricot cream with pink-tipped edges",
         image: "assets/products/optimized/WILD CROWN.webp"
     }

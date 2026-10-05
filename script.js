@@ -1,8 +1,9 @@
 // Product data lives in products-data.js and is loaded only on pages that need it.
 const FALLBACK_PRODUCT_IMAGE = "assets/flower-card.svg";
 const PRODUCTS_PER_PAGE = 20;
-// Stem lengths offered for every rose (the options on product-detail.html)
-const ROSE_STEM_LENGTHS = "40–70 cm";
+// Stem lengths come from each rose's "stems: [min, max]" in products-data.js (taken from the grower's
+// catalogue). Roses without it fall back to this range.
+const DEFAULT_ROSE_STEMS = [40, 70];
 const CART_STORAGE_KEY = "bunchesDirectCart";
 const ORDER_DETAILS_STORAGE_KEY = "bunchesDirectOrderDetails";
 const CHECKOUT_SESSION_ENDPOINT = "/api/create-checkout-session";
@@ -954,12 +955,40 @@ function productCardHtml(product, index, extraClass = "", style = "") {
                 <div class="rose-card-footer">
                     <div>
                         <span class="rose-card-label">Stem length</span>
-                        <span class="rose-card-stem">${ROSE_STEM_LENGTHS}</span>
+                        <span class="rose-card-stem">${formatStemRange(product)}</span>
                     </div>
                     <span class="rose-card-arrow" aria-hidden="true">&rarr;</span>
                 </div>
             </a>
         `;
+}
+
+function getRoseStems(product) {
+    const stems = product && Array.isArray(product.stems) ? product.stems : DEFAULT_ROSE_STEMS;
+    return [Number(stems[0]), Number(stems[1])];
+}
+
+// [40, 60] -> "40–60 cm"
+function formatStemRange(product) {
+    const [min, max] = getRoseStems(product);
+    return min === max ? `${min} cm` : `${min}–${max} cm`;
+}
+
+// Fills the stem length dropdown with this rose's lengths in 10 cm steps, keeping 60 cm as the
+// default when the rose comes in it (otherwise the length closest to 60 cm)
+function renderStemLengthOptions(product) {
+    if (!dom.stemLengthSelect) {
+        return;
+    }
+    const [min, max] = getRoseStems(product);
+    const lengths = [];
+    for (let length = min; length <= max; length += 10) {
+        lengths.push(length);
+    }
+    const preferred = lengths.reduce((best, length) => (Math.abs(length - 60) < Math.abs(best - 60) ? length : best), lengths[0]);
+    dom.stemLengthSelect.innerHTML = lengths
+        .map((length) => `<option value="${length}" ${length === preferred ? "selected" : ""}>${length} cm</option>`)
+        .join("");
 }
 
 // "Load More Roses": keep the cards already on screen and add only the next batch,
@@ -1036,6 +1065,7 @@ function renderProductDetail(product, index) {
     dom.detailImage.alt = `${product.name} rose`;
     dom.detailName.textContent = product.name;
     document.title = `${product.name} | Bunches Direct`;
+    renderStemLengthOptions(product);
 
     // Warm the cache for adjacent roses so Next/Previous feels instant.
     preloadImage(previousProduct && previousProduct.image);
@@ -1927,7 +1957,7 @@ function setAvailabilityUploadMessage(message, isError) {
 //   order-response.html?id=…&token=…&choice=accept|decline the client answers the office's changes
 // The token in the link is what gives access; the server checks it on every request.
 const ORDER_BOX_TYPES = ["Q-Box", "H-Box"];
-const ORDER_STEM_LENGTHS = [40, 50, 60, 70];
+const ORDER_STEM_LENGTHS = [40, 50, 60, 70, 80, 90];
 
 function escapeHtml(value) {
     return String(value ?? "")
