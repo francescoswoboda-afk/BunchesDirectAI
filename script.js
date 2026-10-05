@@ -236,6 +236,7 @@ function init() {
     initRoseCardMorph();
     initRosePageEntrance();
     initCertificationCarousel();
+    initContactForm();
     initProductDetailPage();
     initCartPage();
     initOrderDetailsPage();
@@ -816,6 +817,72 @@ function initCertificationCarousel() {
     box.addEventListener("focusout", start);
     document.addEventListener("visibilitychange", () => (document.hidden ? stop() : start()));
     start();
+}
+
+// "Get in Touch" form: sent through our own server (same email service as orders) and the result
+// is shown inside the form. If the server can't send email, it falls back to the old FormSubmit
+// address in the form's action, so no message is lost.
+function initContactForm() {
+    const form = document.getElementById("contactForm");
+    if (!form) {
+        return;
+    }
+
+    const status = document.getElementById("contactMessage");
+    const button = form.querySelector(".ct-submit");
+    const setStatus = (text, kind) => {
+        if (status) {
+            status.textContent = text;
+            status.dataset.kind = kind || "";
+        }
+    };
+
+    form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        if (!form.reportValidity()) {
+            return;
+        }
+
+        const data = new FormData(form);
+        const payload = {
+            companyName: String(data.get("companyName") || ""),
+            companyEmail: String(data.get("companyEmail") || ""),
+            companyPhone: String(data.get("companyPhone") || ""),
+            message: String(data.get("message") || ""),
+            privacyConsent: data.get("privacyConsent") === "on",
+            website: String(data.get("website") || "")
+        };
+
+        const label = button.textContent;
+        button.disabled = true;
+        button.textContent = "Sending…";
+        setStatus("");
+
+        try {
+            const response = await fetch("/api/contact", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+            const result = await response.json().catch(() => ({}));
+
+            if (response.status === 503 && result.code === "EMAIL_NOT_CONFIGURED") {
+                HTMLFormElement.prototype.submit.call(form);
+                return;
+            }
+            if (!response.ok) {
+                throw new Error(result.error || "Something went wrong. Please try again.");
+            }
+
+            form.reset();
+            setStatus("Thank you! Your message has been sent. We'll get back to you shortly.", "success");
+        } catch (error) {
+            setStatus(error instanceof Error ? error.message : "Something went wrong. Please try again.", "error");
+        } finally {
+            button.disabled = false;
+            button.textContent = label;
+        }
+    });
 }
 
 // The products grid lives at "/" (old links to /products.html redirect there)

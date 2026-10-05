@@ -230,36 +230,27 @@ app.post("/api/place-order", async (req, res) => {
     const text = `A new order has been placed by ${company}.\n\nDelivery date: ${deliveryDetails.deliveryDate || "-"}\n\nSee the attached Excel file for full details.`;
     const safeCompanyForFilename = company.replace(/\s+/g, "-") || "company";
     const attachmentFilename = `order-${safeCompanyForFilename}-${Date.now()}.xlsx`;
-    const smtpUser = String(process.env.SMTP_USER || "").trim();
-    const smtpPass = String(process.env.SMTP_PASS || "").trim();
-    if (!smtpUser || !smtpPass || smtpPass.toLowerCase().includes("your_app_password")) {
+    const mailer = getMailer();
+    if (!mailer) {
       return res.status(500).json({
-        error: "SMTP is not configured. Set SMTP_USER and SMTP_PASS in .env."
+        error: "Email is not configured on the server. Set BREVO_API_KEY (or SMTP_USER and SMTP_PASS)."
       });
     }
 
-    const transporter = createSmtpTransport({
-      smtpUser,
-      smtpPass,
-      smtpHost: String(process.env.SMTP_HOST || "smtp.gmail.com").trim(),
-      smtpPort: Number(process.env.SMTP_PORT) || 465,
-      smtpSecure: String(process.env.SMTP_SECURE || "true") !== "false"
-    });
-
-    await sendOrderViaSmtp({
-      transporter,
-      smtpUser,
+    await mailer.send({
       to: orderEmail,
+      replyTo: isValidEmail(deliveryDetails.companyEmail) ? deliveryDetails.companyEmail : undefined,
       subject,
       text,
-      fileName: attachmentFilename,
-      fileBuffer: buffer,
-      replyTo: isValidEmail(deliveryDetails.companyEmail) ? deliveryDetails.companyEmail : undefined
+      attachments: [{
+        filename: attachmentFilename,
+        content: buffer,
+        contentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      }]
     });
 
     await sendClientConfirmationEmail({
-      transporter,
-      smtpUser,
+      mailer,
       clientEmail: deliveryDetails.companyEmail,
       orderEmail,
       company,
@@ -269,14 +260,66 @@ app.post("/api/place-order", async (req, res) => {
 
     return res.json({ ok: true });
   } catch (err) {
-    if (isSmtpAuthError(err)) {
-      return res.status(500).json({
-        error: "SMTP login failed. Check SMTP_USER and generate a fresh Gmail App Password for SMTP_PASS."
-      });
+    console.error("Order email failed:", err);
+    return res.status(500).json({ error: describeEmailError(err, "Failed to place order.") });
+  }
+});
+
+// Contact form ("Get in Touch"): sent through the same mailer as orders.
+// "website" is a hidden field people never see; bots that fill it in are quietly ignored.
+const contactRateLimit = new Map();
+app.post("/api/contact", async (req, res) => {
+  try {
+    const { companyName, companyEmail, companyPhone, message, privacyConsent, website } = req.body || {};
+    if (website) {
+      return res.json({ ok: true });
     }
 
-    const message = err instanceof Error ? err.message : "Failed to place order.";
-    return res.status(500).json({ error: message });
+    const ip = String(req.headers["fly-client-ip"] || req.ip || "");
+    const now = Date.now();
+    const recent = (contactRateLimit.get(ip) || []).filter((time) => now - time < 10 * 60 * 1000);
+    if (recent.length >= 5) {
+      return res.status(429).json({ error: "Too many messages in a short time. Please try again in a few minutes." });
+    }
+
+    if (!String(companyName || "").trim() || !isValidEmail(companyEmail) || !String(message || "").trim()) {
+      return res.status(400).json({ error: "Please fill in your company name, a valid email and a message." });
+    }
+    if (privacyConsent !== true) {
+      return res.status(400).json({ error: "Please confirm you have read the Privacy Policy and Terms & Conditions." });
+    }
+
+    const mailer = getMailer();
+    if (!mailer) {
+      return res.status(503).json({ error: "Email is not configured on the server.", code: "EMAIL_NOT_CONFIGURED" });
+    }
+
+    const clean = (value, max) => String(value || "").trim().slice(0, max);
+    const name = clean(companyName, 200);
+    const text = [
+      `New contact request from the Bunches Direct website`,
+      ``,
+      `Company: ${name}`,
+      `Email: ${clean(companyEmail, 200)}`,
+      `Phone / WhatsApp: ${clean(companyPhone, 60) || "-"}`,
+      ``,
+      `Message:`,
+      clean(message, 5000)
+    ].join("\n");
+
+    await mailer.send({
+      to: orderEmail,
+      replyTo: clean(companyEmail, 200),
+      subject: `New contact request - ${name}`,
+      text
+    });
+
+    recent.push(now);
+    contactRateLimit.set(ip, recent);
+    return res.json({ ok: true });
+  } catch (err) {
+    console.error("Contact email failed:", err);
+    return res.status(500).json({ error: describeEmailError(err, "Could not send your message.") });
   }
 });
 
@@ -556,6 +599,111 @@ function extractViesErrorMessage(payload) {
   return "";
 }
 
+// ----- Sending email -----
+// Uses Brevo (an email-sending service) when BREVO_API_KEY is set: an API key doesn't expire when a
+// Gmail password changes. Without it, falls back to SMTP (Gmail App Password) as before.
+// Every email goes through mailer.send({ to, bcc, replyTo, subject, text, html, attachments }).
+const EMAIL_FROM = String(process.env.EMAIL_FROM || "orders@bunches-direct.com").trim();
+const EMAIL_FROM_NAME = String(process.env.EMAIL_FROM_NAME || "Bunches Direct").trim();
+const PUBLIC_SITE_URL = String(process.env.PUBLIC_SITE_URL || "https://bunches-direct.com").replace(/\/+$/, "");
+
+function getMailer() {
+  const brevoKey = String(process.env.BREVO_API_KEY || "").trim();
+  if (brevoKey) {
+    return { provider: "brevo", send: (message) => sendViaBrevo(brevoKey, message) };
+  }
+
+  const smtpUser = String(process.env.SMTP_USER || "").trim();
+  const smtpPass = String(process.env.SMTP_PASS || "").trim();
+  if (smtpUser && smtpPass && !smtpPass.toLowerCase().includes("your_app_password")) {
+    const transporter = createSmtpTransport({
+      smtpUser,
+      smtpPass,
+      smtpHost: String(process.env.SMTP_HOST || "smtp.gmail.com").trim(),
+      smtpPort: Number(process.env.SMTP_PORT) || 465,
+      smtpSecure: String(process.env.SMTP_SECURE || "true") !== "false"
+    });
+    return {
+      provider: "smtp",
+      send: (message) => transporter.sendMail({
+        from: `"${EMAIL_FROM_NAME}" <${smtpUser}>`,
+        to: message.to,
+        bcc: message.bcc,
+        replyTo: message.replyTo,
+        subject: message.subject,
+        text: message.text,
+        html: message.html,
+        attachments: (message.attachments || []).map((file) => ({
+          filename: file.filename,
+          content: file.content,
+          path: file.path,
+          contentType: file.contentType,
+          cid: file.cid
+        }))
+      })
+    };
+  }
+
+  return null;
+}
+
+async function sendViaBrevo(apiKey, message) {
+  const toList = (value) => (value ? [].concat(value).map((email) => ({ email })) : undefined);
+
+  // Brevo can't embed images by content-id, so the logo is linked from the website instead
+  let html = message.html;
+  const attachments = [];
+  for (const file of message.attachments || []) {
+    if (file.cid) {
+      html = html && html.split(`cid:${file.cid}`).join(`${PUBLIC_SITE_URL}/assets/email-logo.png`);
+      continue;
+    }
+    const content = file.content ? Buffer.from(file.content) : fs.readFileSync(file.path);
+    attachments.push({ name: file.filename, content: content.toString("base64") });
+  }
+
+  const response = await fetch("https://api.brevo.com/v3/smtp/email", {
+    method: "POST",
+    headers: { "api-key": apiKey, "content-type": "application/json", accept: "application/json" },
+    body: JSON.stringify({
+      sender: { name: EMAIL_FROM_NAME, email: EMAIL_FROM },
+      to: toList(message.to),
+      bcc: toList(message.bcc),
+      replyTo: message.replyTo ? { email: message.replyTo } : undefined,
+      subject: message.subject,
+      textContent: message.text,
+      htmlContent: html,
+      attachment: attachments.length ? attachments : undefined
+    }),
+    signal: AbortSignal.timeout(20000)
+  });
+
+  if (!response.ok) {
+    const body = await response.json().catch(() => ({}));
+    const error = new Error(body.message || `Brevo returned ${response.status}`);
+    error.provider = "brevo";
+    error.status = response.status;
+    throw error;
+  }
+}
+
+// Turns a sending failure into a message that says what to fix
+function describeEmailError(error, fallback) {
+  if (error && error.provider === "brevo") {
+    if (error.status === 401) {
+      return "The email service rejected the API key. Check BREVO_API_KEY on the server.";
+    }
+    if (/sender/i.test(error.message)) {
+      return `The email service doesn't accept ${EMAIL_FROM} as sender yet. Verify the domain in Brevo.`;
+    }
+    return `The email service could not send the email (${error.message}).`;
+  }
+  if (isSmtpAuthError(error)) {
+    return "SMTP login failed. Check SMTP_USER and generate a fresh Gmail App Password for SMTP_PASS.";
+  }
+  return error instanceof Error ? error.message : fallback;
+}
+
 function isSmtpAuthError(error) {
   if (!error || typeof error !== "object") {
     return false;
@@ -593,61 +741,21 @@ function createSmtpTransport({
   });
 }
 
-async function sendOrderViaSmtp({
-  transporter,
-  smtpUser,
-  to,
-  subject,
-  text,
-  fileName,
-  fileBuffer,
-  replyTo
-}) {
-  await transporter.sendMail({
-    from: `"Bunches Direct Orders" <${smtpUser}>`,
-    to,
-    replyTo,
-    subject,
-    text,
-    attachments: [{
-      filename: fileName,
-      content: fileBuffer,
-      contentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-    }]
-  });
-}
-
 async function sendClientConfirmationEmail({
-  transporter,
-  smtpUser,
+  mailer,
   clientEmail,
   orderEmail,
   company,
   cartItems,
   deliveryDetails
 }) {
-  const subject = `Bunches Direct order confirmation for ${company}`;
-  const text = buildClientConfirmationText({
-    company,
-    cartItems,
-    deliveryDetails,
-    orderEmail
-  });
-  const html = buildClientConfirmationHtml({
-    company,
-    cartItems,
-    deliveryDetails,
-    orderEmail
-  });
-
-  await transporter.sendMail({
-    from: `"Bunches Direct Orders" <${smtpUser}>`,
+  await mailer.send({
     to: clientEmail,
     bcc: orderEmail,
     replyTo: orderEmail,
-    subject,
-    text,
-    html,
+    subject: `Bunches Direct order confirmation for ${company}`,
+    text: buildClientConfirmationText({ company, cartItems, deliveryDetails, orderEmail }),
+    html: buildClientConfirmationHtml({ company, cartItems, deliveryDetails, orderEmail }),
     attachments: [{
       filename: "bunches-direct-logo.png",
       path: path.join(__dirname, "assets", "email-logo.png"),

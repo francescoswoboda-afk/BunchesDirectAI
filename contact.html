@@ -72,6 +72,11 @@
         <form id="contactForm" class="ct-card" action="https://formsubmit.co/es@bunches-direct.com" method="POST">
           <input type="hidden" name="_subject" value="New contact request from Bunches Direct website">
           <input type="hidden" name="_captcha" value="false">
+          <!-- left empty by people (it's hidden); bots that fill it in are ignored -->
+          <div class="ct-hp" aria-hidden="true">
+            <label for="contactWebsite">Website</label>
+            <input id="contactWebsite" name="website" type="text" tabindex="-1" autocomplete="off">
+          </div>
 
           <div class="ct-field">
             <label for="companyName">Company name</label>
@@ -99,6 +104,7 @@
             <span>I have read the <a href="privacy-policy.html" target="_blank" rel="noopener">Privacy Policy</a> and <a href="terms-and-conditions.html" target="_blank" rel="noopener">Terms &amp; Conditions</a>.</span>
           </label>
 
+          <p id="contactMessage" class="ct-message" role="status"></p>
           <button class="ct-submit" type="submit">Send Request</button>
         </form>
       </div>

@@ -6557,3 +6557,31 @@ body[data-page="products"] .products-corner-image {
     filter: none;
   }
 }
+
+/* Contact form: hidden anti-spam field and the sent / error message */
+.ct-hp {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.ct-message {
+  margin: 0;
+  font-size: var(--fs-small);
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.ct-message:empty {
+  display: none;
+}
+
+.ct-message[data-kind="success"] {
+  color: #2f6b3a;
+}
+
+.ct-message[data-kind="error"] {
+  color: #b5070d;
+}
