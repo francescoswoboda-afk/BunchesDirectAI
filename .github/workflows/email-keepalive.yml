@@ -1,0 +1,27 @@
+# Once a week, check that the website can still send email through Brevo.
+# This also counts as using the Brevo API key, so it never expires for being idle (90 days).
+# If the check fails, GitHub emails the repository owner about the failed workflow.
+name: Email keep-alive
+
+on:
+  schedule:
+    - cron: "17 7 * * 1"   # every Monday at 07:17 UTC
+  workflow_dispatch:         # allows running it by hand from the Actions tab
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check the email service through the live site
+        run: |
+          # the site may be asleep (Fly stops idle machines), so allow time for it to start
+          for attempt in 1 2 3; do
+            body=$(curl -s -m 60 -w '\n%{http_code}' https://bunches-direct.com/api/email-health) && break
+            sleep 20
+          done
+          code=$(echo "$body" | tail -n1)
+          echo "$body" | head -n1
+          if [ "$code" != "200" ]; then
+            echo "::error::Website email check failed (HTTP $code). Orders and contact messages may not be sent. Check BREVO_API_KEY on Fly."
+            exit 1
+          fi

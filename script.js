@@ -9,12 +9,12 @@ const CHECKOUT_SESSION_ENDPOINT = "/api/create-checkout-session";
 const COOKIE_CONSENT_STORAGE_KEY = "bunchesDirectCookieConsent";
 
 // The company's legal details. Fill these in and they appear on the legal pages and the contact page
-// (Dutch/EU law requires the legal name, address, KvK number and VAT number on a business website).
+// (German law requires these in the Impressum: legal name, address, commercial register entry and VAT ID).
 // Empty fields are simply left out.
 const COMPANY_DETAILS = {
-    legalName: "",  // e.g. "Bunches Direct B.V."
+    legalName: "Bunches Direct Blumenimport GmbH",
     address: "",    // e.g. "Prunus 12, 1424 LD De Kwakel, the Netherlands"
-    kvk: "",        // Chamber of Commerce (KvK) number
+    register: "",   // commercial register entry, e.g. "HRB 12345, Amtsgericht München"
     vat: ""         // VAT number, e.g. "NL123456789B01"
 };
 const AVAILABILITY_ENDPOINT = "/api/availability";
@@ -820,8 +820,7 @@ function initCertificationCarousel() {
 }
 
 // "Get in Touch" form: sent through our own server (same email service as orders) and the result
-// is shown inside the form. If the server can't send email, it falls back to the old FormSubmit
-// address in the form's action, so no message is lost.
+// is shown inside the form.
 function initContactForm() {
     const form = document.getElementById("contactForm");
     if (!form) {
@@ -866,10 +865,6 @@ function initContactForm() {
             });
             const result = await response.json().catch(() => ({}));
 
-            if (response.status === 503 && result.code === "EMAIL_NOT_CONFIGURED") {
-                HTMLFormElement.prototype.submit.call(form);
-                return;
-            }
             if (!response.ok) {
                 throw new Error(result.error || "Something went wrong. Please try again.");
             }
@@ -1639,15 +1634,15 @@ function renderCompanyDetails() {
     const parts = [
         COMPANY_DETAILS.legalName,
         COMPANY_DETAILS.address,
-        COMPANY_DETAILS.kvk && `KvK ${COMPANY_DETAILS.kvk}`,
-        COMPANY_DETAILS.vat && `VAT ${COMPANY_DETAILS.vat}`
+        COMPANY_DETAILS.register,
+        COMPANY_DETAILS.vat && `VAT ID ${COMPANY_DETAILS.vat}`
     ].filter(Boolean);
 
-    // footer: current year, plus KvK / VAT numbers once they are filled in
+    // footer: current year, plus register / VAT numbers once they are filled in
     document.querySelectorAll("[data-year]").forEach((element) => {
         element.textContent = String(new Date().getFullYear());
     });
-    const ids = [COMPANY_DETAILS.kvk && `KvK ${COMPANY_DETAILS.kvk}`, COMPANY_DETAILS.vat && `VAT ${COMPANY_DETAILS.vat}`].filter(Boolean);
+    const ids = [COMPANY_DETAILS.register, COMPANY_DETAILS.vat && `VAT ID ${COMPANY_DETAILS.vat}`].filter(Boolean);
     document.querySelectorAll("[data-company-ids]").forEach((element) => {
         element.textContent = ids.length ? ` · ${ids.join(" · ")}` : "";
     });

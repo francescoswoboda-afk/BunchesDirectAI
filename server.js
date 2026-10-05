@@ -265,6 +265,44 @@ app.post("/api/place-order", async (req, res) => {
   }
 });
 
+// Email health check, called once a week by a GitHub workflow (.github/workflows/email-keepalive.yml).
+// It makes a harmless "who am I" call to Brevo (no email is sent): that keeps the API key from
+// expiring after 90 days without use, and the workflow fails (and GitHub emails the owner) if the
+// key stops working. The result is cached for an hour so the URL can't be used to flood Brevo.
+let emailHealthCache = { at: 0, status: 0, body: null };
+app.get("/api/email-health", async (_req, res) => {
+  if (Date.now() - emailHealthCache.at < 60 * 60 * 1000 && emailHealthCache.body) {
+    return res.status(emailHealthCache.status).json(emailHealthCache.body);
+  }
+
+  const brevoKey = String(process.env.BREVO_API_KEY || "").trim();
+  let status = 200;
+  let body;
+  if (!brevoKey) {
+    status = 503;
+    body = { ok: false, provider: getMailer() ? "smtp" : "none", error: "BREVO_API_KEY is not set" };
+  } else {
+    try {
+      const response = await fetch("https://api.brevo.com/v3/account", {
+        headers: { "api-key": brevoKey, accept: "application/json" },
+        signal: AbortSignal.timeout(15000)
+      });
+      if (response.ok) {
+        body = { ok: true, provider: "brevo" };
+      } else {
+        status = 502;
+        body = { ok: false, provider: "brevo", error: `Brevo answered ${response.status}` };
+      }
+    } catch (error) {
+      status = 502;
+      body = { ok: false, provider: "brevo", error: "Could not reach Brevo" };
+    }
+  }
+
+  emailHealthCache = { at: Date.now(), status, body };
+  return res.status(status).json(body);
+});
+
 // Contact form ("Get in Touch"): sent through the same mailer as orders.
 // "website" is a hidden field people never see; bots that fill it in are quietly ignored.
 const contactRateLimit = new Map();
