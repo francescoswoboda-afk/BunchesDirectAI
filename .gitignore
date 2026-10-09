@@ -2,3 +2,8 @@
 .env.*
 !.env.example
 .orders
+
+# Original rose photos (source files; the site uses the converted ones in assets/products/optimized)
+assets/products/new/
+assets/products/grey background/
+.DS_Store

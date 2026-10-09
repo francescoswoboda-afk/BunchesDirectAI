@@ -5,3 +5,5 @@ node_modules
 .git
 .DS_Store
 .orders
+assets/products/new/
+assets/products/grey background/
