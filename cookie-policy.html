@@ -52,23 +52,27 @@
     <section class="section-pad page-hero legal-hero">
       <div class="container narrow">
         <p class="home-kicker legal-kicker">Legal</p>
-        <h1 class="legal-display">Cookie <span>Policy</span></h1>
+        <h1 class="legal-display" data-i18n-html="cookies.title">Cookie <span>Policy</span></h1>
         <p class="lead">What Bunches Direct stores on your device, and why.</p>
-        <p class="legal-updated">Last updated: 5 October 2026</p>
+        <p class="legal-updated" data-date="2026-10-16">Last updated: 16 October 2026</p>
       </div>
     </section>
 
     <section class="section-pad legal-content">
       <div class="container legal-layout">
+        <p class="legal-note" data-legal-note hidden></p>
+        <div data-legal-lang="en" data-i18n-skip>
         <article class="legal-card">
           <h2>The Short Version</h2>
           <p>Bunches Direct does not use tracking, analytics or advertising cookies. The only thing we store on your device is what the shop needs to work, so we do not need to ask for your consent.</p>
           <h2>What We Store in Your Browser</h2>
-          <p>We use your browser&rsquo;s local storage (not cookies) for three things:</p>
+          <p>We use your browser&rsquo;s local storage (not cookies) for:</p>
           <ul>
             <li><strong>bunchesDirectCart</strong> &ndash; the roses and boxes in your cart.</li>
             <li><strong>bunchesDirectOrderDetails</strong> &ndash; the delivery details you enter, so you don&rsquo;t lose them while moving through checkout.</li>
+            <li><strong>bunchesDirectLanguage</strong> &ndash; the language you chose for the website.</li>
             <li><strong>bunchesDirectCookieConsent</strong> &ndash; remembers that you closed the cookie notice.</li>
+            <li><strong>bunchesDirectProductsView</strong> (only until you close the tab) &ndash; remembers your place in the rose list, so you return to the same spot after opening a rose.</li>
           </ul>
           <p>This information stays on your device. It is only sent to us when you place an order or send the contact form.</p>
           <h2>Fonts and Other Files</h2>
@@ -80,6 +84,31 @@
           <h2>Changes</h2>
           <p>If we ever add other cookies or tools, we will update this page and, where required, ask for your consent first.</p>
         </article>
+        </div>
+        <div data-legal-lang="de" lang="de" data-i18n-skip hidden>
+        <article class="legal-card">
+          <h2>Das Wichtigste in Kürze</h2>
+          <p>Bunches Direct verwendet keine Tracking-, Analyse- oder Werbe-Cookies. Auf Ihrem Gerät speichern wir nur, was der Shop zum Funktionieren braucht; dafür ist keine Einwilligung erforderlich (&sect; 25 Abs. 2 Nr. 2 TDDDG).</p>
+          <h2>Was wir in Ihrem Browser speichern</h2>
+          <p>Wir nutzen den lokalen Speicher Ihres Browsers (keine Cookies) für:</p>
+          <ul>
+            <li><strong>bunchesDirectCart</strong> &ndash; die Rosen und Boxen in Ihrem Warenkorb.</li>
+            <li><strong>bunchesDirectOrderDetails</strong> &ndash; die eingegebenen Lieferdaten, damit sie beim Bestellen nicht verloren gehen.</li>
+            <li><strong>bunchesDirectLanguage</strong> &ndash; die Sprache, die Sie für die Website gewählt haben.</li>
+            <li><strong>bunchesDirectCookieConsent</strong> &ndash; merkt sich, dass Sie den Cookie-Hinweis geschlossen haben.</li>
+            <li><strong>bunchesDirectProductsView</strong> (nur bis zum Schließen des Tabs) &ndash; merkt sich Ihre Position in der Rosenübersicht, damit Sie nach dem Öffnen einer Rose an dieselbe Stelle zurückkehren.</li>
+          </ul>
+          <p>Diese Informationen bleiben auf Ihrem Gerät. Sie werden nur an uns gesendet, wenn Sie eine Bestellung oder das Kontaktformular absenden.</p>
+          <h2>Schriften und andere Dateien</h2>
+          <p>Unsere Schriften und Bilder werden von unserer eigenen Website geladen; beim Aufruf einer Seite wird also keine Verbindung zu Google oder anderen Drittanbietern hergestellt.</p>
+          <h2>Dienste Dritter</h2>
+          <p>Wenn Sie mit Karte bezahlen, werden Sie auf die sichere Zahlungsseite von Stripe weitergeleitet, die nach der Cookie-Richtlinie von Stripe eigene Cookies setzen kann. Das Kontaktformular wird über unsere eigene Website versendet und setzt keine Cookies.</p>
+          <h2>Gespeicherte Daten entfernen</h2>
+          <p>Sie können diese Daten jederzeit löschen, indem Sie in Ihrem Browser die Website-Daten für bunches-direct.com entfernen. Ihr Warenkorb und Ihre gespeicherten Lieferdaten werden dann geleert.</p>
+          <h2>Änderungen</h2>
+          <p>Sollten wir künftig weitere Cookies oder Werkzeuge einsetzen, passen wir diese Seite an und holen, wo erforderlich, vorher Ihre Einwilligung ein.</p>
+        </article>
+        </div>
       </div>
     </section>
   </main>
@@ -106,6 +135,7 @@
     </div>
   </footer>
 
+  <script src="site-i18n.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

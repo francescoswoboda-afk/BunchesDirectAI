@@ -1,5 +1,7 @@
 // Product data lives in products-data.js and is loaded only on pages that need it.
 const FALLBACK_PRODUCT_IMAGE = "assets/flower-card.svg";
+const siteT = (english, values) => (window.SITE_I18N ? SITE_I18N.t(english, values) : String(english).replace(/\{(\w+)\}/g, (match, key) => (values && key in values ? values[key] : match)));
+const siteLocale = () => (window.SITE_I18N ? SITE_I18N.locale : "en-GB");
 const PRODUCTS_PER_PAGE = 20;
 // Stem lengths come from each rose's "stems: [min, max]" in products-data.js (taken from the grower's
 // catalogue). Roses without it fall back to this range.
@@ -1417,8 +1419,8 @@ function hydrateDeliveryForm() {
     // language: what they chose last time, otherwise their browser's language (if we offer it)
     const languageField = dom.deliveryForm.elements.namedItem("language");
     if (languageField) {
-        const browserLanguage = String(navigator.language || "").slice(0, 2).toLowerCase();
-        const wanted = details.language || browserLanguage;
+        const siteLanguage = window.SITE_I18N ? SITE_I18N.lang : String(navigator.language || "").slice(0, 2).toLowerCase();
+        const wanted = details.language || siteLanguage;
         if ([...languageField.options].some((option) => option.value === wanted)) {
             languageField.value = wanted;
         }
@@ -1461,12 +1463,12 @@ function getAvailableDeliveryDates() {
 
     function dateString(date) {
         const options = { month: "short", day: "numeric" };
-        return date.toLocaleDateString("en-US", options);
+        return date.toLocaleDateString(siteLocale(), options);
     }
 
     function dayName(date) {
         const options = { weekday: "long" };
-        return date.toLocaleDateString("en-US", options);
+        return date.toLocaleDateString(siteLocale(), options);
     }
 
     const available = [];
@@ -1707,6 +1709,8 @@ function renderCompanyDetails() {
     });
 }
 
+const COOKIE_BANNER_EN = 'We only store your cart, order details and language in your browser so checkout works. No tracking or advertising cookies. More in our <a href="cookie-policy.html">Cookie Policy</a>.';
+
 function initCookieConsentBanner() {
     if (!document.body) {
         return;
@@ -1730,7 +1734,7 @@ function initCookieConsentBanner() {
     banner.innerHTML = `
         <div class="cookie-banner-inner">
             <p class="cookie-banner-title">Cookies</p>
-            <p class="cookie-banner-copy">We only store your cart and order details in your browser so checkout works. No tracking or advertising cookies. More in our <a href="cookie-policy.html">Cookie Policy</a>.</p>
+            <p class="cookie-banner-copy">${window.SITE_I18N ? SITE_I18N.html("cookie.banner", COOKIE_BANNER_EN) : COOKIE_BANNER_EN}</p>
             <div class="cookie-banner-actions">
                 <button type="button" class="btn btn-solid" data-consent="essential">OK</button>
             </div>

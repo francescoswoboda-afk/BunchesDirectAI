@@ -7030,3 +7030,147 @@ body[data-page="products"] .products-corner-image {
       "country country country country";
   }
 }
+
+/* ===== Language switcher (top right of the header, and in the mobile menu) ===== */
+.lang-switch {
+  position: relative;
+}
+
+.lang-switch-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  height: 38px;
+  padding: 0 0.7rem;
+  border: 1px solid #e3d3d7;
+  border-radius: 999px;
+  background: #ffffff;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #1d1416;
+  cursor: pointer;
+}
+
+.lang-switch-button:hover,
+.lang-switch-button[aria-expanded="true"] {
+  border-color: #1d1416;
+}
+
+.lang-switch-chevron {
+  width: 6px;
+  height: 6px;
+  margin-top: -3px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(45deg);
+}
+
+.lang-switch-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 60;
+  min-width: 170px;
+  margin: 0;
+  padding: 0.35rem;
+  list-style: none;
+  border: 1px solid #efe1e4;
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: 0 14px 34px rgba(70, 20, 30, 0.12);
+}
+
+.lang-switch-menu[hidden] {
+  display: none;
+}
+
+.lang-switch-menu button {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.5rem 0.65rem;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  font: inherit;
+  font-size: 0.88rem;
+  color: #1d1416;
+  text-align: left;
+  cursor: pointer;
+}
+
+.lang-switch-menu button:hover {
+  background: #fff6f8;
+}
+
+.lang-switch-menu button[aria-checked="true"] {
+  font-weight: 700;
+  color: #b5070d;
+}
+
+.lang-code {
+  width: 1.6rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #6f5f62;
+}
+
+.lang-switch-menu button[aria-checked="true"] .lang-code {
+  color: #b5070d;
+}
+
+.lang-switch-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 1.4rem;
+}
+
+.lang-switch-row button {
+  min-width: 44px;
+  height: 36px;
+  border: 1px solid #e3d3d7;
+  border-radius: 999px;
+  background: #ffffff;
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #1d1416;
+  cursor: pointer;
+}
+
+.lang-switch-row button[aria-pressed="true"] {
+  border-color: #1d1416;
+  background: #1d1416;
+  color: #ffffff;
+}
+
+/* on phones the header button is smaller; the full row is in the menu */
+@media (max-width: 640px) {
+  .lang-switch-button {
+    height: 34px;
+    padding: 0 0.55rem;
+    font-size: 0.75rem;
+  }
+}
+
+.legal-note {
+  max-width: 880px;
+  margin: 0 auto 1rem;
+  padding: 0.7rem 1rem;
+  border-radius: 10px;
+  background: #ffffff;
+  border: 1px solid #efe1e4;
+  font-size: var(--fs-small, 0.8rem);
+  color: #6f5f62;
+  text-align: center;
+}
+
+[data-legal-lang][hidden],
+.legal-note[hidden] {
+  display: none;
+}

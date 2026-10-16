@@ -54,7 +54,7 @@
     <section class="dp checkout-content">
       <div class="container">
         <a class="dp-back" href="cart.html"><span aria-hidden="true">&larr;</span> Back to cart</a>
-        <h1 class="dp-title">Delivery <span>Details</span></h1>
+        <h1 class="dp-title" data-i18n-html="delivery.title">Delivery <span>Details</span></h1>
         <p class="dp-lead">Confirm selected products and complete your company and delivery information.</p>
 
         <div class="dp-layout">
@@ -186,11 +186,11 @@
 
             <label class="dp-check" for="privacyConsentField">
               <input id="privacyConsentField" name="privacyConsent" type="checkbox" required>
-              <span>I confirm I have read the <a href="privacy-policy.html" target="_blank" rel="noopener">Privacy Policy</a> and <a href="cookie-policy.html" target="_blank" rel="noopener">Cookie Policy</a>. <em>(required)</em></span>
+              <span data-i18n-html="delivery.privacy">I confirm I have read the <a href="privacy-policy.html" target="_blank" rel="noopener">Privacy Policy</a> and <a href="cookie-policy.html" target="_blank" rel="noopener">Cookie Policy</a>. <em>(required)</em></span>
             </label>
             <label class="dp-check" for="termsConsentField">
               <input id="termsConsentField" name="termsConsent" type="checkbox" required>
-              <span>I agree to the <a href="terms-and-conditions.html" target="_blank" rel="noopener">Terms &amp; Conditions</a>. <em>(required)</em></span>
+              <span data-i18n-html="delivery.terms">I agree to the <a href="terms-and-conditions.html" target="_blank" rel="noopener">Terms &amp; Conditions</a>. <em>(required)</em></span>
             </label>
 
             <p id="deliveryMessage" class="dp-message" role="alert"></p>
@@ -241,6 +241,7 @@
     </div>
   </footer>
 
+  <script src="site-i18n.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

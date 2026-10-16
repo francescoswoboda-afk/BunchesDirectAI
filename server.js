@@ -47,7 +47,10 @@ app.use(express.json({ limit: "20mb" }));
 // HTML pages are sent with a version number on the site's code files (e.g. script.js?v=1696...),
 // taken from each file's last change. Every deploy then gives browsers new addresses, so no phone
 // can keep using an old cached copy of the scripts, styles or rose list.
-const VERSIONED_ASSETS = ["script.js", "styles.css", "products-data.js", "order-i18n.js", "assets/fonts.css"];
+const VERSIONED_ASSETS = ["script.js", "styles.css", "products-data.js", "order-i18n.js", "site-i18n.js", "rose-descriptions-i18n.js", "assets/fonts.css"];
+// Hides the page for a moment while site-i18n.js translates it, so a German visitor never sees the
+// English text flash first. Shows the page anyway after 2 seconds in case the script can't load.
+const LANGUAGE_HEAD_SNIPPET = `<script>(function(){try{var l=localStorage.getItem("bunchesDirectLanguage");if(!l){var n=(navigator.language||"").slice(0,2).toLowerCase();if(["de","fr","nl","it","es"].indexOf(n)>=0)l=n}if(l&&l!=="en"){var d=document.documentElement;d.lang=l;d.classList.add("i18n-pending");setTimeout(function(){d.classList.remove("i18n-pending")},2000)}}catch(e){}})();</script><style>html.i18n-pending body{visibility:hidden}</style>`;
 function sendVersionedHtml(res, fileName) {
   const filePath = path.join(__dirname, fileName);
   let html;
@@ -65,6 +68,9 @@ function sendVersionedHtml(res, fileName) {
     }
     const escaped = asset.replace(/[.]/g, "\\.");
     html = html.replace(new RegExp(`((?:src|href)=")(/?${escaped})(")`, "g"), `$1$2?v=${version}$3`);
+  }
+  if (html.includes("site-i18n.js")) {
+    html = html.replace(/<head>/i, `<head>\n  ${LANGUAGE_HEAD_SNIPPET}`);
   }
   res.setHeader("Cache-Control", "no-cache");
   res.type("html");
