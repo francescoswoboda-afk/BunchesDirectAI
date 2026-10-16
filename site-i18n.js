@@ -33,6 +33,27 @@
         // Products page
         "Our Collection": ["Unsere Kollektion", "Notre collection", "Onze collectie", "La nostra collezione", "Nuestra colección"],
         "Our Availability": ["Unsere Verfügbarkeit", "Nos disponibilités", "Onze beschikbaarheid", "La nostra disponibilità", "Nuestra disponibilidad"],
+        "Our products": ["Unsere Produkte", "Nos produits", "Onze producten", "I nostri prodotti", "Nuestros productos"],
+        "Buy straight from our stock in Aalsmeer, or reserve fresh roses from Ecuador for one of the next arrivals.": [
+            "Kaufen Sie direkt aus unserem Lager in Aalsmeer oder reservieren Sie frische Rosen aus Ecuador für eine der nächsten Lieferungen.",
+            "Achetez directement dans notre stock à Aalsmeer, ou réservez des roses fraîches d'Équateur pour l'un des prochains arrivages.",
+            "Koop direct uit onze voorraad in Aalsmeer, of reserveer verse rozen uit Ecuador voor een van de volgende zendingen.",
+            "Acquisti direttamente dal nostro stock ad Aalsmeer oppure prenoti rose fresche dall'Ecuador per uno dei prossimi arrivi.",
+            "Compre directamente de nuestro stock en Aalsmeer o reserve rosas frescas de Ecuador para una de las próximas llegadas."
+        ],
+        "Current Availability": ["Aktuelle Verfügbarkeit", "Disponibilités actuelles", "Actuele beschikbaarheid", "Disponibilità attuale", "Disponibilidad actual"],
+        "Check our real-time stock in Aalsmeer and place your order instantly.": [
+            "Sehen Sie unseren Lagerbestand in Aalsmeer in Echtzeit und bestellen Sie sofort.",
+            "Consultez notre stock à Aalsmeer en temps réel et passez commande immédiatement.",
+            "Bekijk onze actuele voorraad in Aalsmeer en bestel direct.",
+            "Consulti in tempo reale il nostro stock ad Aalsmeer e ordini subito.",
+            "Consulte nuestro stock en Aalsmeer en tiempo real y haga su pedido al instante."
+        ],
+        "Real-time stock levels": ["Lagerbestand in Echtzeit", "Stock en temps réel", "Voorraad in realtime", "Disponibilità in tempo reale", "Stock en tiempo real"],
+        "Order instantly, no waiting": ["Sofort bestellen, ohne Wartezeit", "Commande immédiate, sans attente", "Direct bestellen, zonder wachten", "Ordine immediato, senza attese", "Pedido inmediato, sin esperas"],
+        "View Availability": ["Verfügbarkeit ansehen", "Voir les disponibilités", "Beschikbaarheid bekijken", "Vedi la disponibilità", "Ver disponibilidad"],
+        "Wish Order": ["Wunschbestellung", "Commande sur réservation", "Wensbestelling", "Ordine su prenotazione", "Pedido por encargo"],
+        "Browse our roses": ["Unsere Rosen ansehen", "Découvrir nos roses", "Bekijk onze rozen", "Scopri le nostre rose", "Ver nuestras rosas"],
         "Search varieties": ["Sorten suchen", "Rechercher une variété", "Soorten zoeken", "Cerca varietà", "Buscar variedades"],
         "Colour": ["Farbe", "Couleur", "Kleur", "Colore", "Color"],
         "All": ["Alle", "Toutes", "Alle", "Tutte", "Todas"],
@@ -188,6 +209,41 @@
     const COOKIES = '<a href="cookie-policy.html" target="_blank" rel="noopener">';
     const TERMS = '<a href="terms-and-conditions.html" target="_blank" rel="noopener">';
     const HTML = {
+        "products.orderTitle": [
+            "Zwei Wege, <span>Ihre Rosen zu bestellen.</span>",
+            "Deux façons de commander <span>vos roses.</span>",
+            "Twee manieren om <span>uw rozen te bestellen.</span>",
+            "Due modi per <span>ordinare le rose.</span>",
+            "Dos formas de pedir <span>sus rosas.</span>"
+        ],
+        "products.orderStep1": [
+            "<strong>Wählen Sie Ihre Rosen</strong> aus unserem gesamten Sortiment aus Ecuador.",
+            "<strong>Choisissez vos roses</strong> dans toute notre gamme équatorienne.",
+            "<strong>Kies uw rozen</strong> uit ons volledige assortiment uit Ecuador.",
+            "<strong>Scelga le rose</strong> da tutta la nostra gamma ecuadoriana.",
+            "<strong>Elija sus rosas</strong> de toda nuestra gama ecuatoriana."
+        ],
+        "products.orderStep2": [
+            "<strong>Wählen Sie einen Ankunftstermin</strong>, einen der nächsten zwei in Amsterdam.",
+            "<strong>Choisissez une date d'arrivée</strong> parmi les deux prochaines à Amsterdam.",
+            "<strong>Kies een aankomstdatum</strong>, een van de volgende twee in Amsterdam.",
+            "<strong>Scelga una data di arrivo</strong> tra le prossime due ad Amsterdam.",
+            "<strong>Elija una fecha de llegada</strong> entre las dos próximas en Ámsterdam."
+        ],
+        "products.orderStep3": [
+            "<strong>Erhalten Sie unseren besten Preis</strong> und die Bestätigung innerhalb von 12–24 Stunden.",
+            "<strong>Recevez notre meilleur prix</strong> et la confirmation sous 12 à 24 heures.",
+            "<strong>Ontvang onze beste prijs</strong> en de bevestiging binnen 12–24 uur.",
+            "<strong>Riceva il nostro miglior prezzo</strong> e la conferma entro 12–24 ore.",
+            "<strong>Reciba nuestro mejor precio</strong> y la confirmación en 12–24 horas."
+        ],
+        "products.orderFoot": [
+            '<strong>So einfach ist das.</strong> Sie sind unsicher, was am besten passt? <a href="contact.html">Kontaktieren Sie uns</a>',
+            '<strong>C\'est aussi simple que ça.</strong> Vous hésitez entre les deux ? <a href="contact.html">Contactez-nous</a>',
+            '<strong>Zo eenvoudig is het.</strong> Twijfelt u welke u moet kiezen? <a href="contact.html">Neem contact met ons op</a>',
+            '<strong>È semplicissimo.</strong> Non sa quale scegliere? <a href="contact.html">Ci contatti</a>',
+            '<strong>Así de sencillo.</strong> ¿No sabe cuál elegir? <a href="contact.html">Contáctenos</a>'
+        ],
         "products.title": ["Die <span>Rosen</span>", "Les <span>roses</span>", "De <span>rozen</span>", "Le <span>rose</span>", "Las <span>rosas</span>"],
         "products.lead": [
             'Reservieren Sie noch heute Ihre Lieblingssorten. <br class="lead-break">Wir bestätigen die Verfügbarkeit und senden Ihnen unser bestes Angebot <br class="lead-break">für erstklassige Rosen aus dem Hochland Ecuadors.',

@@ -105,16 +105,51 @@
   </div>
 
   <main>
-    <section class="products-hero-redesign">
-      <div class="container products-hero-grid">
-        <div class="products-hero-copy">
-          <p class="products-kicker">Our Collection</p>
-          <h1 data-i18n-html="products.title">The <span>Roses</span></h1>
-          <p class="lead" data-i18n-html="products.lead">Reserve your preferred rose varieties today. <br class="lead-break">We'll confirm availability and send our best offer <br class="lead-break">on top-of-the-line roses cultivated at high altitudes in Ecuador.</p>
-          <div class="products-hero-actions">
-            <a class="home-btn-primary" id="openAvailabilityBtn" href="assets/availability/latest-availability.pdf" data-pdf-viewer-trigger>Our Availability</a>
-          </div>
+    <section class="order-ways" aria-labelledby="orderWaysTitle">
+      <div class="container">
+        <p class="order-ways-kicker">Our products</p>
+        <h1 class="order-ways-title" id="orderWaysTitle" data-i18n-html="products.orderTitle">Two ways to order <span>your roses.</span></h1>
+        <p class="order-ways-lead">Buy straight from our stock in Aalsmeer, or reserve fresh roses from Ecuador for one of the next arrivals.</p>
+
+        <div class="order-ways-grid">
+          <article class="order-way">
+            <div class="order-way-head">
+              <span class="order-way-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" focusable="false"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8z" /></svg>
+              </span>
+              <div>
+                <span class="order-way-num">01</span>
+                <h2>Current Availability</h2>
+              </div>
+            </div>
+            <p class="order-way-text">Check our real-time stock in Aalsmeer and place your order instantly.</p>
+            <ul class="order-way-checks">
+              <li>Real-time stock levels</li>
+              <li>Order instantly, no waiting</li>
+            </ul>
+            <a class="order-way-btn order-way-btn--solid" id="openAvailabilityBtn" href="assets/availability/latest-availability.pdf" data-pdf-viewer-trigger>View Availability <span aria-hidden="true">&rarr;</span></a>
+          </article>
+
+          <article class="order-way">
+            <div class="order-way-head">
+              <span class="order-way-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" focusable="false"><rect x="3.5" y="5" width="17" height="15.5" rx="2" /><path d="M3.5 10h17M8 3v4M16 3v4" /></svg>
+              </span>
+              <div>
+                <span class="order-way-num">02</span>
+                <h2>Wish Order</h2>
+              </div>
+            </div>
+            <ol class="order-way-steps">
+              <li data-i18n-html="products.orderStep1"><strong>Choose your roses</strong> from our full Ecuadorian range.</li>
+              <li data-i18n-html="products.orderStep2"><strong>Pick an arrival date</strong>, one of the next two in Amsterdam.</li>
+              <li data-i18n-html="products.orderStep3"><strong>Get your best price</strong> and confirmation within 12–24 hours.</li>
+            </ol>
+            <a class="order-way-btn order-way-btn--outline" id="browseRosesBtn" href="#productSearch">Browse our roses <span aria-hidden="true">&darr;</span></a>
+          </article>
         </div>
+
+        <p class="order-ways-foot" data-i18n-html="products.orderFoot"><strong>It's that simple.</strong> Not sure which to choose? <a href="contact.html">Get in touch</a></p>
       </div>
     </section>
 

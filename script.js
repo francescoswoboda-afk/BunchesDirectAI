@@ -246,6 +246,7 @@ function init() {
     initPaymentPage();
     initAvailabilityPage();
     initPdfViewerModal();
+    initBrowseRosesButton();
     initOrderReviewPage();
     initOrderResponsePage();
 }
@@ -303,6 +304,57 @@ function initProductsRoseMorph() {
 
     onWidthResize(updateRoseProgress);
     updateRoseProgress();
+}
+
+// "Browse our roses" glides down to the search bar (just below the sticky header),
+// then the toolbar briefly glows so the eye lands on it.
+function initBrowseRosesButton() {
+    const button = document.getElementById("browseRosesBtn");
+    const toolbar = document.querySelector(".rose-toolbar");
+
+    if (!button || !toolbar) {
+        return;
+    }
+
+    button.addEventListener("click", (event) => {
+        event.preventDefault();
+
+        const header = document.querySelector(".products-topbar");
+        const headerHeight = header ? header.getBoundingClientRect().height : 0;
+        const startY = window.scrollY;
+        const targetY = Math.max(0, startY + toolbar.getBoundingClientRect().top - headerHeight - 16);
+        const highlight = () => {
+            toolbar.classList.remove("is-highlighted");
+            void toolbar.offsetWidth;
+            toolbar.classList.add("is-highlighted");
+        };
+
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+            window.scrollTo(0, targetY);
+            highlight();
+            return;
+        }
+
+        const distance = targetY - startY;
+        const duration = Math.min(1100, Math.max(600, Math.abs(distance) * 0.9));
+        const easeInOutCubic = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+        let startTime = null;
+
+        const step = (now) => {
+            if (startTime === null) {
+                startTime = now;
+            }
+            const progress = Math.min(1, (now - startTime) / duration);
+            window.scrollTo(0, startY + distance * easeInOutCubic(progress));
+            if (progress < 1) {
+                requestAnimationFrame(step);
+            } else {
+                highlight();
+            }
+        };
+
+        requestAnimationFrame(step);
+    });
 }
 
 function initPdfViewerModal() {

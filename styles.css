@@ -7174,3 +7174,277 @@ body[data-page="products"] .products-corner-image {
 .legal-note[hidden] {
   display: none;
 }
+
+/* Products page: "Two ways to order" intro (LIVE availability vs. wish order from Ecuador).
+   The two cards share the full content width so they line up with the rose grid below. */
+body[data-page="products"] .order-ways {
+  position: relative;
+  z-index: 1;
+  padding: clamp(1rem, 2.2vw, 1.5rem) 0 0;
+}
+
+/* Label and two-colour title in the same style as the About Us page */
+.order-ways-kicker {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0 0 0.6rem;
+  color: #b5070d;
+  font-size: var(--fs-label);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.order-ways-kicker::before {
+  content: "";
+  width: 1.4rem;
+  height: 1.5px;
+  background: currentColor;
+}
+
+.order-ways-title {
+  margin: 0;
+  color: #1d1416;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(2.2rem, 3.6vw, 3rem);
+  font-weight: 700;
+  line-height: 1.05;
+}
+
+.order-ways-title span {
+  color: #b5070d;
+}
+
+.order-ways-lead {
+  margin: 0.35rem 0 0;
+  max-width: 70ch;
+  color: #6f5f62;
+  font-size: var(--fs-body);
+  line-height: 1.6;
+}
+
+.order-ways-grid {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.order-way {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: #ffffff;
+  border-top: 3px solid #b5070d;
+  border-radius: 0 0 14px 14px;
+  box-shadow: 0 8px 22px rgba(80, 10, 20, 0.06);
+  padding: 1rem 1.3rem 1.2rem;
+  font-size: var(--fs-body);
+}
+
+.order-way-head {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.order-way-icon {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: #fbe6e8;
+  color: #b5070d;
+}
+
+.order-way-icon svg {
+  width: 19px;
+  height: 19px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.order-way-num {
+  display: block;
+  color: #b5070d;
+  font-family: "Cormorant Garamond", serif;
+  font-variant-numeric: lining-nums;
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.06em;
+  line-height: 1;
+}
+
+.order-way h2 {
+  margin: 0.1rem 0 0;
+  color: #1d1416;
+  font-size: 1.15rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.order-way-text {
+  margin: 0.8rem 0 0;
+  color: #4d4043;
+  line-height: 1.5;
+}
+
+.order-way-checks,
+.order-way-steps {
+  list-style: none;
+  margin: 0.6rem 0 1rem;
+  padding: 0;
+}
+
+.order-way-checks li {
+  position: relative;
+  padding-left: 1.6rem;
+  margin-bottom: 0.3rem;
+  color: #1d1416;
+}
+
+.order-way-checks li::before {
+  content: "";
+  position: absolute;
+  left: 0.25rem;
+  top: 0.2em;
+  width: 0.38rem;
+  height: 0.7rem;
+  border: solid #b5070d;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.order-way-steps {
+  margin-top: 0.8rem;
+  counter-reset: order-step;
+}
+
+.order-way-steps li {
+  position: relative;
+  counter-increment: order-step;
+  padding: 0.1rem 0 0.55rem 2.1rem;
+  color: #4d4043;
+  line-height: 1.45;
+}
+
+.order-way-steps li:last-child {
+  padding-bottom: 0;
+}
+
+.order-way-steps li::before {
+  content: counter(order-step);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #b5070d;
+  color: #ffffff;
+  font-family: "Cormorant Garamond", serif;
+  font-variant-numeric: lining-nums;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.order-way-steps strong {
+  color: #1d1416;
+}
+
+.order-way-btn {
+  align-self: flex-start;
+  margin-top: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 999px;
+  padding: 0.55rem 1.15rem;
+  font-weight: 800;
+  font-size: var(--fs-ui);
+  text-decoration: none;
+  transition: background-color 160ms ease, color 160ms ease;
+}
+
+.order-way-btn--solid {
+  background: #b5070d;
+  color: #ffffff;
+}
+
+.order-way-btn--solid:hover {
+  background: #8d0308;
+}
+
+.order-way-btn--outline {
+  border: 1.5px solid #b5070d;
+  color: #b5070d;
+  background: #ffffff;
+}
+
+.order-way-btn--outline:hover {
+  background: #fbe6e8;
+}
+
+.order-ways-foot {
+  margin: 0.8rem 0 0;
+  color: #4d4043;
+  font-size: var(--fs-body);
+}
+
+.order-ways-foot strong {
+  color: #b5070d;
+}
+
+.order-ways-foot a {
+  color: #b5070d;
+  font-weight: 800;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.order-ways-lead,
+.order-way-text,
+.order-way-checks li,
+.order-way-steps li,
+.order-ways-foot {
+  text-align: left;
+}
+
+body[data-page="products"] #productSearch {
+  scroll-margin-top: 140px;
+}
+
+@media (max-width: 820px) {
+  .order-ways-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .order-way {
+    padding: 0.9rem 1rem 1rem;
+  }
+
+  .order-way-btn {
+    align-self: stretch;
+    justify-content: center;
+  }
+}
+
+/* After "Browse our roses" scrolls down, the search field glows once */
+.rose-toolbar.is-highlighted .rose-search {
+  animation: rose-search-glow 1.2s ease-out;
+}
+
+@keyframes rose-search-glow {
+  0% { box-shadow: 0 0 0 0 rgba(181, 7, 13, 0); }
+  25% { box-shadow: 0 0 0 5px rgba(181, 7, 13, 0.22); }
+  100% { box-shadow: 0 0 0 0 rgba(181, 7, 13, 0); }
+}
