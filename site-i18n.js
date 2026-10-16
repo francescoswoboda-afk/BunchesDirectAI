@@ -43,11 +43,11 @@
         ],
         "Current Availability": ["Aktuelle Verfügbarkeit", "Disponibilités actuelles", "Actuele beschikbaarheid", "Disponibilità attuale", "Disponibilidad actual"],
         "Check our real-time stock in Aalsmeer and place your order instantly.": [
-            "Sehen Sie unseren Lagerbestand in Aalsmeer in Echtzeit und bestellen Sie sofort.",
-            "Consultez notre stock à Aalsmeer en temps réel et passez commande immédiatement.",
+            "Echtzeit-Bestand in Aalsmeer ansehen und sofort bestellen.",
+            "Consultez le stock d'Aalsmeer en temps réel et commandez aussitôt.",
             "Bekijk onze actuele voorraad in Aalsmeer en bestel direct.",
             "Consulti in tempo reale il nostro stock ad Aalsmeer e ordini subito.",
-            "Consulte nuestro stock en Aalsmeer en tiempo real y haga su pedido al instante."
+            "Consulte nuestro stock en Aalsmeer en tiempo real y pida al instante."
         ],
         "Real-time stock levels": ["Lagerbestand in Echtzeit", "Stock en temps réel", "Voorraad in realtime", "Disponibilità in tempo reale", "Stock en tiempo real"],
         "Order instantly, no waiting": ["Sofort bestellen, ohne Wartezeit", "Commande immédiate, sans attente", "Direct bestellen, zonder wachten", "Ordine immediato, senza attese", "Pedido inmediato, sin esperas"],
@@ -217,22 +217,22 @@
             "Dos formas de pedir <span>sus rosas.</span>"
         ],
         "products.orderStep1": [
-            "<strong>Wählen Sie Ihre Rosen</strong> aus unserem gesamten Sortiment aus Ecuador.",
+            "<strong>Rosen auswählen</strong> aus unserem gesamten Ecuador-Sortiment.",
             "<strong>Choisissez vos roses</strong> dans toute notre gamme équatorienne.",
             "<strong>Kies uw rozen</strong> uit ons volledige assortiment uit Ecuador.",
             "<strong>Scelga le rose</strong> da tutta la nostra gamma ecuadoriana.",
             "<strong>Elija sus rosas</strong> de toda nuestra gama ecuatoriana."
         ],
         "products.orderStep2": [
-            "<strong>Wählen Sie einen Ankunftstermin</strong>, einen der nächsten zwei in Amsterdam.",
-            "<strong>Choisissez une date d'arrivée</strong> parmi les deux prochaines à Amsterdam.",
-            "<strong>Kies een aankomstdatum</strong>, een van de volgende twee in Amsterdam.",
+            "<strong>Ankunftstag wählen</strong>, einer der nächsten zwei in Amsterdam.",
+            "<strong>Choisissez une arrivée</strong> parmi les deux prochaines à Amsterdam.",
+            "<strong>Kies een aankomstdatum</strong> uit de volgende twee in Amsterdam.",
             "<strong>Scelga una data di arrivo</strong> tra le prossime due ad Amsterdam.",
             "<strong>Elija una fecha de llegada</strong> entre las dos próximas en Ámsterdam."
         ],
         "products.orderStep3": [
-            "<strong>Erhalten Sie unseren besten Preis</strong> und die Bestätigung innerhalb von 12–24 Stunden.",
-            "<strong>Recevez notre meilleur prix</strong> et la confirmation sous 12 à 24 heures.",
+            "<strong>Bestpreis erhalten</strong> und Bestätigung in 12–24 Stunden.",
+            "<strong>Recevez notre meilleur prix</strong> et la confirmation sous 12–24 h.",
             "<strong>Ontvang onze beste prijs</strong> en de bevestiging binnen 12–24 uur.",
             "<strong>Riceva il nostro miglior prezzo</strong> e la conferma entro 12–24 ore.",
             "<strong>Reciba nuestro mejor precio</strong> y la confirmación en 12–24 horas."
