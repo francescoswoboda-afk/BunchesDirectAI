@@ -209,6 +209,15 @@ app.post("/api/place-order", async (req, res) => {
     if (!isValidEmail(deliveryDetails.companyEmail)) {
       return res.status(400).json({ error: "A valid client email is required to place the order." });
     }
+    // every field on the order form is required except phone and language
+    const requiredFields = { companyName: "company name", contactPerson: "contact person", taxVat: "Tax / VAT number", street: "street", houseNumber: "house number", postcode: "postal code", city: "city", country: "country", truckCompany: "truck company", deliveryDate: "delivery date" };
+    const missing = Object.entries(requiredFields).filter(([field]) => !String(deliveryDetails[field] || "").trim()).map(([, label]) => label);
+    if (missing.length) {
+      return res.status(400).json({ error: `Please fill in: ${missing.join(", ")}.` });
+    }
+    if (!whatsappDigits(deliveryDetails.whatsapp)) {
+      return res.status(400).json({ error: "Please enter your WhatsApp number with the country code, e.g. +49 170 1234567." });
+    }
     if (deliveryDetails.privacyConsent !== true || deliveryDetails.termsConsent !== true) {
       return res.status(400).json({
         error: "You must accept the Privacy Policy and Terms & Conditions to place an order."
@@ -498,7 +507,7 @@ function sanitizeOrderItems(rawItems, { strict }) {
 }
 
 function sanitizeDeliveryDetails(raw) {
-  const fields = ["companyName", "companyEmail", "taxVat", "deliveryAddress", "phone", "contactPerson", "truckCompany", "deliveryDate", "whatsapp"];
+  const fields = ["companyName", "companyEmail", "taxVat", "deliveryAddress", "street", "houseNumber", "postcode", "city", "country", "phone", "contactPerson", "truckCompany", "deliveryDate", "whatsapp"];
   const details = {};
   for (const field of fields) {
     details[field] = String(raw?.[field] || "").trim().slice(0, 300);

@@ -1332,7 +1332,12 @@ function initOrderDetailsPage() {
         const details = {
             companyName: String(formData.get("companyName") || ""),
             companyEmail: String(formData.get("companyEmail") || ""),
-            deliveryAddress: String(formData.get("deliveryAddress") || ""),
+            // the address parts are kept for next time; deliveryAddress is the full line used in emails
+            street: String(formData.get("street") || "").trim(),
+            houseNumber: String(formData.get("houseNumber") || "").trim(),
+            postcode: String(formData.get("postcode") || "").trim(),
+            city: String(formData.get("city") || "").trim(),
+            country: String(formData.get("country") || "").trim(),
             taxVat: String(formData.get("taxVat") || ""),
             phone: String(formData.get("phone") || ""),
             whatsapp: String(formData.get("whatsapp") || ""),
@@ -1343,6 +1348,7 @@ function initOrderDetailsPage() {
             privacyConsent: formData.get("privacyConsent") === "on",
             termsConsent: formData.get("termsConsent") === "on"
         };
+        details.deliveryAddress = `${details.street} ${details.houseNumber}, ${details.postcode} ${details.city}, ${details.country}`;
 
         // Disable button and show loading state
         dom.toPaymentBtn.disabled = true;
@@ -1403,7 +1409,7 @@ function hydrateDeliveryForm() {
 
     setIfPresent("companyName", details.companyName);
     setIfPresent("companyEmail", details.companyEmail);
-    setIfPresent("deliveryAddress", details.deliveryAddress);
+    ["street", "houseNumber", "postcode", "city", "country"].forEach((name) => setIfPresent(name, details[name]));
     setIfPresent("taxVat", details.taxVat);
     setIfPresent("phone", details.phone);
     setIfPresent("whatsapp", details.whatsapp);

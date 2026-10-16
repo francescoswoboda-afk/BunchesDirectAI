@@ -6983,3 +6983,50 @@ body[data-page="products"] .products-corner-image {
     height: auto;
   }
 }
+
+/* Order form: required marks and the delivery address in parts */
+.dp-req {
+  color: var(--dp-red);
+  font-weight: 700;
+}
+
+.dp-required-note {
+  margin: 0 0 0.8rem;
+  font-size: var(--fs-small, 0.8rem);
+  color: var(--dp-muted);
+  text-align: right;
+}
+
+.dp-group-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--dp-ink);
+}
+
+/* phones: street | number, postal code | city, country full width */
+.dp-address {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-areas:
+    "street number"
+    "postcode city"
+    "country country";
+  gap: 1rem 0.75rem;
+}
+
+.dp-address-street { grid-area: street; }
+.dp-address-number { grid-area: number; }
+.dp-address-postcode { grid-area: postcode; }
+.dp-address-city { grid-area: city; }
+.dp-address-country { grid-area: country; }
+
+/* wider screens: a wide street field with a short number field next to it */
+@media (min-width: 521px) {
+  .dp-address {
+    grid-template-columns: minmax(0, 3fr) minmax(0, 1fr) minmax(0, 1.4fr) minmax(0, 2.6fr);
+    grid-template-areas:
+      "street street street number"
+      "postcode postcode city city"
+      "country country country country";
+  }
+}

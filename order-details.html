@@ -59,26 +59,27 @@
 
         <div class="dp-layout">
           <form id="deliveryForm" class="dp-card" novalidate>
+            <p class="dp-required-note"><span class="dp-req" aria-hidden="true">*</span> Required fields</p>
             <h2 class="dp-section-title">Company</h2>
             <div class="dp-grid">
               <div class="dp-field">
-                <label for="companyNameField">Company name</label>
+                <label for="companyNameField">Company name <span class="dp-req" aria-hidden="true">*</span></label>
                 <input id="companyNameField" name="companyName" type="text" autocomplete="organization" required>
               </div>
               <div class="dp-field">
-                <label for="contactPersonField">Contact person</label>
+                <label for="contactPersonField">Contact person <span class="dp-req" aria-hidden="true">*</span></label>
                 <input id="contactPersonField" name="contactPerson" type="text" autocomplete="name" required>
               </div>
               <div class="dp-field">
-                <label for="companyEmailField">Company email</label>
+                <label for="companyEmailField">Company email <span class="dp-req" aria-hidden="true">*</span></label>
                 <input id="companyEmailField" name="companyEmail" type="email" autocomplete="email" required>
               </div>
               <div class="dp-field">
-                <label for="phoneField">Phone</label>
-                <input id="phoneField" name="phone" type="tel" autocomplete="tel" required>
+                <label for="phoneField">Phone <em class="or-optional">(optional)</em></label>
+                <input id="phoneField" name="phone" type="tel" autocomplete="tel">
               </div>
               <div class="dp-field">
-                <label for="whatsappField">WhatsApp number</label>
+                <label for="whatsappField">WhatsApp number <span class="dp-req" aria-hidden="true">*</span></label>
                 <input id="whatsappField" name="whatsapp" type="tel" autocomplete="tel" inputmode="tel" required
                        pattern="\s*(\+|00)[\d\s\-\(\)]{7,20}" placeholder="+49 170 1234567"
                        title="Please include the country code, e.g. +49 170 1234567">
@@ -97,8 +98,8 @@
                 </div>
               </div>
               <div class="dp-field">
-                <label for="taxVatField">Tax / VAT number</label>
-                <input id="taxVatField" name="taxVat" type="text">
+                <label for="taxVatField">Tax / VAT number <span class="dp-req" aria-hidden="true">*</span></label>
+                <input id="taxVatField" name="taxVat" type="text" required>
               </div>
             </div>
             <p class="dp-hint">We'll send your offer with prices by email and WhatsApp, in the language you choose.</p>
@@ -108,15 +109,70 @@
             <h2 class="dp-section-title">Delivery</h2>
             <div class="dp-grid">
               <div class="dp-field dp-field-wide">
-                <label for="deliveryAddressField">Delivery address</label>
-                <input id="deliveryAddressField" name="deliveryAddress" type="text" autocomplete="street-address" required>
+                <span class="dp-group-label">Delivery address</span>
+                <div class="dp-address">
+                  <div class="dp-field dp-address-street">
+                    <label for="streetField">Street <span class="dp-req" aria-hidden="true">*</span></label>
+                    <input id="streetField" name="street" type="text" autocomplete="address-line1" required>
+                  </div>
+                  <div class="dp-field dp-address-number">
+                    <label for="houseNumberField">Number <span class="dp-req" aria-hidden="true">*</span></label>
+                    <input id="houseNumberField" name="houseNumber" type="text" required>
+                  </div>
+                  <div class="dp-field dp-address-postcode">
+                    <label for="postcodeField">Postal code <span class="dp-req" aria-hidden="true">*</span></label>
+                    <input id="postcodeField" name="postcode" type="text" autocomplete="postal-code" required>
+                  </div>
+                  <div class="dp-field dp-address-city">
+                    <label for="cityField">City <span class="dp-req" aria-hidden="true">*</span></label>
+                    <input id="cityField" name="city" type="text" autocomplete="address-level2" required>
+                  </div>
+                  <div class="dp-field dp-address-country">
+                    <label for="countryField">Country <span class="dp-req" aria-hidden="true">*</span></label>
+                    <div class="dp-select">
+                      <select id="countryField" name="country" autocomplete="country-name" required>
+                        <option value="">Select a country</option>
+                    <option value="Austria">Austria</option>
+                    <option value="Belgium">Belgium</option>
+                    <option value="Bulgaria">Bulgaria</option>
+                    <option value="Croatia">Croatia</option>
+                    <option value="Cyprus">Cyprus</option>
+                    <option value="Czech Republic">Czech Republic</option>
+                    <option value="Denmark">Denmark</option>
+                    <option value="Estonia">Estonia</option>
+                    <option value="Finland">Finland</option>
+                    <option value="France">France</option>
+                    <option value="Germany">Germany</option>
+                    <option value="Greece">Greece</option>
+                    <option value="Hungary">Hungary</option>
+                    <option value="Ireland">Ireland</option>
+                    <option value="Italy">Italy</option>
+                    <option value="Latvia">Latvia</option>
+                    <option value="Lithuania">Lithuania</option>
+                    <option value="Luxembourg">Luxembourg</option>
+                    <option value="Malta">Malta</option>
+                    <option value="Netherlands">Netherlands</option>
+                    <option value="Norway">Norway</option>
+                    <option value="Poland">Poland</option>
+                    <option value="Portugal">Portugal</option>
+                    <option value="Romania">Romania</option>
+                    <option value="Slovakia">Slovakia</option>
+                    <option value="Slovenia">Slovenia</option>
+                    <option value="Spain">Spain</option>
+                    <option value="Sweden">Sweden</option>
+                    <option value="Switzerland">Switzerland</option>
+                    <option value="United Kingdom">United Kingdom</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
               </div>
               <div class="dp-field">
-                <label for="truckCompanyField">Truck company in Aalsmeer</label>
+                <label for="truckCompanyField">Truck company in Aalsmeer <span class="dp-req" aria-hidden="true">*</span></label>
                 <input id="truckCompanyField" name="truckCompany" type="text" required>
               </div>
               <div class="dp-field">
-                <label for="deliveryDateSelect">Delivery date</label>
+                <label for="deliveryDateSelect">Delivery date <span class="dp-req" aria-hidden="true">*</span></label>
                 <div class="dp-select">
                   <select id="deliveryDateSelect" name="deliveryDate" required>
                     <option value="">Select a delivery date</option>
