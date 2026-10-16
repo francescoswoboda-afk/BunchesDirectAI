@@ -78,10 +78,30 @@
                 <input id="phoneField" name="phone" type="tel" autocomplete="tel" required>
               </div>
               <div class="dp-field">
+                <label for="whatsappField">WhatsApp number</label>
+                <input id="whatsappField" name="whatsapp" type="tel" autocomplete="tel" inputmode="tel" required
+                       pattern="\s*(\+|00)[\d\s\-\(\)]{7,20}" placeholder="+49 170 1234567"
+                       title="Please include the country code, e.g. +49 170 1234567">
+              </div>
+              <div class="dp-field">
+                <label for="languageField">Language for emails</label>
+                <div class="dp-select">
+                  <select id="languageField" name="language">
+                    <option value="en">English</option>
+                    <option value="de">Deutsch</option>
+                    <option value="fr">Français</option>
+                    <option value="nl">Nederlands</option>
+                    <option value="it">Italiano</option>
+                    <option value="es">Español</option>
+                  </select>
+                </div>
+              </div>
+              <div class="dp-field">
                 <label for="taxVatField">Tax / VAT number</label>
                 <input id="taxVatField" name="taxVat" type="text">
               </div>
             </div>
+            <p class="dp-hint">We'll send your offer with prices by email and WhatsApp, in the language you choose.</p>
 
             <hr class="dp-divider">
 

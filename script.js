@@ -1335,6 +1335,8 @@ function initOrderDetailsPage() {
             deliveryAddress: String(formData.get("deliveryAddress") || ""),
             taxVat: String(formData.get("taxVat") || ""),
             phone: String(formData.get("phone") || ""),
+            whatsapp: String(formData.get("whatsapp") || ""),
+            language: String(formData.get("language") || "en"),
             contactPerson: String(formData.get("contactPerson") || ""),
             truckCompany: String(formData.get("truckCompany") || ""),
             deliveryDate: String(formData.get("deliveryDate") || ""),
@@ -1404,7 +1406,17 @@ function hydrateDeliveryForm() {
     setIfPresent("deliveryAddress", details.deliveryAddress);
     setIfPresent("taxVat", details.taxVat);
     setIfPresent("phone", details.phone);
+    setIfPresent("whatsapp", details.whatsapp);
     setIfPresent("contactPerson", details.contactPerson);
+    // language: what they chose last time, otherwise their browser's language (if we offer it)
+    const languageField = dom.deliveryForm.elements.namedItem("language");
+    if (languageField) {
+        const browserLanguage = String(navigator.language || "").slice(0, 2).toLowerCase();
+        const wanted = details.language || browserLanguage;
+        if ([...languageField.options].some((option) => option.value === wanted)) {
+            languageField.value = wanted;
+        }
+    }
     setIfPresent("truckCompany", details.truckCompany);
 
     // Render available delivery dates in select dropdown
@@ -2009,14 +2021,13 @@ function setOrderHeading(reference, titleHtml, lead) {
     }
 }
 
-// "2026-10-15" -> "Thursday 15 October 2026"
-function formatOrderDate(value) {
-    const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(value || ""));
-    if (!match) {
-        return String(value || "-");
-    }
-    const date = new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
-    return date.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+// "2026-10-15" -> "jueves, 15 de octubre de 2026" etc. (language of the page)
+function formatOrderDate(value, lang = "en") {
+    return window.ORDER_I18N ? ORDER_I18N.formatDate(value, lang) : String(value || "-");
+}
+
+function formatOrderMoney(amount, lang = "en") {
+    return window.ORDER_I18N ? ORDER_I18N.formatMoney(amount, lang) : `€${(Number(amount) || 0).toFixed(2)}`;
 }
 
 function orderItemImage(item) {
@@ -2028,48 +2039,51 @@ function orderTotalBoxes(items) {
     return items.reduce((sum, item) => sum + (Number(item.quantity) || 0), 0);
 }
 
-function orderItemsHtml(items) {
+// Order lines; with prices (an offer) each line also shows stems per box, price per stem and its total
+function orderItemsHtml(items, lang = "en", withPrices = false) {
+    const strings = ORDER_I18N.t(lang);
     return items
         .map((item) => {
             const quantity = Number(item.quantity) || 1;
             const meta = [item.boxType, item.stemLength && `${item.stemLength} cm`].filter(Boolean).join(" · ");
+            const priced = withPrices && item.pricePerStem;
+            const priceMeta = priced
+                ? `<span>${escapeHtml(ORDER_I18N.fill(strings.stemsPerBox, { n: item.stemsPerBox }))} · ${escapeHtml(formatOrderMoney(item.pricePerStem, lang))} ${escapeHtml(strings.pricePerStem)}</span>`
+                : "";
             return `
             <div class="dp-item">
                 <img src="${escapeHtml(orderItemImage(item))}" alt="" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='${FALLBACK_PRODUCT_IMAGE}';">
-                <div class="dp-item-copy"><strong>${escapeHtml(item.roseName)}</strong><span>${escapeHtml(meta)}</span></div>
-                <span class="dp-item-qty">${quantity} ${quantity === 1 ? "box" : "boxes"}</span>
+                <div class="dp-item-copy"><strong>${escapeHtml(item.roseName)}</strong><span>${escapeHtml(meta)}</span>${priceMeta}</div>
+                <span class="dp-item-qty">${escapeHtml(ORDER_I18N.boxesLabel(quantity, lang))}${priced ? `<span class="or-line-total">${escapeHtml(formatOrderMoney(ORDER_I18N.lineTotal(item), lang))}</span>` : ""}</span>
             </div>`;
         })
         .join("");
 }
 
-function orderDetailsHtml(details) {
+function orderDetailsHtml(details, lang = "en") {
+    const L = ORDER_I18N.t(lang).labels;
     const rows = [
-        ["Company", details.companyName],
-        ["Contact person", details.contactPerson],
-        ["Email", details.companyEmail],
-        ["Phone", details.phone],
-        ["Tax / VAT #", details.taxVat],
-        ["Delivery address", details.deliveryAddress],
-        ["Truck company in Aalsmeer", details.truckCompany]
-    ];
+        [L.company, details.companyName],
+        [L.contact, details.contactPerson],
+        [L.email, details.companyEmail],
+        [L.phone, details.phone],
+        [L.whatsapp, details.whatsapp],
+        [L.vat, details.taxVat],
+        [L.address, details.deliveryAddress],
+        [L.truck, details.truckCompany]
+    ].filter(([label, value]) => label !== L.whatsapp || value);
     return `<dl class="or-details">${rows
         .map(([label, value]) => `<dt>${escapeHtml(label)}</dt><dd>${escapeHtml(value || "-")}</dd>`)
         .join("")}</dl>`;
 }
 
-function orderSummaryLinesHtml(deliveryDate, items) {
-    return `
-        <p class="or-summary-line"><span>Delivery</span><strong>${escapeHtml(formatOrderDate(deliveryDate))}</strong></p>
-        <div class="dp-summary-total"><span>Total boxes</span><span>${orderTotalBoxes(items)}</span></div>`;
-}
-
-function orderDoneHtml(heading, text, icon = "&#10003;") {
+function orderDoneHtml(heading, text, icon = "&#10003;", extraHtml = "") {
     return `
         <div class="dp-done-card">
             <span class="dp-done-icon" aria-hidden="true">${icon}</span>
             <h1>${escapeHtml(heading)}</h1>
             <p>${escapeHtml(text)}</p>
+            ${extraHtml}
         </div>`;
 }
 
@@ -2089,23 +2103,22 @@ function runOrderButton(button, busyLabel, task) {
     });
 }
 
-// ----- Office: order-review.html -----
+const WHATSAPP_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2a10 10 0 0 0-8.7 14.9L2 22l5.3-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3.1.8.8-3-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.1-1.2l-.5-.2Z"/></svg>';
+
+// ----- Office: order-review.html (in Spanish, for the person who prices the orders) -----
+// The office writes stems per box and a price per stem for every rose, can still change the order,
+// and sends it to the client as an offer to accept or decline. The client is told in their language.
 function initOrderReviewPage() {
     const root = document.getElementById("orderReviewRoot");
     if (!root) {
         return;
     }
 
+    const ES = "es";
     const link = getOrderLinkParams();
-    const state = {
-        order: null,
-        mode: link.mode === "edit" ? "edit" : "accept",
-        items: [],
-        deliveryDate: "",
-        note: ""
-    };
+    const state = { order: null, items: [], deliveryDate: "", note: "" };
 
-    // The editable copy starts from the changes already sent (if any), otherwise from the client's order
+    // The offer starts from the one already sent (if any), otherwise from the client's order
     function resetDraft() {
         const source = state.order.proposal || {
             cartItems: state.order.cartItems,
@@ -2117,55 +2130,31 @@ function initOrderReviewPage() {
         state.note = source.note || "";
     }
 
-    function setMode(mode) {
-        state.mode = mode;
-        const url = new URL(window.location.href);
-        url.searchParams.set("mode", mode);
-        window.history.replaceState(null, "", url);
-        render();
-        window.scrollTo({ top: 0, behavior: "smooth" });
+    function clientLanguageLabel() {
+        const code = ORDER_I18N.lang(state.order.deliveryDetails.language);
+        return ORDER_I18N.LANGUAGES[code].label;
+    }
+
+    function whatsappButton(url, label, solid = false) {
+        return url
+            ? `<a class="or-whatsapp${solid ? " is-solid" : ""}" href="${escapeHtml(url)}" target="_blank" rel="noopener">${WHATSAPP_ICON}<span>${escapeHtml(label)}</span></a>`
+            : "";
     }
 
     function render() {
         const order = state.order;
-        const company = order.deliveryDetails.companyName || "Client";
+        const company = order.deliveryDetails.companyName || "El cliente";
 
         if (order.status === "accepted" || order.status === "cancelled") {
             const accepted = order.status === "accepted";
-            setOrderHeading(`Order ${order.id}`, accepted ? "Order <span>accepted</span>" : "Order <span>cancelled</span>", "");
+            const total = order.proposal ? ` Total: ${formatOrderMoney(ORDER_I18N.offerTotal(order.cartItems), ES)} sin IVA.` : "";
+            setOrderHeading(`Pedido ${order.id}`, accepted ? "Pedido <span>aceptado</span>" : "Pedido <span>cancelado</span>", "");
             root.innerHTML = orderDoneHtml(
-                accepted ? "This order is accepted" : "This order is cancelled",
-                accepted ? `${company} has been told the order is being processed.` : `${company} has been told the order is cancelled.`,
-                accepted ? "&#10003;" : "&times;"
+                accepted ? "Este pedido está aceptado" : "Este pedido está cancelado",
+                accepted ? `${company} ha aceptado la oferta.${total}` : `${company} ha sido informado de que el pedido está cancelado.`,
+                accepted ? "&#10003;" : "&times;",
+                whatsappButton(order.clientChatUrl, "Escribir al cliente por WhatsApp")
             );
-            return;
-        }
-
-        // Once changes are sent, the original can no longer be accepted; only re-sent changes or a cancel
-        if (order.status === "awaiting_client") {
-            state.mode = "edit";
-        }
-
-        if (state.mode === "accept") {
-            setOrderHeading(`New order · ${order.id}`, `Accept <span>order</span>`, `${company} placed this order. Check it and accept it, or change it first.`);
-            root.innerHTML = `
-            <div class="dp-layout">
-                <div class="dp-card">
-                    <h2 class="dp-section-title">Roses ordered</h2>
-                    <div class="dp-items">${orderItemsHtml(order.cartItems)}</div>
-                    <hr class="dp-divider">
-                    <h2 class="dp-section-title">Delivery details</h2>
-                    ${orderDetailsHtml(order.deliveryDetails)}
-                </div>
-                <aside class="dp-summary">
-                    <h2>Your decision</h2>
-                    ${orderSummaryLinesHtml(order.deliveryDetails.deliveryDate, order.cartItems)}
-                    <button class="dp-submit" type="button" data-order-action="accept">Accept order</button>
-                    <p id="orderActionMessage" class="dp-message" role="alert"></p>
-                    <p class="or-hint">The client gets an email that the order is accepted and being processed.</p>
-                    <p class="or-alt">Something not right? <button class="or-link" type="button" data-order-mode="edit">Change or cancel the order</button></p>
-                </aside>
-            </div>`;
             return;
         }
 
@@ -2173,51 +2162,57 @@ function initOrderReviewPage() {
             .map((product) => `<option value="${escapeHtml(product.name)}">${escapeHtml(product.name)}</option>`)
             .join("");
         const banner = order.status === "awaiting_client"
-            ? `<p class="or-banner">You already sent changes to ${escapeHtml(company)}. They haven't answered yet. Sending again replaces those changes.</p>`
+            ? `<div class="or-banner"><p>Ya enviaste una oferta a ${escapeHtml(company)} (${escapeHtml(formatOrderMoney(ORDER_I18N.offerTotal(order.proposal.cartItems), ES))}). Aún no ha respondido. Si la envías de nuevo, sustituye a la anterior.</p>${whatsappButton(order.clientOfferWhatsAppUrl, "Enviar la oferta por WhatsApp")}</div>`
             : "";
 
-        setOrderHeading(`Order ${order.id}`, `Change <span>order</span>`, `Edit ${company}'s order and send it back. They can accept the new version or decline it.`);
+        setOrderHeading(
+            `${order.status === "pending" ? "Nuevo pedido" : "Pedido"} · ${order.id}`,
+            "Preparar <span>oferta</span>",
+            `${company} ha hecho este pedido. Escribe los tallos por caja y el precio por tallo de cada rosa, y envía la oferta. El cliente la recibe en ${clientLanguageLabel()} y puede aceptarla o rechazarla.`
+        );
         root.innerHTML = `
             ${banner}
             <div class="dp-layout">
                 <div class="dp-card">
-                    <h2 class="dp-section-title">Roses</h2>
-                    <div class="or-edit-list">${state.items.length === 0 ? '<p class="dp-items-empty">No roses left. Add one below, or cancel the whole order.</p>' : state.items.map(editRowHtml).join("")}</div>
+                    <h2 class="dp-section-title">Rosas y precios</h2>
+                    <div class="or-edit-list">${state.items.length === 0 ? '<p class="dp-items-empty">No quedan rosas. Añade una abajo o rechaza el pedido.</p>' : state.items.map(editRowHtml).join("")}</div>
                     <div class="or-add-row">
                         <div class="dp-select">
-                            <select id="orderAddRose" aria-label="Rose to add">
-                                <option value="">Add a rose…</option>
+                            <select id="orderAddRose" aria-label="Rosa para añadir">
+                                <option value="">Añadir una rosa…</option>
                                 ${roseOptions}
                             </select>
                         </div>
-                        <button class="or-secondary" type="button" data-edit-action="add">Add</button>
+                        <button class="or-secondary" type="button" data-edit-action="add">Añadir</button>
                     </div>
 
                     <hr class="dp-divider">
 
                     <div class="dp-grid">
                         <div class="dp-field">
-                            <label for="orderDeliveryDate">Delivery date</label>
+                            <label for="orderDeliveryDate">Fecha de entrega</label>
                             <input id="orderDeliveryDate" type="date" value="${escapeHtml(state.deliveryDate)}" required>
                         </div>
                         <div class="dp-field dp-field-wide">
-                            <label for="orderNote">Message to the client <em class="or-optional">(optional)</em></label>
-                            <textarea id="orderNote" rows="4" maxlength="2000" placeholder="e.g. Aloha is sold out this week, so we replaced it with Vendela.">${escapeHtml(state.note)}</textarea>
+                            <label for="orderNote">Mensaje para el cliente <em class="or-optional">(opcional, mejor en ${escapeHtml(clientLanguageLabel())} o inglés)</em></label>
+                            <textarea id="orderNote" rows="3" maxlength="2000" placeholder="p. ej. Aloha is sold out this week, so we replaced it with Vendela.">${escapeHtml(state.note)}</textarea>
                         </div>
                     </div>
 
                     <hr class="dp-divider">
-                    <h2 class="dp-section-title">Delivery details</h2>
-                    ${orderDetailsHtml(order.deliveryDetails)}
+                    <h2 class="dp-section-title">Datos del cliente</h2>
+                    ${orderDetailsHtml(order.deliveryDetails, ES)}
+                    ${whatsappButton(order.clientChatUrl, "Escribir al cliente por WhatsApp")}
                 </div>
                 <aside class="dp-summary">
-                    <h2>Send to client</h2>
-                    ${orderSummaryLinesHtml(state.deliveryDate, state.items)}
-                    <button class="dp-submit" type="button" data-order-action="propose" ${state.items.length === 0 ? "disabled" : ""}>Send changes to client</button>
+                    <h2>Oferta</h2>
+                    <p class="or-summary-line"><span>Entrega</span><strong>${escapeHtml(formatOrderDate(state.deliveryDate, ES))}</strong></p>
+                    <div class="dp-summary-total"><span>Total cajas</span><span>${orderTotalBoxes(state.items)}</span></div>
+                    <div class="dp-summary-total or-offer-total"><span>Total <em class="or-optional">sin IVA</em></span><span id="orderOfferTotal">${escapeHtml(formatOrderMoney(ORDER_I18N.offerTotal(state.items), ES))}</span></div>
+                    <button class="dp-submit" type="button" data-order-action="propose" ${state.items.length === 0 ? "disabled" : ""}>Enviar oferta al cliente</button>
                     <p id="orderActionMessage" class="dp-message" role="alert"></p>
-                    <p class="or-hint">${escapeHtml(company)} gets an email with the new order and two buttons: accept or decline. If they decline, the order is cancelled.</p>
-                    ${order.status === "pending" ? '<p class="or-alt">Order fine after all? <button class="or-link" type="button" data-order-mode="accept">Accept it as it is</button></p>' : ""}
-                    <p class="or-alt"><button class="or-link or-danger" type="button" data-order-action="cancel">Cancel the whole order</button></p>
+                    <p class="or-hint">${escapeHtml(company)} recibe la oferta por correo con dos botones: aceptar o rechazar. Después podrás enviarla también por WhatsApp.</p>
+                    <p class="or-alt"><button class="or-link or-danger" type="button" data-order-action="cancel">Rechazar el pedido</button></p>
                 </aside>
             </div>`;
     }
@@ -2230,31 +2225,53 @@ function initOrderReviewPage() {
         const stemOptions = ORDER_STEM_LENGTHS
             .map((length) => `<option value="${length}" ${Number(item.stemLength) === length ? "selected" : ""}>${length} cm</option>`)
             .join("");
+        const name = escapeHtml(item.roseName);
         return `
             <div class="or-edit-row">
                 <img src="${escapeHtml(orderItemImage(item))}" alt="" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='${FALLBACK_PRODUCT_IMAGE}';">
-                <strong class="or-edit-name">${escapeHtml(item.roseName)}</strong>
+                <strong class="or-edit-name">${name}</strong>
                 <div class="or-edit-controls">
                     <div class="dp-select or-mini-select">
-                        <select data-edit-field="boxType" data-index="${index}" aria-label="Box type for ${escapeHtml(item.roseName)}">
-                            ${ORDER_BOX_TYPES.includes(item.boxType) ? "" : '<option value="" selected>Box type…</option>'}${boxOptions}
+                        <select data-edit-field="boxType" data-index="${index}" aria-label="Tipo de caja de ${name}">
+                            ${ORDER_BOX_TYPES.includes(item.boxType) ? "" : '<option value="" selected>Caja…</option>'}${boxOptions}
                         </select>
                     </div>
                     <div class="dp-select or-mini-select">
-                        <select data-edit-field="stemLength" data-index="${index}" aria-label="Stem length for ${escapeHtml(item.roseName)}">
-                            ${ORDER_STEM_LENGTHS.includes(Number(item.stemLength)) ? "" : '<option value="" selected>Stem…</option>'}${stemOptions}
+                        <select data-edit-field="stemLength" data-index="${index}" aria-label="Largo de tallo de ${name}">
+                            ${ORDER_STEM_LENGTHS.includes(Number(item.stemLength)) ? "" : '<option value="" selected>Tallo…</option>'}${stemOptions}
                         </select>
                     </div>
-                    <div class="cp-qty" role="group" aria-label="Boxes of ${escapeHtml(item.roseName)}">
-                        <button type="button" data-edit-action="decrease" data-index="${index}" aria-label="One box less" ${quantity <= 1 ? "disabled" : ""}>&minus;</button>
+                    <div class="cp-qty" role="group" aria-label="Cajas de ${name}">
+                        <button type="button" data-edit-action="decrease" data-index="${index}" aria-label="Una caja menos" ${quantity <= 1 ? "disabled" : ""}>&minus;</button>
                         <span>${quantity}</span>
-                        <button type="button" data-edit-action="increase" data-index="${index}" aria-label="One box more">+</button>
+                        <button type="button" data-edit-action="increase" data-index="${index}" aria-label="Una caja más">+</button>
                     </div>
-                    <button class="cp-remove" type="button" data-edit-action="remove" data-index="${index}" aria-label="Remove ${escapeHtml(item.roseName)}">
+                    <button class="cp-remove" type="button" data-edit-action="remove" data-index="${index}" aria-label="Quitar ${name}">
                         <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 7h16M9 7V5h6v2M6.5 7l.8 12h9.4l.8-12M10 11v5M14 11v5" /></svg>
                     </button>
                 </div>
+                <div class="or-price-row">
+                    <label class="or-price-field">
+                        <span>Tallos por caja</span>
+                        <input type="number" inputmode="numeric" min="1" max="2000" step="1" data-price-field="stemsPerBox" data-index="${index}" value="${item.stemsPerBox || ""}" placeholder="p. ej. 125">
+                    </label>
+                    <label class="or-price-field">
+                        <span>Precio por tallo (€)</span>
+                        <input type="text" inputmode="decimal" data-price-field="pricePerStem" data-index="${index}" value="${item.pricePerStem ? String(item.pricePerStem).replace(".", ",") : ""}" placeholder="p. ej. 0,65">
+                    </label>
+                    <p class="or-price-total"><span>Total línea</span><strong data-line-total="${index}">${escapeHtml(formatOrderMoney(ORDER_I18N.lineTotal(item), ES))}</strong></p>
+                </div>
             </div>`;
+    }
+
+    // Typing a price updates the totals in place (no re-render, so the cursor stays in the field)
+    function updateTotals() {
+        state.items.forEach((item, index) => {
+            const cell = root.querySelector(`[data-line-total="${index}"]`);
+            if (cell) cell.textContent = formatOrderMoney(ORDER_I18N.lineTotal(item), ES);
+        });
+        const total = document.getElementById("orderOfferTotal");
+        if (total) total.textContent = formatOrderMoney(ORDER_I18N.offerTotal(state.items), ES);
     }
 
     function addRose() {
@@ -2272,29 +2289,23 @@ function initOrderReviewPage() {
         render();
     }
 
-    function showResult(promise, heading, text) {
+    function showResult(promise, heading, text, icon, extra) {
         promise.then((data) => {
             state.order = data.order;
-            setOrderHeading(`Order ${data.order.id}`, heading, "");
-            root.innerHTML = orderDoneHtml(...text);
+            setOrderHeading(`Pedido ${data.order.id}`, heading, "");
+            root.innerHTML = orderDoneHtml(text[0], text[1], icon, extra ? extra(data.order) : "");
             window.scrollTo({ top: 0, behavior: "smooth" });
         }).catch((error) => {
-            // The order changed in the meantime (e.g. already accepted): show its current state
+            // The order changed in the meantime (e.g. the client already answered): show its current state
             if (error.order) {
                 state.order = error.order;
+                resetDraft();
                 render();
             }
         });
     }
 
     root.addEventListener("click", (event) => {
-        const modeButton = event.target.closest("[data-order-mode]");
-        if (modeButton) {
-            resetDraft();
-            setMode(modeButton.dataset.orderMode);
-            return;
-        }
-
         const editButton = event.target.closest("[data-edit-action]");
         if (editButton) {
             const action = editButton.dataset.editAction;
@@ -2315,41 +2326,42 @@ function initOrderReviewPage() {
         if (!actionButton) {
             return;
         }
-        const company = state.order.deliveryDetails.companyName || "The client";
+        const company = state.order.deliveryDetails.companyName || "El cliente";
         const action = actionButton.dataset.orderAction;
+        const message = document.getElementById("orderActionMessage");
 
-        if (action === "accept") {
-            showResult(
-                runOrderButton(actionButton, "Accepting…", () => orderRequest(link, "accept")),
-                "Order <span>accepted</span>",
-                ["Order accepted", `${company} has been emailed that the order is accepted and being processed.`]
-            );
-        } else if (action === "propose") {
+        if (action === "propose") {
             const missingOption = state.items.some((item) => !ORDER_BOX_TYPES.includes(item.boxType) || !ORDER_STEM_LENGTHS.includes(Number(item.stemLength)));
-            if (missingOption || !state.deliveryDate) {
-                const message = document.getElementById("orderActionMessage");
-                if (message) {
-                    message.textContent = missingOption ? "Choose a box type and stem length for every rose." : "Choose a delivery date.";
-                }
+            const missingPrice = state.items.some((item) => !(Number(item.stemsPerBox) >= 1) || !(Number(item.pricePerStem) > 0));
+            const problem = missingOption ? "Elige el tipo de caja y el largo de tallo de cada rosa."
+                : missingPrice ? "Escribe los tallos por caja y el precio por tallo de cada rosa."
+                : !state.deliveryDate ? "Elige una fecha de entrega." : "";
+            if (problem) {
+                if (message) message.textContent = problem;
                 return;
             }
             showResult(
-                runOrderButton(actionButton, "Sending…", () => orderRequest(link, "propose", {
-                    cartItems: state.items.map(({ roseName, boxType, stemLength, quantity }) => ({ roseName, boxType, stemLength, quantity })),
+                runOrderButton(actionButton, "Enviando…", () => orderRequest(link, "propose", {
+                    cartItems: state.items.map(({ roseName, boxType, stemLength, quantity, stemsPerBox, pricePerStem }) => ({ roseName, boxType, stemLength, quantity, stemsPerBox, pricePerStem })),
                     deliveryDate: state.deliveryDate,
                     note: state.note
                 })),
-                "Changes <span>sent</span>",
-                ["Changes sent to the client", `${company} has been emailed the new order. You'll get an email as soon as they accept or decline it.`]
+                "Oferta <span>enviada</span>",
+                ["Oferta enviada", `${company} ha recibido la oferta por correo. Te avisaremos por WhatsApp y correo en cuanto la acepte o la rechace.`],
+                "&#10003;",
+                (order) => order.clientOfferWhatsAppUrl
+                    ? `<p class="or-hint">Para que la vea antes, envíasela también por WhatsApp (el mensaje ya está escrito en ${escapeHtml(clientLanguageLabel())}):</p>${whatsappButton(order.clientOfferWhatsAppUrl, "Enviar la oferta por WhatsApp", true)}`
+                    : ""
             );
         } else if (action === "cancel") {
-            if (!window.confirm(`Cancel this order? ${company} will get an email saying the order has been cancelled.`)) {
+            if (!window.confirm(`¿Rechazar este pedido? ${company} recibirá un correo diciendo que el pedido está cancelado.`)) {
                 return;
             }
             showResult(
-                runOrderButton(actionButton, "Cancelling…", () => orderRequest(link, "cancel")),
-                "Order <span>cancelled</span>",
-                ["Order cancelled", `${company} has been emailed that the order is cancelled.`, "&times;"]
+                runOrderButton(actionButton, "Cancelando…", () => orderRequest(link, "cancel")),
+                "Pedido <span>cancelado</span>",
+                ["Pedido rechazado", `${company} ha recibido un correo diciendo que el pedido está cancelado.`],
+                "&times;"
             );
         }
     });
@@ -2372,6 +2384,17 @@ function initOrderReviewPage() {
         if (event.target.id === "orderNote") {
             state.note = event.target.value;
         }
+        const priceField = event.target.closest("[data-price-field]");
+        if (priceField) {
+            const message = document.getElementById("orderActionMessage");
+            if (message) message.textContent = "";
+            const item = state.items[Number(priceField.dataset.index)];
+            if (item) {
+                const raw = priceField.value.replace(",", ".");
+                item[priceField.dataset.priceField] = priceField.dataset.priceField === "stemsPerBox" ? Math.floor(Number(raw) || 0) : Number(raw) || 0;
+                updateTotals();
+            }
+        }
     });
 
     orderRequest(link)
@@ -2381,12 +2404,12 @@ function initOrderReviewPage() {
             render();
         })
         .catch((error) => {
-            setOrderHeading("", "Order <span>not found</span>", "");
-            root.innerHTML = orderDoneHtml("This link doesn't work", error.message, "!");
+            setOrderHeading("", "Pedido <span>no encontrado</span>", "");
+            root.innerHTML = orderDoneHtml("Este enlace no funciona", error.message, "!");
         });
 }
 
-// ----- Client: order-response.html -----
+// ----- Client: order-response.html, in the language the client chose -----
 function initOrderResponsePage() {
     const root = document.getElementById("orderResponseRoot");
     if (!root) {
@@ -2397,48 +2420,56 @@ function initOrderResponsePage() {
     let order = null;
 
     function render() {
+        const lang = ORDER_I18N.lang(order.deliveryDetails.language);
+        const strings = ORDER_I18N.t(lang);
+        const P = strings.page;
+        document.documentElement.lang = lang;
+        const ref = ORDER_I18N.fill(P.order, { id: order.id });
+
         if (order.status === "accepted") {
-            setOrderHeading(`Order ${order.id}`, "Order <span>accepted</span>", "");
-            root.innerHTML = orderDoneHtml("Your order is accepted", "Thank you! Your order is being processed. We've sent you a confirmation email.");
+            setOrderHeading(ref, P.acceptedTitle, "");
+            root.innerHTML = orderDoneHtml(P.acceptedHeading, P.acceptedText);
             return;
         }
         if (order.status === "cancelled") {
-            setOrderHeading(`Order ${order.id}`, "Order <span>cancelled</span>", "");
-            root.innerHTML = orderDoneHtml("This order is cancelled", "You're welcome to place a new order at any time.", "&times;");
+            setOrderHeading(ref, P.cancelledTitle, "");
+            root.innerHTML = orderDoneHtml(P.cancelledHeading, P.cancelledText, "&times;");
             return;
         }
         if (order.status !== "awaiting_client" || !order.proposal) {
-            setOrderHeading(`Order ${order.id}`, "Your <span>order</span>", "");
-            root.innerHTML = orderDoneHtml("We're reviewing your order", "We'll email you as soon as it has been checked.", "&#8230;");
+            setOrderHeading(ref, P.reviewTitle, "");
+            root.innerHTML = orderDoneHtml(P.reviewHeading, P.reviewText, "&#8230;");
             return;
         }
 
         const proposal = order.proposal;
         const declineFirst = link.choice === "decline";
-        const acceptButton = `<button class="${declineFirst ? "or-secondary or-wide" : "dp-submit"}" type="button" data-response="accept">Accept changes</button>`;
-        const declineButton = `<button class="${declineFirst ? "dp-submit" : "or-secondary or-wide"}" type="button" data-response="decline">Decline and cancel order</button>`;
+        const acceptButton = `<button class="${declineFirst ? "or-secondary or-wide" : "dp-submit"}" type="button" data-response="accept">${escapeHtml(P.accept)}</button>`;
+        const declineButton = `<button class="${declineFirst ? "dp-submit" : "or-secondary or-wide"}" type="button" data-response="decline">${escapeHtml(P.decline)}</button>`;
         const note = proposal.note
-            ? `<div class="or-note"><p class="or-note-title">Message from Bunches Direct</p><p>${escapeHtml(proposal.note).replace(/\n/g, "<br>")}</p></div>`
+            ? `<div class="or-note"><p class="or-note-title">${escapeHtml(P.noteTitle)}</p><p>${escapeHtml(proposal.note).replace(/\n/g, "<br>")}</p></div>`
             : "";
         const changes = proposal.changes && proposal.changes.length
-            ? `<h2 class="dp-section-title">What changed</h2><ul class="or-changes">${proposal.changes.map((change) => `<li>${escapeHtml(change)}</li>`).join("")}</ul><hr class="dp-divider">`
+            ? `<h2 class="dp-section-title">${escapeHtml(P.whatChanged)}</h2><ul class="or-changes">${proposal.changes.map((change) => `<li>${escapeHtml(change)}</li>`).join("")}</ul><hr class="dp-divider">`
             : "";
 
-        setOrderHeading(`Order ${order.id}`, "Updated <span>order</span>", "We've made a few changes to your order. Please accept the new version so we can process it, or decline it to cancel the order.");
+        setOrderHeading(ref, P.offerTitle, P.offerLead);
         root.innerHTML = `
             <div class="dp-layout">
                 <div class="dp-card">
                     ${note}
                     ${changes}
-                    <h2 class="dp-section-title">Your updated order</h2>
-                    <div class="dp-items">${orderItemsHtml(proposal.cartItems)}</div>
+                    <h2 class="dp-section-title">${escapeHtml(strings.offer.items)}</h2>
+                    <div class="dp-items">${orderItemsHtml(proposal.cartItems, lang, true)}</div>
                     <hr class="dp-divider">
-                    <h2 class="dp-section-title">Delivery details</h2>
-                    ${orderDetailsHtml(order.deliveryDetails)}
+                    <h2 class="dp-section-title">${escapeHtml(P.deliveryDetails)}</h2>
+                    ${orderDetailsHtml(order.deliveryDetails, lang)}
                 </div>
                 <aside class="dp-summary">
-                    <h2>Your answer</h2>
-                    ${orderSummaryLinesHtml(proposal.deliveryDate, proposal.cartItems)}
+                    <h2>${escapeHtml(P.yourAnswer)}</h2>
+                    <p class="or-summary-line"><span>${escapeHtml(strings.delivery)}</span><strong>${escapeHtml(formatOrderDate(proposal.deliveryDate, lang))}</strong></p>
+                    <div class="dp-summary-total"><span>${escapeHtml(P.totalBoxes)}</span><span>${orderTotalBoxes(proposal.cartItems)}</span></div>
+                    <div class="dp-summary-total or-offer-total"><span>${escapeHtml(strings.total)} <em class="or-optional">${escapeHtml(strings.exclVat)}</em></span><span>${escapeHtml(formatOrderMoney(ORDER_I18N.offerTotal(proposal.cartItems), lang))}</span></div>
                     ${declineFirst ? declineButton + acceptButton : acceptButton + declineButton}
                     <p id="orderActionMessage" class="dp-message" role="alert"></p>
                 </aside>
@@ -2450,12 +2481,13 @@ function initOrderResponsePage() {
         if (!button) {
             return;
         }
+        const P = ORDER_I18N.t(order.deliveryDetails.language).page;
         const decision = button.dataset.response;
-        if (decision === "decline" && !window.confirm("Decline the changes? Your order will be cancelled.")) {
+        if (decision === "decline" && !window.confirm(P.confirmDecline)) {
             return;
         }
 
-        runOrderButton(button, decision === "accept" ? "Accepting…" : "Cancelling…", () => orderRequest(link, "respond", { decision }))
+        runOrderButton(button, decision === "accept" ? P.accepting : P.cancelling, () => orderRequest(link, "respond", { decision }))
             .then((data) => {
                 order = data.order;
                 render();
@@ -2475,8 +2507,9 @@ function initOrderResponsePage() {
             render();
         })
         .catch((error) => {
-            setOrderHeading("", "Order <span>not found</span>", "");
-            root.innerHTML = orderDoneHtml("This link doesn't work", error.message, "!");
+            const P = ORDER_I18N.t(String(navigator.language || "").slice(0, 2)).page;
+            setOrderHeading("", P.notFoundTitle, "");
+            root.innerHTML = orderDoneHtml(P.notFound, error.message, "!");
         });
 }
 

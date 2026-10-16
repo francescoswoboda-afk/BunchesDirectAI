@@ -106,3 +106,15 @@ If your hosting/proxy only forwards `/api/*` requests to Node, use this fallback
 2. Enter the admin password.
 3. Choose the new PDF and click **Upload Today's PDF**.
 4. Public `availability.html` updates automatically for all clients.
+
+## WhatsApp notifications for the office (CallMeBot)
+
+New orders and client answers also arrive as a WhatsApp message (in Spanish) with a link to the order page.
+
+1. On the office phone, add this contact: **+34 644 51 95 23** (CallMeBot). The current number is on callmebot.com, under "WhatsApp API"; check it there in case it changed.
+2. Send it the message: `I allow callmebot to send me messages`
+3. It answers with an API key.
+4. Set both on the server: `fly secrets set CALLMEBOT_PHONE=+49... CALLMEBOT_APIKEY=123456`
+
+Clients choose their language on the order form; their emails, the offer page and the WhatsApp offer
+text use it (`order-i18n.js`). The office order page (`order-review.html`) is in Spanish.

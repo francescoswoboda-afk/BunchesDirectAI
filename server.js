@@ -8,6 +8,7 @@ const dotenv = require("dotenv");
 const Stripe = require("stripe");
 const ExcelJS = require("exceljs");
 const nodemailer = require("nodemailer");
+const I18N = require("./order-i18n.js");
 
 dotenv.config();
 dotenv.config({ path: path.join(__dirname, ".env.local"), override: true });
@@ -46,7 +47,7 @@ app.use(express.json({ limit: "20mb" }));
 // HTML pages are sent with a version number on the site's code files (e.g. script.js?v=1696...),
 // taken from each file's last change. Every deploy then gives browsers new addresses, so no phone
 // can keep using an old cached copy of the scripts, styles or rose list.
-const VERSIONED_ASSETS = ["script.js", "styles.css", "products-data.js", "assets/fonts.css"];
+const VERSIONED_ASSETS = ["script.js", "styles.css", "products-data.js", "order-i18n.js", "assets/fonts.css"];
 function sendVersionedHtml(res, fileName) {
   const filePath = path.join(__dirname, fileName);
   let html;
@@ -233,6 +234,7 @@ app.post("/api/place-order", async (req, res) => {
 
     // The office gets the client's copy plus the "Accept order" / "Change or cancel" buttons and the Excel file
     await sendAdminNewOrderEmail(mailer, order);
+    notifyOfficeNewOrder(order);
     await sendClientConfirmationEmail({
       mailer,
       clientEmail: order.deliveryDetails.companyEmail,
@@ -291,15 +293,16 @@ app.post("/api/orders/:id/propose", (req, res) => {
       throw orderInputError("Choose a delivery date.");
     }
 
-    const proposal = { cartItems: items, deliveryDate, note, sentAt: new Date().toISOString() };
-    if (describeOrderChanges(order, proposal).length === 0 && !note) {
-      throw orderInputError("Nothing was changed. Use \"Accept order\" to accept it as it is.");
+    if (items.some((item) => !(item.stemsPerBox >= 1 && item.stemsPerBox <= 2000) || !(item.pricePerStem > 0 && item.pricePerStem <= 100))) {
+      throw orderInputError("Escribe los tallos por caja y el precio por tallo de cada rosa.");
     }
+
+    const proposal = { cartItems: items, deliveryDate, note, total: I18N.offerTotal(items), sentAt: new Date().toISOString() };
 
     order.proposal = proposal;
     await sendClientProposalEmail(mailer, order);
     order.status = "awaiting_client";
-    addOrderHistory(order, "Changes sent to the client");
+    addOrderHistory(order, `Offer sent to the client (${I18N.formatMoney(proposal.total, "en")} excl. VAT)`);
   });
 });
 
@@ -319,11 +322,13 @@ app.post("/api/orders/:id/respond", (req, res) => {
       order.deliveryDetails.deliveryDate = order.proposal.deliveryDate;
       await sendClientAcceptedEmail(mailer, order);
       await sendAdminClientAnswerEmail(mailer, order, true);
+      notifyOfficeClientAnswer(order, true);
       order.status = "accepted";
       addOrderHistory(order, "Client accepted the changes");
     } else if (decision === "decline") {
       await sendClientCancelledEmail(mailer, order, "client");
       await sendAdminClientAnswerEmail(mailer, order, false);
+      notifyOfficeClientAnswer(order, false);
       order.status = "cancelled";
       addOrderHistory(order, "Client declined the changes");
     } else {
@@ -476,24 +481,101 @@ function sanitizeOrderItems(rawItems, { strict }) {
       }
       continue;
     }
-    items.push({
+    const item = {
       roseName,
       boxType,
       stemLength,
       quantity: Math.max(1, Math.min(500, Math.floor(Number(raw?.quantity) || 1))),
       image: productCatalog.get(roseName)?.image || ""
-    });
+    };
+    if (raw?.stemsPerBox !== undefined || raw?.pricePerStem !== undefined) {
+      item.stemsPerBox = Math.floor(Number(raw.stemsPerBox) || 0);
+      item.pricePerStem = Math.round((Number(String(raw.pricePerStem).replace(",", ".")) || 0) * 1000) / 1000;
+    }
+    items.push(item);
   }
   return items;
 }
 
 function sanitizeDeliveryDetails(raw) {
-  const fields = ["companyName", "companyEmail", "taxVat", "deliveryAddress", "phone", "contactPerson", "truckCompany", "deliveryDate"];
+  const fields = ["companyName", "companyEmail", "taxVat", "deliveryAddress", "phone", "contactPerson", "truckCompany", "deliveryDate", "whatsapp"];
   const details = {};
   for (const field of fields) {
     details[field] = String(raw?.[field] || "").trim().slice(0, 300);
   }
+  details.language = I18N.lang(String(raw?.language || "").trim());
   return details;
+}
+
+// "+49 170 1234567" / "0049 170..." -> "491701234567" (what wa.me links need); "" if it isn't a full number
+function whatsappDigits(value) {
+  let digits = String(value || "").replace(/[^\d+]/g, "");
+  if (digits.startsWith("00")) {
+    digits = `+${digits.slice(2)}`;
+  }
+  if (!digits.startsWith("+")) {
+    return "";
+  }
+  digits = digits.slice(1).replace(/\D/g, "");
+  return digits.length >= 8 && digits.length <= 15 ? digits : "";
+}
+
+function whatsappChatUrl(value, text = "") {
+  const digits = whatsappDigits(value);
+  return digits ? `https://wa.me/${digits}${text ? `?text=${encodeURIComponent(text)}` : ""}` : "";
+}
+
+// ----- WhatsApp message to the office (CallMeBot) -----
+// Free service that sends WhatsApp messages to the phone that signed up for it (your dad's).
+// Set CALLMEBOT_PHONE (e.g. +491701234567) and CALLMEBOT_APIKEY on the server. Best effort: if it
+// fails, the order still goes through and the email still arrives.
+async function notifyOfficeWhatsApp(text) {
+  const phone = String(process.env.CALLMEBOT_PHONE || "").trim();
+  const apikey = String(process.env.CALLMEBOT_APIKEY || "").trim();
+  if (!phone || !apikey) {
+    return;
+  }
+  try {
+    const url = `https://api.callmebot.com/whatsapp.php?phone=${encodeURIComponent(phone)}&apikey=${encodeURIComponent(apikey)}&text=${encodeURIComponent(text.slice(0, 1500))}`;
+    const response = await fetch(url, { signal: AbortSignal.timeout(15000) });
+    if (!response.ok) {
+      console.error("WhatsApp notification failed:", response.status, (await response.text()).slice(0, 200));
+    }
+  } catch (error) {
+    console.error("WhatsApp notification failed:", error.message);
+  }
+}
+
+function officeOrderSummary(order, items = order.cartItems) {
+  const lines = items.map((item) => `• ${item.quantity}× ${item.roseName} (${item.boxType}${item.stemLength ? `, ${item.stemLength} cm` : ""})`);
+  return lines.join("\n");
+}
+
+async function notifyOfficeNewOrder(order) {
+  const d = order.deliveryDetails;
+  const chat = whatsappChatUrl(d.whatsapp);
+  await notifyOfficeWhatsApp([
+    `🌹 *Nuevo pedido ${order.id}*`,
+    `${d.companyName || "Cliente"}${d.contactPerson ? ` (${d.contactPerson})` : ""}`,
+    `Entrega: ${I18N.formatDate(d.deliveryDate, "es")}`,
+    "",
+    officeOrderSummary(order),
+    "",
+    `Abrir el pedido, poner precios y enviar la oferta:`,
+    orderPageUrl("order-review.html", order, order.adminToken),
+    chat ? `\nWhatsApp del cliente: ${chat}` : (d.phone ? `\nTeléfono del cliente: ${d.phone}` : "")
+  ].join("\n"));
+}
+
+async function notifyOfficeClientAnswer(order, accepted) {
+  const d = order.deliveryDetails;
+  const total = order.proposal ? I18N.formatMoney(I18N.offerTotal(order.proposal.cartItems), "es") : "";
+  await notifyOfficeWhatsApp([
+    accepted ? `✅ *Oferta aceptada · ${order.id}*` : `❌ *Oferta rechazada · ${order.id}*`,
+    `${d.companyName || "El cliente"} ${accepted ? "ha aceptado la oferta" : "ha rechazado la oferta; el pedido está cancelado"}${accepted && total ? ` (${total} sin IVA)` : ""}.`,
+    "",
+    orderPageUrl("order-review.html", order, order.adminToken)
+  ].join("\n"));
 }
 
 function createOrderRecord({ cartItems, deliveryDetails }) {
@@ -568,9 +650,26 @@ function buildOrderView(order, role) {
     cartItems: order.cartItems,
     deliveryDetails: order.deliveryDetails,
     proposal: order.proposal
-      ? { ...order.proposal, changes: describeOrderChanges(order, order.proposal) }
-      : null
+      ? { ...order.proposal, changes: describeOrderChanges(order, order.proposal, order.deliveryDetails.language) }
+      : null,
+    ...(role === "admin" ? officeWhatsAppLinks(order) : {})
   };
+}
+
+// For the office page: chat with the client, and (once an offer exists) send it to them on WhatsApp
+function officeWhatsAppLinks(order) {
+  const d = order.deliveryDetails;
+  const links = { clientChatUrl: whatsappChatUrl(d.whatsapp) };
+  if (order.proposal && links.clientChatUrl) {
+    const strings = I18N.t(d.language);
+    links.clientOfferWhatsAppUrl = whatsappChatUrl(d.whatsapp, I18N.fill(strings.whatsappOffer, {
+      name: clientGreetingName(order),
+      id: order.id,
+      total: I18N.formatMoney(I18N.offerTotal(order.proposal.cartItems), d.language),
+      link: orderPageUrl("order-response.html", order, order.clientToken)
+    }));
+  }
+  return links;
 }
 
 function orderInputError(message) {
@@ -624,10 +723,11 @@ async function handleOrderAction(req, res, role, allowedStatuses, action) {
 }
 
 // Plain-language list of what the office changed, shown to the client in the email and on the page
-function describeOrderChanges(order, proposal) {
+function describeOrderChanges(order, proposal, lang = "en") {
+  const strings = I18N.t(lang);
   const keyOf = (item) => `${item.roseName}|${item.boxType}|${item.stemLength}`;
   const labelOf = (item) => [item.roseName, item.boxType, item.stemLength ? `${item.stemLength} cm` : ""].filter(Boolean).join(", ");
-  const boxes = (quantity) => `${quantity} ${quantity === 1 ? "box" : "boxes"}`;
+  const boxes = (quantity) => I18N.boxesLabel(quantity, lang);
   const totals = (items) => {
     const map = new Map();
     for (const item of items) {
@@ -645,18 +745,18 @@ function describeOrderChanges(order, proposal) {
   for (const [key, { item, quantity }] of before) {
     const updated = after.get(key);
     if (!updated) {
-      changes.push(`Removed: ${labelOf(item)} (${boxes(quantity)})`);
+      changes.push(I18N.fill(strings.changeRemoved, { item: `${labelOf(item)} (${boxes(quantity)})` }));
     } else if (updated.quantity !== quantity) {
       changes.push(`${labelOf(item)}: ${boxes(quantity)} → ${boxes(updated.quantity)}`);
     }
   }
   for (const [key, { item, quantity }] of after) {
     if (!before.has(key)) {
-      changes.push(`Added: ${labelOf(item)} (${boxes(quantity)})`);
+      changes.push(I18N.fill(strings.changeAdded, { item: `${labelOf(item)} (${boxes(quantity)})` }));
     }
   }
   if (proposal.deliveryDate !== order.deliveryDetails.deliveryDate) {
-    changes.push(`Delivery date: ${formatDeliveryDate(order.deliveryDetails.deliveryDate)} → ${formatDeliveryDate(proposal.deliveryDate)}`);
+    changes.push(I18N.fill(strings.changeDate, { from: I18N.formatDate(order.deliveryDetails.deliveryDate, lang), to: I18N.formatDate(proposal.deliveryDate, lang) }));
   }
   return changes;
 }
@@ -1083,53 +1183,25 @@ async function sendClientConfirmationEmail({
   cartItems,
   deliveryDetails
 }) {
+  const lang = I18N.lang(deliveryDetails.language);
+  const strings = I18N.t(lang);
+  const name = String(deliveryDetails.contactPerson || deliveryDetails.companyName || company || "");
+  const content = { cartItems, deliveryDetails, dateLabel: strings.requestedDelivery, lang };
   await mailer.send({
     to: clientEmail,
     replyTo: orderEmail,
-    subject: `Bunches Direct order confirmation for ${company}`,
-    text: buildClientConfirmationText({ company, cartItems, deliveryDetails, orderEmail }),
-    html: buildClientConfirmationHtml({ company, cartItems, deliveryDetails, orderEmail }),
-    attachments: [{
-      filename: "bunches-direct-logo.png",
-      path: path.join(__dirname, "assets", "email-logo.png"),
-      cid: EMAIL_LOGO_CID
-    }]
+    subject: I18N.fill(strings.received.subject, { company }),
+    text: renderOrderEmailText({ ...content, greeting: I18N.fill(strings.received.heading, { name }), intro: strings.received.intro, closing: I18N.fill(strings.closing, { email: orderEmail }) }),
+    html: renderOrderEmail({
+      ...content,
+      title: strings.received.eyebrow,
+      eyebrow: strings.received.eyebrow,
+      heading: I18N.fill(strings.received.heading, { name }),
+      intro: strings.received.intro,
+      orderEmail
+    }),
+    attachments: [emailLogoAttachment()]
   });
-}
-
-function buildClientConfirmationText({ company, cartItems, deliveryDetails, orderEmail }) {
-  const greetingCompany = String(deliveryDetails.companyName || company || "Customer");
-  const orderLines = cartItems.map((item) => {
-    const roseName = String(item.roseName || "Rose");
-    const boxType = String(item.boxType || "Box");
-    const stemLength = item.stemLength ? `, ${item.stemLength} cm` : "";
-    const quantity = Number(item.quantity) || 1;
-    return `- ${roseName} | ${boxType}${stemLength} | Quantity: ${quantity}`;
-  });
-
-  return [
-    `Greetings ${greetingCompany},`,
-    "",
-    "Thank you for your order with Bunches Direct.",
-    "We have received your request and will review it shortly.",
-    "",
-    "Order summary:",
-    ...orderLines,
-    "",
-    `Company Name: ${String(deliveryDetails.companyName || "-")}`,
-    `Company Email: ${String(deliveryDetails.companyEmail || "-")}`,
-    `Tax / VAT #: ${String(deliveryDetails.taxVat || "-")}`,
-    `Delivery Address: ${String(deliveryDetails.deliveryAddress || "-")}`,
-    `Phone: ${String(deliveryDetails.phone || "-")}`,
-    `Contact Person: ${String(deliveryDetails.contactPerson || "-")}`,
-    `Truck Company in Aalsmeer: ${String(deliveryDetails.truckCompany || "-")}`,
-    `Delivery Date: ${formatDeliveryDate(deliveryDetails.deliveryDate)}`,
-    "",
-    `If anything needs to be changed, reply to ${orderEmail}.`,
-    "",
-    "Kind regards,",
-    "Bunches Direct"
-  ].join("\n");
 }
 
 function isValidEmail(value) {
@@ -1154,20 +1226,6 @@ function formatDeliveryDate(value) {
   });
 }
 
-function buildClientConfirmationHtml({ company, cartItems, deliveryDetails, orderEmail }) {
-  const greetingName = String(deliveryDetails.contactPerson || deliveryDetails.companyName || company || "there");
-  return renderOrderEmail({
-    title: "Order confirmation",
-    eyebrow: "Order received",
-    heading: `Thank you, ${greetingName}`,
-    intro: "We have received your order and will review it shortly. We'll confirm availability and get back to you with our best offer.",
-    dateLabel: "Requested delivery",
-    cartItems,
-    deliveryDetails,
-    orderEmail
-  });
-}
-
 const EMAIL_RED = "#b5070d";
 const EMAIL_INK = "#1f1414";
 const EMAIL_MUTED = "#7a6a6c";
@@ -1188,13 +1246,19 @@ function renderOrderEmail({
   cartItems,
   deliveryDetails,
   orderEmail,
-  itemsTitle = "Your roses",
+  itemsTitle,
   buttons = [],
   note = "",
-  noteTitle = "Message from Bunches Direct",
+  noteTitle,
   changes = [],
-  closing
+  closing,
+  lang = "en",
+  showPrices = false
 }) {
+  const strings = I18N.t(lang);
+  itemsTitle = itemsTitle || strings.yourRoses;
+  noteTitle = noteTitle || strings.noteTitle;
+  const money = (amount) => escapeHtml(I18N.formatMoney(amount, lang));
   const red = EMAIL_RED;
   const ink = EMAIL_INK;
   const muted = EMAIL_MUTED;
@@ -1203,7 +1267,7 @@ function renderOrderEmail({
   const serif = EMAIL_SERIF;
   const sans = EMAIL_SANS;
 
-  const deliveryDate = escapeHtml(formatDeliveryDate(deliveryDetails.deliveryDate));
+  const deliveryDate = escapeHtml(I18N.formatDate(deliveryDetails.deliveryDate, lang));
   const safeOrderEmail = escapeHtml(orderEmail);
   const totalBoxes = cartItems.reduce((sum, item) => sum + (Number(item.quantity) || 1), 0);
 
@@ -1213,26 +1277,42 @@ function renderOrderEmail({
     const stemLength = item.stemLength ? `${escapeHtml(String(item.stemLength))} cm` : "";
     const quantity = escapeHtml(String(Number(item.quantity) || 1));
     const meta = [boxType, stemLength].filter(Boolean).join(" &middot; ");
+    const priceLine = showPrices && item.pricePerStem
+      ? `<div style="font-family:${sans};font-size:13px;color:${muted};padding-top:2px;">${escapeHtml(I18N.fill(strings.stemsPerBox, { n: item.stemsPerBox }))} &middot; ${money(item.pricePerStem)} ${escapeHtml(strings.pricePerStem)}</div>`
+      : "";
+    const right = showPrices && item.pricePerStem
+      ? `&times; ${quantity}<div style="font-weight:400;font-size:13px;color:${muted};padding-top:2px;">${money(I18N.lineTotal(item))}</div>`
+      : `&times; ${quantity}`;
 
     return `
             <tr>
               <td style="padding:14px 0;border-bottom:1px solid ${line};">
                 <div style="font-family:${serif};font-size:18px;color:${ink};">${roseName}</div>
-                <div style="font-family:${sans};font-size:13px;color:${muted};padding-top:2px;">${meta}</div>
+                <div style="font-family:${sans};font-size:13px;color:${muted};padding-top:2px;">${meta}</div>${priceLine}
               </td>
-              <td align="right" style="padding:14px 0;border-bottom:1px solid ${line};font-family:${sans};font-size:15px;font-weight:700;color:${ink};white-space:nowrap;">&times; ${quantity}</td>
+              <td align="right" valign="top" style="padding:14px 0;border-bottom:1px solid ${line};font-family:${sans};font-size:15px;font-weight:700;color:${ink};white-space:nowrap;">${right}</td>
             </tr>`;
   }).join("");
 
+  const totalRow = showPrices && cartItems.some((item) => item.pricePerStem)
+    ? `
+                <tr>
+                  <td style="padding:14px 0 0;font-family:${sans};font-size:15px;font-weight:700;color:${ink};">${escapeHtml(strings.total)} <span style="font-weight:400;font-size:13px;color:${muted};">(${escapeHtml(strings.exclVat)})</span></td>
+                  <td align="right" style="padding:14px 0 0;font-family:${serif};font-size:22px;color:${red};white-space:nowrap;">${money(I18N.offerTotal(cartItems))}</td>
+                </tr>`
+    : "";
+
+  const L = strings.labels;
   const detailRows = [
-    ["Company", deliveryDetails.companyName],
-    ["Contact person", deliveryDetails.contactPerson],
-    ["Email", deliveryDetails.companyEmail],
-    ["Phone", deliveryDetails.phone],
-    ["Tax / VAT #", deliveryDetails.taxVat],
-    ["Delivery address", deliveryDetails.deliveryAddress],
-    ["Truck company in Aalsmeer", deliveryDetails.truckCompany]
-  ].map(([label, value]) => `
+    [L.company, deliveryDetails.companyName],
+    [L.contact, deliveryDetails.contactPerson],
+    [L.email, deliveryDetails.companyEmail],
+    [L.phone, deliveryDetails.phone],
+    [L.whatsapp, deliveryDetails.whatsapp],
+    [L.vat, deliveryDetails.taxVat],
+    [L.address, deliveryDetails.deliveryAddress],
+    [L.truck, deliveryDetails.truckCompany]
+  ].filter(([label, value]) => label !== L.whatsapp || value).map(([label, value]) => `
             <tr>
               <td valign="top" style="padding:9px 16px 9px 0;font-family:${sans};font-size:13px;color:${muted};width:42%;">${escapeHtml(label)}</td>
               <td valign="top" style="padding:9px 0;font-family:${sans};font-size:14px;color:${ink};">${escapeHtml(String(value || "-"))}</td>
@@ -1274,7 +1354,7 @@ function renderOrderEmail({
             <td style="padding:30px 32px 0;">
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
                 <tr>
-                  <td style="padding-bottom:6px;border-bottom:1px solid ${ink};font-family:${serif};font-size:20px;color:${ink};">What changed</td>
+                  <td style="padding-bottom:6px;border-bottom:1px solid ${ink};font-family:${serif};font-size:20px;color:${ink};">${escapeHtml(strings.whatChanged)}</td>
                 </tr>${changes.map((change) => `
                 <tr>
                   <td style="padding:10px 0;border-bottom:1px solid ${line};font-family:${sans};font-size:14px;color:${ink};">${escapeHtml(change)}</td>
@@ -1284,11 +1364,11 @@ function renderOrderEmail({
           </tr>`;
 
   const closingHtml = closing === undefined
-    ? `Need to change something? Just reply to this email or write to <a href="mailto:${safeOrderEmail}" style="color:${red};text-decoration:underline;">${safeOrderEmail}</a>.`
+    ? escapeHtml(strings.closing).replace("{email}", `<a href="mailto:${safeOrderEmail}" style="color:${red};text-decoration:underline;">${safeOrderEmail}</a>`)
     : escapeHtml(closing);
 
   return `<!doctype html>
-<html lang="en">
+<html lang="${escapeHtml(I18N.lang(lang))}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -1331,8 +1411,8 @@ function renderOrderEmail({
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
                 <tr>
                   <td style="padding-bottom:6px;border-bottom:1px solid ${ink};font-family:${serif};font-size:20px;color:${ink};">${escapeHtml(itemsTitle)}</td>
-                  <td align="right" style="padding-bottom:6px;border-bottom:1px solid ${ink};font-family:${sans};font-size:13px;color:${muted};">${totalBoxes} ${totalBoxes === 1 ? "box" : "boxes"}</td>
-                </tr>${rows}
+                  <td align="right" style="padding-bottom:6px;border-bottom:1px solid ${ink};font-family:${sans};font-size:13px;color:${muted};">${escapeHtml(I18N.boxesLabel(totalBoxes, lang))}</td>
+                </tr>${rows}${totalRow}
               </table>
             </td>
           </tr>
@@ -1340,7 +1420,7 @@ function renderOrderEmail({
             <td style="padding:30px 32px 0;">
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
                 <tr>
-                  <td colspan="2" style="padding-bottom:6px;border-bottom:1px solid ${ink};font-family:${serif};font-size:20px;color:${ink};">Delivery details</td>
+                  <td colspan="2" style="padding-bottom:6px;border-bottom:1px solid ${ink};font-family:${serif};font-size:20px;color:${ink};">${escapeHtml(strings.deliveryDetails)}</td>
                 </tr>
                 <tr><td colspan="2" style="height:6px;line-height:6px;font-size:0;">&nbsp;</td></tr>${detailRows}
               </table>
@@ -1349,14 +1429,14 @@ function renderOrderEmail({
           <tr>
             <td style="padding:30px 32px 32px;">
               <p style="margin:0 0 18px;font-family:${sans};font-size:14px;line-height:1.65;color:${ink};">${closingHtml}</p>
-              <p style="margin:0;font-family:${sans};font-size:14px;line-height:1.5;color:${ink};">Kind regards,<br><span style="font-family:${serif};font-size:19px;color:${red};">Bunches Direct</span></p>
+              <p style="margin:0;font-family:${sans};font-size:14px;line-height:1.5;color:${ink};">${escapeHtml(strings.kindRegards)}<br><span style="font-family:${serif};font-size:19px;color:${red};">Bunches Direct</span></p>
             </td>
           </tr>
         </table>
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;">
           <tr>
             <td align="center" style="padding:18px 20px 0;font-family:${sans};font-size:12px;line-height:1.6;color:${muted};">
-              Premium roses from Ecuador, delivered across Europe.<br>
+              ${escapeHtml(strings.tagline)}<br>
               <a href="https://bunches-direct.com" style="color:${muted};text-decoration:underline;">bunches-direct.com</a>
             </td>
           </tr>
@@ -1369,7 +1449,9 @@ function renderOrderEmail({
 }
 
 // Plain-text twin of renderOrderEmail, for mail apps that don't show HTML
-function renderOrderEmailText({ greeting, intro, dateLabel, cartItems, deliveryDetails, links = [], note = "", changes = [], closing }) {
+function renderOrderEmailText({ greeting, intro, dateLabel, cartItems, deliveryDetails, links = [], note = "", changes = [], closing, lang = "en", showPrices = false }) {
+  const strings = I18N.t(lang);
+  const L = strings.labels;
   const lines = [greeting, "", intro, ""];
   for (const link of links) {
     lines.push(`${link.label}: ${link.url}`);
@@ -1378,31 +1460,38 @@ function renderOrderEmailText({ greeting, intro, dateLabel, cartItems, deliveryD
     lines.push("");
   }
   if (note) {
-    lines.push("Message from Bunches Direct:", note, "");
+    lines.push(`${strings.noteTitle}:`, note, "");
   }
   if (changes.length) {
-    lines.push("What changed:", ...changes.map((change) => `- ${change}`), "");
+    lines.push(`${strings.whatChanged}:`, ...changes.map((change) => `- ${change}`), "");
   }
-  lines.push(`${dateLabel}: ${formatDeliveryDate(deliveryDetails.deliveryDate)}`, "", "Roses:");
+  lines.push(`${dateLabel}: ${I18N.formatDate(deliveryDetails.deliveryDate, lang)}`, "", `${strings.yourRoses}:`);
   for (const item of cartItems) {
     const stemLength = item.stemLength ? `, ${item.stemLength} cm` : "";
-    lines.push(`- ${item.roseName} | ${item.boxType || "Box"}${stemLength} | Quantity: ${Number(item.quantity) || 1}`);
+    const price = showPrices && item.pricePerStem
+      ? ` | ${I18N.fill(strings.stemsPerBox, { n: item.stemsPerBox })} × ${I18N.formatMoney(item.pricePerStem, lang)} = ${I18N.formatMoney(I18N.lineTotal(item), lang)}`
+      : "";
+    lines.push(`- ${item.roseName} | ${item.boxType || "Box"}${stemLength} | × ${Number(item.quantity) || 1}${price}`);
+  }
+  if (showPrices && cartItems.some((item) => item.pricePerStem)) {
+    lines.push("", `${strings.total} (${strings.exclVat}): ${I18N.formatMoney(I18N.offerTotal(cartItems), lang)}`);
   }
   lines.push(
     "",
-    `Company: ${deliveryDetails.companyName || "-"}`,
-    `Contact person: ${deliveryDetails.contactPerson || "-"}`,
-    `Email: ${deliveryDetails.companyEmail || "-"}`,
-    `Phone: ${deliveryDetails.phone || "-"}`,
-    `Tax / VAT #: ${deliveryDetails.taxVat || "-"}`,
-    `Delivery address: ${deliveryDetails.deliveryAddress || "-"}`,
-    `Truck company in Aalsmeer: ${deliveryDetails.truckCompany || "-"}`,
+    `${L.company}: ${deliveryDetails.companyName || "-"}`,
+    `${L.contact}: ${deliveryDetails.contactPerson || "-"}`,
+    `${L.email}: ${deliveryDetails.companyEmail || "-"}`,
+    `${L.phone}: ${deliveryDetails.phone || "-"}`,
+    ...(deliveryDetails.whatsapp ? [`${L.whatsapp}: ${deliveryDetails.whatsapp}`] : []),
+    `${L.vat}: ${deliveryDetails.taxVat || "-"}`,
+    `${L.address}: ${deliveryDetails.deliveryAddress || "-"}`,
+    `${L.truck}: ${deliveryDetails.truckCompany || "-"}`,
     ""
   );
   if (closing) {
     lines.push(closing, "");
   }
-  lines.push("Kind regards,", "Bunches Direct");
+  lines.push(strings.kindRegards.replace(/,$/, ","), "Bunches Direct");
   return lines.join("\n");
 }
 
@@ -1440,10 +1529,11 @@ function clientGreetingName(order) {
 // To the office: the client's order with "Accept order" and "Change or cancel" buttons, plus the Excel file
 async function sendAdminNewOrderEmail(mailer, order) {
   const company = order.deliveryDetails.companyName || "Unknown company";
-  const intro = "A new pre-order has come in. Accept it as it is, or change it and send the new version back to the client.";
+  const intro = "A new pre-order has come in. Open it to enter the prices and send the offer to the client (you can also change the order or decline it there).";
+  const chat = whatsappChatUrl(order.deliveryDetails.whatsapp);
   const buttons = [
-    { label: "Accept order", url: orderPageUrl("order-review.html", order, order.adminToken, { mode: "accept" }) },
-    { label: "Change or cancel", url: orderPageUrl("order-review.html", order, order.adminToken, { mode: "edit" }) }
+    { label: "Open order and set prices", url: orderPageUrl("order-review.html", order, order.adminToken) },
+    ...(chat ? [{ label: "Chat on WhatsApp", url: chat }] : [])
   ];
   const content = { cartItems: order.cartItems, deliveryDetails: order.deliveryDetails, dateLabel: "Requested delivery" };
 
@@ -1467,85 +1557,62 @@ async function sendAdminNewOrderEmail(mailer, order) {
   });
 }
 
-// To the client: the order (original, or the changed one they agreed to) is accepted
+// To the client, in their language: the offer they accepted is now the confirmed order
 async function sendClientAcceptedEmail(mailer, order) {
-  const intro = "Good news: we have accepted your order and it is now being processed. We'll be in touch about delivery.";
-  const content = { cartItems: order.cartItems, deliveryDetails: order.deliveryDetails, dateLabel: "Delivery" };
+  const lang = order.deliveryDetails.language;
+  const strings = I18N.t(lang);
+  const content = { cartItems: order.cartItems, deliveryDetails: order.deliveryDetails, dateLabel: strings.delivery, lang, showPrices: true };
   await mailer.send({
     to: order.deliveryDetails.companyEmail,
     replyTo: orderEmail,
-    subject: `Your Bunches Direct order has been accepted`,
-    text: renderOrderEmailText({ ...content, greeting: `Hello ${clientGreetingName(order)},`, intro, closing: `Questions? Reply to ${orderEmail}.` }),
-    html: renderOrderEmail({
-      ...content,
-      title: "Order accepted",
-      eyebrow: "Order accepted",
-      heading: "Your order is confirmed",
-      intro,
-      orderEmail,
-      closing: undefined
-    }),
+    subject: strings.accepted.subject,
+    text: renderOrderEmailText({ ...content, greeting: strings.accepted.heading, intro: strings.accepted.intro, closing: I18N.fill(strings.questions, { email: orderEmail }) }),
+    html: renderOrderEmail({ ...content, title: strings.accepted.eyebrow, eyebrow: strings.accepted.eyebrow, heading: strings.accepted.heading, intro: strings.accepted.intro, orderEmail }),
     attachments: [emailLogoAttachment()]
   });
 }
 
-// To the client: the office changed the order; they can accept the new version or decline it
+// To the client, in their language: the offer with prices (and any changes), to accept or decline
 async function sendClientProposalEmail(mailer, order) {
   const proposal = order.proposal;
-  const intro = "We've reviewed your order and suggest a few changes, shown below. Please accept the new version so we can process it, or decline it to cancel the order.";
+  const lang = order.deliveryDetails.language;
+  const strings = I18N.t(lang);
   const buttons = [
-    { label: "Accept changes", url: orderPageUrl("order-response.html", order, order.clientToken, { choice: "accept" }) },
-    { label: "Decline", url: orderPageUrl("order-response.html", order, order.clientToken, { choice: "decline" }) }
+    { label: strings.offer.accept, url: orderPageUrl("order-response.html", order, order.clientToken, { choice: "accept" }) },
+    { label: strings.offer.decline, url: orderPageUrl("order-response.html", order, order.clientToken, { choice: "decline" }) }
   ];
-  const changes = describeOrderChanges(order, proposal);
   const content = {
     cartItems: proposal.cartItems,
     deliveryDetails: { ...order.deliveryDetails, deliveryDate: proposal.deliveryDate },
-    dateLabel: "Proposed delivery",
+    dateLabel: strings.proposedDelivery,
     note: proposal.note,
-    changes
+    changes: describeOrderChanges(order, proposal, lang),
+    lang,
+    showPrices: true
   };
 
   await mailer.send({
     to: order.deliveryDetails.companyEmail,
     replyTo: orderEmail,
-    subject: `Changes to your Bunches Direct order - please confirm`,
-    text: renderOrderEmailText({ ...content, greeting: `Hello ${clientGreetingName(order)},`, intro, links: buttons }),
-    html: renderOrderEmail({
-      ...content,
-      title: "Changes to your order",
-      eyebrow: "Please confirm",
-      heading: "We've updated your order",
-      intro,
-      itemsTitle: "Your updated order",
-      buttons,
-      orderEmail
-    }),
+    subject: strings.offer.subject,
+    text: renderOrderEmailText({ ...content, greeting: strings.offer.heading, intro: strings.offer.intro, links: buttons }),
+    html: renderOrderEmail({ ...content, title: strings.offer.eyebrow, eyebrow: strings.offer.eyebrow, heading: strings.offer.heading, intro: strings.offer.intro, itemsTitle: strings.offer.items, buttons, orderEmail }),
     attachments: [emailLogoAttachment()]
   });
 }
 
-// To the client: the order is cancelled, either by the office or because they declined the changes
+// To the client, in their language: the order is cancelled (by the office, or because they declined)
 async function sendClientCancelledEmail(mailer, order, cancelledBy) {
-  const intro = cancelledBy === "client"
-    ? "You declined the suggested changes, so your order has been cancelled. You're welcome to place a new order at any time."
-    : "Unfortunately we can't fulfil this order, so it has been cancelled. Please get in touch if you'd like to find an alternative.";
-  const content = { cartItems: order.cartItems, deliveryDetails: order.deliveryDetails, dateLabel: "Requested delivery" };
+  const lang = order.deliveryDetails.language;
+  const strings = I18N.t(lang);
+  const intro = cancelledBy === "client" ? strings.cancelled.byClient : strings.cancelled.byOffice;
+  const content = { cartItems: order.cartItems, deliveryDetails: order.deliveryDetails, dateLabel: strings.requestedDelivery, lang };
   await mailer.send({
     to: order.deliveryDetails.companyEmail,
     replyTo: orderEmail,
-    subject: `Your Bunches Direct order has been cancelled`,
-    text: renderOrderEmailText({ ...content, greeting: `Hello ${clientGreetingName(order)},`, intro, closing: `Questions? Reply to ${orderEmail}.` }),
-    html: renderOrderEmail({
-      ...content,
-      title: "Order cancelled",
-      eyebrow: "Order cancelled",
-      heading: "Your order has been cancelled",
-      intro,
-      itemsTitle: "Cancelled order",
-      orderEmail,
-      closing: undefined
-    }),
+    subject: strings.cancelled.subject,
+    text: renderOrderEmailText({ ...content, greeting: strings.cancelled.heading, intro, closing: I18N.fill(strings.questions, { email: orderEmail }) }),
+    html: renderOrderEmail({ ...content, title: strings.cancelled.eyebrow, eyebrow: strings.cancelled.eyebrow, heading: strings.cancelled.heading, intro, itemsTitle: strings.cancelled.items, orderEmail }),
     attachments: [emailLogoAttachment()]
   });
 }
@@ -1555,21 +1622,21 @@ async function sendClientCancelledEmail(mailer, order, cancelledBy) {
 async function sendAdminClientAnswerEmail(mailer, order, accepted) {
   const company = order.deliveryDetails.companyName || "The client";
   const intro = accepted
-    ? `${company} accepted your changes. The order is accepted and can be processed. The final order is attached as an Excel file.`
-    : `${company} declined your changes, so the order has been cancelled.`;
-  const content = { cartItems: accepted ? order.proposal.cartItems : order.cartItems, deliveryDetails: order.deliveryDetails, dateLabel: "Delivery" };
+    ? `${company} accepted your offer. The order is accepted and can be processed. The final order is attached as an Excel file.`
+    : `${company} declined your offer, so the order has been cancelled.`;
+  const content = { cartItems: accepted ? order.proposal.cartItems : order.cartItems, deliveryDetails: order.deliveryDetails, dateLabel: "Delivery", showPrices: accepted };
 
   try {
     await mailer.send({
       to: orderEmail,
       replyTo: isValidEmail(order.deliveryDetails.companyEmail) ? order.deliveryDetails.companyEmail : undefined,
-      subject: `${accepted ? "Changes accepted" : "Changes declined"} - ${company} - order ${order.id}`,
+      subject: `${accepted ? "Offer accepted" : "Offer declined"} - ${company} - order ${order.id}`,
       text: renderOrderEmailText({ ...content, greeting: accepted ? "Order accepted" : "Order cancelled", intro }),
       html: renderOrderEmail({
         ...content,
-        title: accepted ? "Changes accepted" : "Changes declined",
+        title: accepted ? "Offer accepted" : "Offer declined",
         eyebrow: `Order ${order.id}`,
-        heading: accepted ? "The client accepted your changes" : "The client declined your changes",
+        heading: accepted ? "The client accepted your offer" : "The client declined your offer",
         intro,
         itemsTitle: accepted ? "Final order" : "Original order",
         orderEmail,

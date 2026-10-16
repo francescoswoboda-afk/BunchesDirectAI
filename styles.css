@@ -6847,3 +6847,139 @@ body[data-page="products"] .products-corner-image {
     order: 0;
   }
 }
+
+/* ===== Offers with prices (order-review.html for the office, order-response.html for the client) ===== */
+.or-price-row {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 0.6rem;
+  padding-left: calc(42px + 0.75rem);
+}
+
+.or-price-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  min-width: 0;
+  font-size: var(--fs-small, 0.8rem);
+  font-weight: 600;
+  color: var(--dp-ink);
+}
+
+.or-price-field input {
+  width: 100%;
+  height: 40px;
+  padding: 0 0.7rem;
+  border: 1px solid var(--dp-field);
+  border-radius: 10px;
+  background: #ffffff;
+  font: inherit;
+  font-size: var(--fs-ui, 0.9rem);
+  font-weight: 400;
+  color: var(--dp-ink);
+  box-sizing: border-box;
+}
+
+.or-price-field input:focus {
+  outline: none;
+  border-color: var(--dp-ink);
+  box-shadow: 0 0 0 3px rgba(29, 20, 22, 0.06);
+}
+
+.or-price-total {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.3rem;
+  min-width: 90px;
+  margin: 0;
+  font-size: var(--fs-small, 0.8rem);
+  color: var(--dp-muted);
+}
+
+.or-price-total strong {
+  height: 40px;
+  display: flex;
+  align-items: center;
+  font-size: var(--fs-ui, 0.9rem);
+  color: var(--dp-ink);
+}
+
+.or-offer-total span:last-child {
+  color: var(--dp-red);
+}
+
+.dp-item-copy span + span {
+  display: block;
+}
+
+.or-line-total {
+  display: block;
+  margin-top: 0.15rem;
+  font-weight: 400;
+  color: var(--dp-muted);
+  text-align: right;
+}
+
+/* WhatsApp buttons: chat with the client, or send the offer with the message already written */
+.or-whatsapp {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding: 0.6rem 1.1rem;
+  border: 1.5px solid #1e9e57;
+  border-radius: 999px;
+  background: #ffffff;
+  font-size: var(--fs-ui, 0.9rem);
+  font-weight: 700;
+  color: #167a43;
+  text-decoration: none;
+}
+
+.or-whatsapp svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+}
+
+.or-whatsapp:hover {
+  background: #effaf3;
+}
+
+.or-whatsapp.is-solid {
+  background: #1e9e57;
+  color: #ffffff;
+}
+
+.or-whatsapp.is-solid:hover {
+  background: #178a4b;
+}
+
+.or-banner .or-whatsapp {
+  margin-top: 0.6rem;
+}
+
+.or-banner p {
+  margin: 0;
+}
+
+@media (max-width: 520px) {
+  .or-price-row {
+    grid-template-columns: 1fr 1fr;
+    padding-left: 0;
+  }
+
+  .or-price-total {
+    grid-column: 1 / -1;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .or-price-total strong {
+    height: auto;
+  }
+}
