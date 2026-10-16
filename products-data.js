@@ -1846,5 +1846,96 @@ window.BUNCHES_PRODUCTS = [
         color: "pink",
         description: "Dusty antique pink",
         image: "assets/products/optimized/yuyi-gardens-2026.webp"
+    },
+    {
+        id: "EXOTIX-ORANGE",
+        name: "Exotix Orange",
+        color: "peach",
+        description: "Caramel apricot with ruffled petals",
+        image: "assets/products/optimized/exotix-orange-2026.webp"
+    },
+    {
+        id: "FRIENDS",
+        name: "Friends",
+        color: "pink",
+        description: "Dusty mauve with antique pink edges",
+        image: "assets/products/optimized/friends-2026.webp"
+    },
+    {
+        id: "FATAL-ATTRACTION",
+        name: "Fatal Attraction",
+        color: "pink",
+        description: "Pale blush pink spray rose",
+        image: "assets/products/optimized/fatal-attraction-2026.webp"
+    },
+    {
+        id: "GOLDEN-BLOSSOM",
+        name: "Golden Blossom",
+        color: "yellow",
+        description: "Golden yellow spray rose",
+        image: "assets/products/optimized/golden-blossom-2026.webp"
+    },
+    {
+        id: "GREEN-ROSEVER",
+        name: "Green Rosever",
+        color: "green",
+        description: "Lime green spray rose",
+        image: "assets/products/optimized/green-rosever-2026.webp"
+    },
+    {
+        id: "JUICY-XPRESSION",
+        name: "Juicy Xpression",
+        color: "peach",
+        description: "Apricot centre with cream outer petals",
+        image: "assets/products/optimized/juicy-xpression-2026.webp"
+    },
+    {
+        id: "JUST-A-LITTLE-BIT-MORE",
+        name: "Just a Little Bit More",
+        color: "peach",
+        description: "Coral heart with pink outer petals",
+        image: "assets/products/optimized/just-a-little-bit-more-2026.webp"
+    },
+    {
+        id: "PRINCESS-FAIRYKISS",
+        name: "Princess FairyKiss",
+        color: "pink",
+        description: "Pale pink spray garden rose",
+        image: "assets/products/optimized/princess-fairykiss-2026.webp"
+    },
+    {
+        id: "PRINCESS-PINKU",
+        name: "Princess Pinku",
+        color: "red",
+        description: "Dark burgundy spray garden rose",
+        image: "assets/products/optimized/princess-pinku-2026.webp"
+    },
+    {
+        id: "SAHARA-SENSATION",
+        name: "Sahara Sensation",
+        color: "peach",
+        description: "Sandy peach spray rose",
+        image: "assets/products/optimized/sahara-sensation-2026.webp"
+    },
+    {
+        id: "SEXY-RED",
+        name: "Sexy Red",
+        color: "red",
+        description: "Deep velvet red",
+        image: "assets/products/optimized/sexy-red-2026.webp"
+    },
+    {
+        id: "SWEET-EYE",
+        name: "Sweet Eye",
+        color: "pink",
+        description: "Blush pink garden rose with a green eye",
+        image: "assets/products/optimized/sweet-eye-2026.webp"
+    },
+    {
+        id: "WILD-ESPERANCE",
+        name: "Wild Esperance",
+        color: "pink",
+        description: "Coral pink with ruffled raspberry edges",
+        image: "assets/products/optimized/wild-esperance-2026.webp"
     }
 ];
