@@ -51,13 +51,16 @@ const VERSIONED_ASSETS = ["script.js", "styles.css", "products-data.js", "order-
 // Hides the page for a moment while site-i18n.js translates it, so a German visitor never sees the
 // English text flash first. Shows the page anyway after 2 seconds in case the script can't load.
 const LANGUAGE_HEAD_SNIPPET = `<script>(function(){try{var l=localStorage.getItem("bunchesDirectLanguage");if(!l){var n=(navigator.language||"").slice(0,2).toLowerCase();if(["de","fr","nl","it","es"].indexOf(n)>=0)l=n}if(l&&l!=="en"){var d=document.documentElement;d.lang=l;d.classList.add("i18n-pending");setTimeout(function(){d.classList.remove("i18n-pending")},2000)}}catch(e){}})();</script><style>html.i18n-pending body{visibility:hidden}</style>`;
-function sendVersionedHtml(res, fileName) {
+function sendVersionedHtml(res, fileName, transform) {
   const filePath = path.join(__dirname, fileName);
   let html;
   try {
     html = fs.readFileSync(filePath, "utf8");
   } catch {
     return res.status(404).end();
+  }
+  if (transform) {
+    html = transform(html);
   }
   for (const asset of VERSIONED_ASSETS) {
     let version = "";
@@ -85,6 +88,23 @@ app.get("/", (_req, res) => {
 app.get(["/index.html", "/products.html"], (req, res) => {
   const query = req.originalUrl.includes("?") ? req.originalUrl.slice(req.originalUrl.indexOf("?")) : "";
   return res.redirect(301, `/${query}`);
+});
+// Each rose page (product-detail.html?rose=Aloha) gets its own title, description and canonical
+// address, and its name, colour and photo are written into the page itself. Without this, Google
+// sees every rose page as the same empty template and treats them as duplicates.
+const SITE_ORIGIN = "https://bunches-direct.com";
+app.get("/product-detail.html", (req, res) => {
+  const requested = String(req.query.rose || "").trim().toLowerCase();
+  const product = requested ? loadProducts().find((item) => item.name.toLowerCase() === requested) : null;
+  return sendVersionedHtml(res, "product-detail.html", (html) => renderRosePage(html, product));
+});
+// Lists every rose page so Google finds them all, and stays in step with products-data.js.
+app.get("/sitemap.xml", (_req, res) => {
+  const urls = ["/", "/about.html", "/contact.html", ...loadProducts().map(getRosePagePath)];
+  const body = urls.map((url) => `  <url>\n    <loc>${escapeHtml(SITE_ORIGIN + url)}</loc>\n  </url>`).join("\n");
+  res.type("application/xml");
+  res.setHeader("Cache-Control", "no-cache");
+  return res.send(`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${body}\n</urlset>\n`);
 });
 app.get(availabilityAdminPath, (_req, res) => {
   return res.sendFile(path.join(__dirname, "availability-upload-8k2m.html"));
@@ -774,6 +794,68 @@ function describeOrderChanges(order, proposal, lang = "en") {
     changes.push(I18N.fill(strings.changeDate, { from: I18N.formatDate(order.deliveryDetails.deliveryDate, lang), to: I18N.formatDate(proposal.deliveryDate, lang) }));
   }
   return changes;
+}
+
+// The rose list from products-data.js, reread whenever the file changes.
+let productsCache = { mtimeMs: -1, list: [] };
+function loadProducts() {
+  const filePath = path.join(__dirname, "products-data.js");
+  try {
+    const { mtimeMs } = fs.statSync(filePath);
+    if (mtimeMs !== productsCache.mtimeMs) {
+      const sandbox = { window: {} };
+      vm.runInNewContext(fs.readFileSync(filePath, "utf8"), sandbox, { timeout: 1000 });
+      const list = Array.isArray(sandbox.window.BUNCHES_PRODUCTS) ? sandbox.window.BUNCHES_PRODUCTS : [];
+      productsCache = { mtimeMs, list: list.filter((item) => item && typeof item.name === "string" && item.name.trim()) };
+    }
+  } catch (error) {
+    console.error("Could not load products-data.js:", error.message);
+  }
+  return productsCache.list;
+}
+
+// Same address format as getProductDetailUrl() in script.js.
+function getRosePagePath(product) {
+  return `/product-detail.html?rose=${encodeURIComponent(product.name)}`;
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function renderRosePage(html, product) {
+  if (!product) {
+    // No rose or an unknown name: the page falls back to the first rose, so keep it out of Google.
+    return html.replace(/<title>/i, '<meta name="robots" content="noindex, follow">\n  <title>');
+  }
+  const name = escapeHtml(product.name);
+  const colour = product.description ? escapeHtml(product.description) : "";
+  const url = escapeHtml(SITE_ORIGIN + getRosePagePath(product));
+  const image = product.image ? escapeHtml(`${SITE_ORIGIN}/${product.image.replace(/^\//, "")}`) : "";
+  const title = `${name} Rose | Bunches Direct`;
+  const description = `${name} rose${colour ? `: ${colour.charAt(0).toLowerCase()}${colour.slice(1)}` : ""}. `
+    + "Order wholesale boxes of fresh Ecuadorian roses, delivered across Europe via Aalsmeer.";
+  const head = [
+    `<meta name="description" content="${description}">`,
+    `<title>${title}</title>`,
+    `<link rel="canonical" href="${url}">`,
+    `<meta property="og:type" content="product">`,
+    `<meta property="og:url" content="${url}">`,
+    `<meta property="og:title" content="${title}">`,
+    `<meta property="og:description" content="${description}">`,
+    image ? `<meta property="og:image" content="${image}">` : ""
+  ].filter(Boolean).join("\n  ");
+
+  return html
+    .replace(/<meta name="description"[^>]*>\s*<title>[^<]*<\/title>/i, head)
+    .replace('<img id="detailImage" alt="Rose image"', `<img id="detailImage" src="${escapeHtml(product.image || "assets/flower-card.svg")}" alt="${name} rose"`)
+    .replace('<h1 id="detailName" class="rose-detail-name"></h1>', `<h1 id="detailName" class="rose-detail-name">${name}</h1>`)
+    .replace('<span id="detailColour"></span>', `<span id="detailColour">${colour}</span>`);
 }
 
 function buildRosePriceMap(scriptPath) {

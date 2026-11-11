@@ -1118,7 +1118,7 @@ function renderProductDetail(product, index) {
     dom.detailImage.src = product.image || FALLBACK_PRODUCT_IMAGE;
     dom.detailImage.alt = `${product.name} rose`;
     dom.detailName.textContent = product.name;
-    document.title = `${product.name} | Bunches Direct`;
+    document.title = `${product.name} Rose | Bunches Direct`;
     renderStemLengthOptions(product);
 
     // Warm the cache for adjacent roses so Next/Previous feels instant.
