@@ -107,7 +107,7 @@ window.BUNCHES_PRODUCTS = [
     },
     {
         id: "Atomic1",
-        name: "Atomic 1",
+        name: "Atomic",
         color: "bicolor",
         category: "event",
         price: 95,
